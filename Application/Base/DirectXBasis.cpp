@@ -294,7 +294,7 @@ void DirectXBasis::PostDraw() {
 	HRESULT result;
 
 	//バックバッファの番号取得
-	UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
+	//UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
 
 //リソースバリア復帰コマンド
 	///5.リソースバリアを隠す
