@@ -177,12 +177,12 @@ void Model::LoadFromOBJInternal(const std::string& modelname, bool smoothing) {
 				if (faceIndexCount >= 3) {
 					// 四角形ポリゴンの4点目なので、
 					// 四角形の0,1,2,3の内 2,3,0で三角形を構築する
-					mesh->AddIndex(indexCountTex - 1);
-					mesh->AddIndex(indexCountTex);
-					mesh->AddIndex(indexCountTex - 3);
+					mesh->AddIndex((unsigned short)indexCountTex - 1);
+					mesh->AddIndex((unsigned short)indexCountTex);
+					mesh->AddIndex((unsigned short)indexCountTex - 3);
 				}
 				else {
-					mesh->AddIndex(indexCountTex);
+					mesh->AddIndex((unsigned short)indexCountTex);
 				}
 				indexCountTex++;
 				faceIndexCount++;
