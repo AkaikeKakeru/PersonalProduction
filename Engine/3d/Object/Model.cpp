@@ -51,11 +51,11 @@ void Model::LoadFromOBJInternal(const std::string& modelname, bool smoothing) {
 	//ファイルストリーム
 	std::ifstream file;
 	//モデル名
-	const string filename = modelname + ".obj"; // "modelname.obj"
+	const string modelFilename = modelname + ".obj"; // "modelname.obj"
 	const string directoryPath = Directory_ + modelname + "/"; // "Resources/modelname/"
 
 															   //objファイルを開く
-	file.open(directoryPath + filename);
+	file.open(directoryPath + modelFilename);
 
 	//ファイルオープンの失敗を確認
 	assert(!file.fail());
@@ -65,7 +65,7 @@ void Model::LoadFromOBJInternal(const std::string& modelname, bool smoothing) {
 	// メッシュ生成
 	Mesh* mesh = new Mesh;
 	int indexCountTex = 0;
-	int indexCountNoTex = 0;
+	//int indexCountNoTex = 0;
 
 	vector<Vector3>positions;//頂点座標
 	vector<Vector3>normals;//法線ベクトル
@@ -83,10 +83,10 @@ void Model::LoadFromOBJInternal(const std::string& modelname, bool smoothing) {
 		//マテリアル
 		if (key == "mtllib") {
 			// マテリアルのファイル名読み込み
-			string filename;
-			line_stream >> filename;
+			string materialFilename;
+			line_stream >> materialFilename;
 			// マテリアル読み込み
-			LoadMaterial(directoryPath, filename);
+			LoadMaterial(directoryPath, materialFilename);
 		}
 		// 先頭文字列がgならグループの開始
 		if (key == "g") {
