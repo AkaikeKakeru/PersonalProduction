@@ -1,4 +1,4 @@
-#include "TitleScene.h"
+﻿#include "TitleScene.h"
 #include "SafeDelete.h"
 
 #include "Framework.h"
@@ -74,7 +74,12 @@ void TitleScene::Update(){
 
 void TitleScene::Draw(){
 #ifdef _DEBUG
+	imGuiManager_->Begin();
+	ImGui::Text("Hello, world");
 
+	//デモを表示
+	ImGui::ShowDemoWindow();
+	imGuiManager_->End();
 #endif
 
 	//モデル本命処理

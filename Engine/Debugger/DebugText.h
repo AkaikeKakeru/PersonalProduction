@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "DrawBasis.h"
 #include "Sprite.h"
 

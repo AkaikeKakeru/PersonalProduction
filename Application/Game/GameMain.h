@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "SafeDelete.h"
 #include "Framework.h"
 #include "BaseScene.h"

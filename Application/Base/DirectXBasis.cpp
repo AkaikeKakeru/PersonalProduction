@@ -1,4 +1,4 @@
-#include "DirectXBasis.h"
+﻿#include "DirectXBasis.h"
 #include <string>
 #include <cassert>
 

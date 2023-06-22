@@ -1,4 +1,4 @@
-#include "Sprite.h"
+﻿#include "Sprite.h"
 #include "SafeDelete.h"
 #include "Degree.h"
 #include "WinApp.h"
@@ -118,7 +118,7 @@ void Sprite::Draw() {
 
 void Sprite::CreateVertexBufferView() {
 	HRESULT result;
-#pragma region 頂点データ
+#pragma region VerticesData
 	//上下左右の数値の設定
 	dir_.left = (0.0f - anchorPoint_.x) * size_.x;
 	dir_.right = (1.0f - anchorPoint_.x) * size_.x;
@@ -156,7 +156,7 @@ void Sprite::CreateVertexBufferView() {
 	UINT sizeVB = static_cast<UINT>(sizeof(vertices_[0]) * _countof(vertices_));
 #pragma endregion
 
-#pragma region 頂点バッファ設定
+#pragma region VertexBafferSetting
 	//頂点バッファの設定
 	D3D12_HEAP_PROPERTIES vbHeapProp{};
 	vbHeapProp.Type = D3D12_HEAP_TYPE_UPLOAD;
@@ -171,7 +171,7 @@ void Sprite::CreateVertexBufferView() {
 	vbResDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 #pragma endregion
 
-#pragma region 頂点バッファ生成
+#pragma region VertexBafferCreate
 	//頂点バッファの生成
 	result = device_->CreateCommittedResource(
 		&vbHeapProp,
@@ -183,7 +183,7 @@ void Sprite::CreateVertexBufferView() {
 	assert(SUCCEEDED(result));
 #pragma endregion
 
-#pragma region 頂点バッファへ転送
+#pragma region VertexBafferTransfer
 	//GPU上のバッファに対応した仮想メモリ(メインメモリ上)を取得
 	result = vertBuff_->Map(0, nullptr, (void**)&vertMap_);
 	assert(SUCCEEDED(result));
@@ -195,7 +195,7 @@ void Sprite::CreateVertexBufferView() {
 	vertBuff_->Unmap(0, nullptr);
 #pragma endregion
 
-#pragma region 頂点バッファビュー作成
+#pragma region VertexBafferViewCreate
 	//頂点バッファビューの作成
 
 	//GPU仮想アドレス

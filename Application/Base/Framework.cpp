@@ -1,4 +1,4 @@
-#include "Framework.h"
+﻿#include "Framework.h"
 #include "Object3d.h"
 #include "DrawBasis.h"
 #include "TitleScene.h"
@@ -50,9 +50,11 @@ void Framework::Initialize(){
 	//再生
 	//audio_->SoundPlayWave(audio_->GetXAudio2().Get(), soundData1);
 
+#ifdef _DEBUG
 	//ImGuiマネージャー
 	ImGuiManager::GetInstance();
 	ImGuiManager::StaticInitialize();
+#endif // DEBUG
 
 	//オブジェクト基盤
 	Object3d::StaticInitialize(dxBas_->GetDevice().Get());
@@ -80,8 +82,9 @@ void Framework::Update(){
 void Framework::Finalize(){
 	audio_->Finalize();
 	Audio::GetInstance()-> SoundUnload(&soundData1);
-
+#ifdef _DEBUG
 	imGuiManager_->Finalize();
+#endif // DEBUG
 	sceneManager_->Finalize();
 	delete sceneFactory_;
 }

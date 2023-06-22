@@ -1,4 +1,4 @@
-#include "DebugText.h"
+﻿#include "DebugText.h"
 
 DebugText::~DebugText() {
 	for (int i = 0; i < _countof(sprites_); i++) {

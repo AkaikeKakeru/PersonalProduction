@@ -1,4 +1,4 @@
-#include "WinApp.h"
+﻿#include "WinApp.h"
 #include <imgui_impl_win32.h>
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
@@ -27,7 +27,7 @@ WinApp* WinApp::GetInstance(){
 }
 
 void WinApp::Initialize(){
-#pragma region ウィンドウの設定
+#pragma region WindowSetting
 	//ウィンドウクラス
 	w_.cbSize = sizeof(WNDCLASSEX);
 	w_.lpfnWndProc = (WNDPROC)WindowProc;
@@ -43,7 +43,7 @@ void WinApp::Initialize(){
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 #pragma endregion
 
-#pragma region ウィンドウの生成
+#pragma region WindowCreate
 	hwnd_ = CreateWindow(
 		w_.lpszClassName,
 		L"MyEngine",
