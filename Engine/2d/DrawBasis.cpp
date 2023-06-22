@@ -340,7 +340,7 @@ void DrawBasis::LoadTexture(uint32_t textureIndex, const std::string& fileName) 
 		CP_ACP, 0, fullPath.c_str(), -1, nullptr, 0);
 
 	//ワイド文字列に変換
-	std::vector<wchar_t> wfilePath(filePathBufferSize);
+	std::vector<wchar_t> wfilePath(static_cast<const unsigned _int64>(filePathBufferSize));
 	MultiByteToWideChar(
 		CP_ACP, 0, fullPath.c_str(), -1, wfilePath.data(), filePathBufferSize);
 

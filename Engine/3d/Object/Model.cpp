@@ -164,22 +164,22 @@ void Model::LoadFromOBJInternal(const std::string& modelname, bool smoothing) {
 					index_stream >> indexNormal;
 					//頂点データの追加
 					Mesh::VertexPosNormalUv vertex{};
-					vertex.pos = positions[indexPosition - 1];
-					vertex.normal = normals[indexNormal - 1];
-					vertex.uv = texcoords[indexTexcoord - 1];
+					vertex.pos = positions[indexPosition - static_cast<const unsigned _int64>(1)];
+					vertex.normal = normals[indexNormal - static_cast<const unsigned _int64>(1)];
+					vertex.uv = texcoords[indexTexcoord - static_cast<const unsigned _int64>(1)];
 					mesh->AddVertex(vertex);
 					//エッジ平滑化のデータを追加
 					if(smoothing) {
-						mesh->AddSmoothData(indexPosition, (unsigned short)mesh->GetVertexCount() - 1);
+						mesh->AddSmoothData(indexPosition, (unsigned short)(mesh->GetVertexCount() - 1));
 					}
 				}
 				//頂点インデックスに追加
 				if (faceIndexCount >= 3) {
 					// 四角形ポリゴンの4点目なので、
 					// 四角形の0,1,2,3の内 2,3,0で三角形を構築する
-					mesh->AddIndex((unsigned short)indexCountTex - 1);
+					mesh->AddIndex((unsigned short)(indexCountTex - 1));
 					mesh->AddIndex((unsigned short)indexCountTex);
-					mesh->AddIndex((unsigned short)indexCountTex - 3);
+					mesh->AddIndex((unsigned short)(indexCountTex - 3));
 				}
 				else {
 					mesh->AddIndex((unsigned short)indexCountTex);
