@@ -1,4 +1,4 @@
-#include "FixFPS.h"
+﻿#include "FixFPS.h"
 #include <thread>
 
 FixFPS* FixFPS::GetInstace() {

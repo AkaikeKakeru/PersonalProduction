@@ -1,4 +1,4 @@
-#include "Model.h"
+﻿#include "Model.h"
 #include <cassert>
 #include <fstream>
 #include <sstream>
@@ -51,11 +51,11 @@ void Model::LoadFromOBJInternal(const std::string& modelname, bool smoothing) {
 	//ファイルストリーム
 	std::ifstream file;
 	//モデル名
-	const string filename = modelname + ".obj"; // "modelname.obj"
+	const string modelFilename = modelname + ".obj"; // "modelname.obj"
 	const string directoryPath = Directory_ + modelname + "/"; // "Resources/modelname/"
 
 															   //objファイルを開く
-	file.open(directoryPath + filename);
+	file.open(directoryPath + modelFilename);
 
 	//ファイルオープンの失敗を確認
 	assert(!file.fail());
@@ -65,7 +65,7 @@ void Model::LoadFromOBJInternal(const std::string& modelname, bool smoothing) {
 	// メッシュ生成
 	Mesh* mesh = new Mesh;
 	int indexCountTex = 0;
-	int indexCountNoTex = 0;
+	//int indexCountNoTex = 0;
 
 	vector<Vector3>positions;//頂点座標
 	vector<Vector3>normals;//法線ベクトル
@@ -83,10 +83,10 @@ void Model::LoadFromOBJInternal(const std::string& modelname, bool smoothing) {
 		//マテリアル
 		if (key == "mtllib") {
 			// マテリアルのファイル名読み込み
-			string filename;
-			line_stream >> filename;
+			string materialFilename;
+			line_stream >> materialFilename;
 			// マテリアル読み込み
-			LoadMaterial(directoryPath, filename);
+			LoadMaterial(directoryPath, materialFilename);
 		}
 		// 先頭文字列がgならグループの開始
 		if (key == "g") {
@@ -164,25 +164,25 @@ void Model::LoadFromOBJInternal(const std::string& modelname, bool smoothing) {
 					index_stream >> indexNormal;
 					//頂点データの追加
 					Mesh::VertexPosNormalUv vertex{};
-					vertex.pos = positions[indexPosition - 1];
-					vertex.normal = normals[indexNormal - 1];
-					vertex.uv = texcoords[indexTexcoord - 1];
+					vertex.pos = positions[indexPosition - static_cast<const unsigned _int64>(1)];
+					vertex.normal = normals[indexNormal - static_cast<const unsigned _int64>(1)];
+					vertex.uv = texcoords[indexTexcoord - static_cast<const unsigned _int64>(1)];
 					mesh->AddVertex(vertex);
 					//エッジ平滑化のデータを追加
 					if(smoothing) {
-						mesh->AddSmoothData(indexPosition, (unsigned short)mesh->GetVertexCount() - 1);
+						mesh->AddSmoothData(indexPosition, (unsigned short)(mesh->GetVertexCount() - 1));
 					}
 				}
 				//頂点インデックスに追加
 				if (faceIndexCount >= 3) {
 					// 四角形ポリゴンの4点目なので、
 					// 四角形の0,1,2,3の内 2,3,0で三角形を構築する
-					mesh->AddIndex(indexCountTex - 1);
-					mesh->AddIndex(indexCountTex);
-					mesh->AddIndex(indexCountTex - 3);
+					mesh->AddIndex((unsigned short)(indexCountTex - 1));
+					mesh->AddIndex((unsigned short)indexCountTex);
+					mesh->AddIndex((unsigned short)(indexCountTex - 3));
 				}
 				else {
-					mesh->AddIndex(indexCountTex);
+					mesh->AddIndex((unsigned short)indexCountTex);
 				}
 				indexCountTex++;
 				faceIndexCount++;

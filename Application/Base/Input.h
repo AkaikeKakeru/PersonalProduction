@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #define DIRECTINPUT_VERSION 0x0800 //DirectInput Version
 #include <dinput.h>
 #include <wrl.h>

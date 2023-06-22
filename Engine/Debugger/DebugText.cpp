@@ -1,4 +1,4 @@
-#include "DebugText.h"
+﻿#include "DebugText.h"
 
 DebugText::~DebugText() {
 	for (int i = 0; i < _countof(sprites_); i++) {
@@ -25,7 +25,7 @@ void DebugText::Print(const std::string & text, float x, float y, float scale) {
 		}
 
 		// 1文字取り出す(※ASCIIコードでしか成り立たない)
-		const unsigned char& character = text[i];
+		const unsigned char& character = static_cast<const unsigned char>(text[i]);
 
 		int fontIndex = character - 32;
 		if (character >= 0x7f) {

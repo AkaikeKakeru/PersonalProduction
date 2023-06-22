@@ -1,4 +1,4 @@
-#include "Audio.h"
+﻿#include "Audio.h"
 #include <cassert>
 
 void Audio::Initialize() {
@@ -84,7 +84,7 @@ Audio::SoundData Audio::SoundLoadWave(const char* filename) {
 	}
 
 	//Dataチャンクのデータ部(波形データ)の読み込み
-	char* pBuffer = new char[data.size_];
+	char* pBuffer = new char[static_cast<size_t>(data.size_)];
 	file.read(pBuffer, data.size_);
 
 	//Waveファイルを閉じる
@@ -97,7 +97,7 @@ Audio::SoundData Audio::SoundLoadWave(const char* filename) {
 
 	soundData.wfex_ = format.fmt_;
 	soundData.pBuffer_ = reinterpret_cast<BYTE*>(pBuffer);
-	soundData.bufferSize_ = data.size_;
+	soundData.bufferSize_ = static_cast<unsigned int>(data.size_);
 
 	return soundData;
 }
