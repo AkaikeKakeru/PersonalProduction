@@ -1,47 +1,47 @@
-#pragma once
+ï»¿#pragma once
 
 #include "BaseCollider.h"
 #include "CollisionPrimitive.h"
 
 class SphereCollider
 	: public BaseCollider, public Sphere {
-public: //ƒƒ“ƒoŠÖ”
+public: //ãƒ¡ãƒ³ãƒé–¢æ•°
 	SphereCollider(Vector3 offset = { 0,0,0 },
 		float radius = 1.0f) :
 		offset_(offset),
 		radius_(radius) {
-		//‹…Œ`ó‚ğƒZƒbƒg
+		//çƒå½¢çŠ¶ã‚’ã‚»ãƒƒãƒˆ
 		shapeType_ = COLLISIONSHAPE_SPHERE;
 	}
 
-	//XV
+	//æ›´æ–°
 	void Update() override;
 
 
-public://ƒAƒNƒZƒbƒT
-	//”¼Œaæ“¾
+public://ã‚¢ã‚¯ã‚»ãƒƒã‚µ
+	//åŠå¾„å–å¾—
 	inline float GetRadius() {
 		return radius_;
 	}
 
-	//ƒIƒtƒZƒbƒgæ“¾
+	//ã‚ªãƒ•ã‚»ãƒƒãƒˆå–å¾—
 	inline const Vector3& GetOffset() {
 		return offset_; 
 	}
 
-	//”¼ŒaƒZƒbƒg
+	//åŠå¾„ã‚»ãƒƒãƒˆ
 	inline void SetRadius(float radius) {
 		radius_ = radius;
 	}
 
-	//ƒIƒtƒZƒbƒgƒZƒbƒg
+	//ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚»ãƒƒãƒˆ
 	inline void SetOffset(const Vector3& offset) {
 		offset_ = offset;
 	}
 
-private: //ƒƒ“ƒo•Ï”
-	//ƒIƒuƒWƒFƒNƒg’†S‚©‚ç‚ÌƒIƒtƒZƒbƒg
+private: //ãƒ¡ãƒ³ãƒå¤‰æ•°
+	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆä¸­å¿ƒã‹ã‚‰ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 	Vector3 offset_;
-	//”¼Œa
+	//åŠå¾„
 	float radius_;
 };

@@ -1,4 +1,4 @@
-#include "MyMath.h"
+ï»¿#include "MyMath.h"
 
 float ConvertToRadian(float degree) {
 	const float PI = 3.14159265f;
@@ -19,7 +19,7 @@ float SquareRoot(float f) {
 
 	float x = 1.0f, y = 0.0f;
 
-	//ƒjƒ…[ƒgƒ“–@‚ğ—p‚¢‚é
+	//ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ³æ³•ã‚’ç”¨ã„ã‚‹
 	while (true) {
 		x = x - (x * x - f) / (2.0f * x);
 		y = x * x - f;

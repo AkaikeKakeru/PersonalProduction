@@ -1,8 +1,8 @@
-#pragma once
+ï»¿#pragma once
 
-//ƒ‰ƒWƒAƒ“•ÏŠ·
+//ãƒ©ã‚¸ã‚¢ãƒ³å¤‰æ›
 float ConvertToRadian(float degree);
-//â‘Î’l
+//çµ¶å¯¾å€¤
 float AbsoluteValue(float f);
-//•½•ûª
+//å¹³æ–¹æ ¹
 float SquareRoot(float f);

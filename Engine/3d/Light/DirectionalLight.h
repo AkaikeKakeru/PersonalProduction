@@ -1,47 +1,47 @@
-#pragma once
+ï»¿#pragma once
 #include "Vector3.h"
 
 class DirectionalLight {
-public://ƒTƒuƒNƒ‰ƒX
+public://ã‚µãƒ–ã‚¯ãƒ©ã‚¹
 	struct ConstBufferData{
-		Vector3 lightv_; //ƒ‰ƒCƒg‚Ö‚Ì•ûŒüƒxƒNƒgƒ‹
+		Vector3 lightv_; //ãƒ©ã‚¤ãƒˆã¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 		float pad1_;
-		Vector3 lightcolor_;//ƒ‰ƒCƒg‚ÌF
-		unsigned int active_;//—LŒøƒtƒ‰ƒO
+		Vector3 lightcolor_;//ãƒ©ã‚¤ãƒˆã®è‰²
+		unsigned int active_;//æœ‰åŠ¹ãƒ•ãƒ©ã‚°
 	};
 
-	//ƒ‰ƒCƒg•ûŒü‚ğæ“¾
+	//ãƒ©ã‚¤ãƒˆæ–¹å‘ã‚’å–å¾—
 	const Vector3& GetLightDir() {
 		return lightdir_;
 	}
 
-	//ƒ‰ƒCƒgF‚ğæ“¾
+	//ãƒ©ã‚¤ãƒˆè‰²ã‚’å–å¾—
 	const Vector3&  GetLightColor() {
 		return lightcolor_;
 	}
 
-	//ƒ‰ƒCƒg•ûŒü‚ğƒZƒbƒg
+	//ãƒ©ã‚¤ãƒˆæ–¹å‘ã‚’ã‚»ãƒƒãƒˆ
 	void SetLightDir(const Vector3& lightdir) {
-		//³‹K‰»‚µ‚ÄƒZƒbƒg
+		//æ­£è¦åŒ–ã—ã¦ã‚»ãƒƒãƒˆ
 		lightdir_ = Vector3Normalize(lightdir);
 	}
 
-	//ƒ‰ƒCƒgF‚ğƒZƒbƒg
+	//ãƒ©ã‚¤ãƒˆè‰²ã‚’ã‚»ãƒƒãƒˆ
 	void SetLightColor(const Vector3& lightcolor) {
 		lightcolor_ = lightcolor;
 	}
 
-	//—LŒøƒtƒ‰ƒO‚ğƒZƒbƒg
+	//æœ‰åŠ¹ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆ
 	inline void SetActive(bool active) { active_ = active; }
 
-	//—LŒøƒ`ƒFƒbƒN
+	//æœ‰åŠ¹ãƒã‚§ãƒƒã‚¯
 	inline bool IsActive() { return active_; }
 
-private://ƒƒ“ƒo•Ï”
-	//ƒ‰ƒCƒgŒõü•ûŒü(’PˆÊƒxƒNƒgƒ‹)
+private://ãƒ¡ãƒ³ãƒå¤‰æ•°
+	//ãƒ©ã‚¤ãƒˆå…‰ç·šæ–¹å‘(å˜ä½ãƒ™ã‚¯ãƒˆãƒ«)
 	Vector3 lightdir_ = { 1,0,0 };
-	//ƒ‰ƒCƒgF
+	//ãƒ©ã‚¤ãƒˆè‰²
 	Vector3 lightcolor_ = { 1,1,1 };
-	//—LŒøƒtƒ‰ƒO
+	//æœ‰åŠ¹ãƒ•ãƒ©ã‚°
 	bool active_ = false;
 };

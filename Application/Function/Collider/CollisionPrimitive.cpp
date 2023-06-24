@@ -1,10 +1,10 @@
-#include "CollisionPrimitive.h"
+ï»¿#include "CollisionPrimitive.h"
 
 void Triangle::ComputeNormal() {
 	Vector3 p0_p1 = p1_ - p0_;
 	Vector3 p0_p2 = p2_ - p0_;
 
-	//ŠOÏ‚É‚æ‚èA2•Î‚É‚’¼‚ÈƒxƒNƒgƒ‹‚ğZo‚·‚é
+	//å¤–ç©ã«ã‚ˆã‚Šã€2åã«å‚ç›´ãªãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡ºã™ã‚‹
 	normal_ = Vector3Cross(p0_p1, p0_p2);
 
 	normal_ = Vector3Normalize(normal_);

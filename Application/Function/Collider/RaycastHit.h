@@ -1,16 +1,16 @@
-#pragma once
+ï»¿#pragma once
 
 #include "BaseCollider.h"
 
 class Object3d;
 
 struct RaycastHit {
-	//Õ“Ë‘Šè‚ÌƒIƒuƒWƒFƒNƒg
+	//è¡çªç›¸æ‰‹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	Object3d* object_ = nullptr;
-	//Õ“Ë‘Šè‚ÌƒRƒ‰ƒCƒ_[
+	//è¡çªç›¸æ‰‹ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 	BaseCollider* collider_ = nullptr;
-	//Õ“Ë“_
+	//è¡çªç‚¹
 	Vector3 inter_;
-	//Õ“Ë“_‚Ü‚Å‚Ì‹——£
+	//è¡çªç‚¹ã¾ã§ã®è·é›¢
 	float distance_ = 0.0f;
 };

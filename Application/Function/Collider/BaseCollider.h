@@ -1,55 +1,55 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CollisionTypes.h"
 #include "CollisionInfo.h"
 #include "Object3d.h"
 
 class BaseCollider {
-public: //ƒtƒŒƒ“ƒhƒNƒ‰ƒX
+public: //ãƒ•ãƒ¬ãƒ³ãƒ‰ã‚¯ãƒ©ã‚¹
 	friend class CollisionManager;
 
-public: //ƒƒ“ƒoŠÖ”
+public: //ãƒ¡ãƒ³ãƒé–¢æ•°
 	virtual void Update() = 0;
 
-public: //ƒAƒNƒZƒbƒT
-	//ƒIƒuƒWƒFƒNƒgƒZƒbƒg
+public: //ã‚¢ã‚¯ã‚»ãƒƒã‚µ
+	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚»ãƒƒãƒˆ
 	inline void SetObject(Object3d* object) {
 		object_ = object; }
-	//ƒIƒuƒWƒFƒNƒgæ“¾
+	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå–å¾—
 	inline Object3d* GetObject3d() {
 		return object_; }
 
-	//Œ`óƒ^ƒCƒvæ“¾
+	//å½¢çŠ¶ã‚¿ã‚¤ãƒ—å–å¾—
 	inline CollisionShapeType GetShapeType() {
 		return shapeType_; }
 
-	//Õ“ËƒR[ƒ‹ƒoƒbƒNŠÖ”
+	//è¡çªæ™‚ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 	inline void OnCollision(const CollisionInfo& info) {
 		object_->OnCollision(info);
 	}
 
-	//‘®«ƒZƒbƒg
+	//å±æ€§ã‚»ãƒƒãƒˆ
 	inline void SetAttribute(unsigned short attribute) {
 		this->attribute_ = attribute;
 	}
-	//‘®«’Ç‰Á
+	//å±æ€§è¿½åŠ 
 	inline void AddAtribute(unsigned short attribute) {
 		this->attribute_ |= attribute;
 	}
-	//‘®«æ‚èœ‚«
+	//å±æ€§å–ã‚Šé™¤ã
 	inline void RemoveAttribute(unsigned short attribute) {
 		this->attribute_ &= !attribute;
 	}
 
-protected: //ƒƒ“ƒo•Ï”
+protected: //ãƒ¡ãƒ³ãƒå¤‰æ•°
 	Object3d* object_ = nullptr;
-	//Œ`óƒ^ƒCƒv
+	//å½¢çŠ¶ã‚¿ã‚¤ãƒ—
 	CollisionShapeType shapeType_ = SHAPE_UNKNOWN;
 
-	//Õ“Ë‘®«
+	//è¡çªå±æ€§
 	unsigned short attribute_ = 0b1111111111111111;
 
-public: //ƒRƒ“ƒXƒgƒfƒXƒg
+public: //ã‚³ãƒ³ã‚¹ãƒˆãƒ‡ã‚¹ãƒˆ
 	BaseCollider() = default;
 	virtual ~BaseCollider() = default;
 

@@ -1,44 +1,44 @@
-#pragma once
+ï»¿#pragma once
 #include "Vector3.h"
 
-//‹…
+//çƒ
 struct Sphere {
-	//’†S
+	//ä¸­å¿ƒ
 	Vector3 center_ = { 0,0,0 };
 
-	//”¼Œa
+	//åŠå¾„
 	float radius_ = 1.0f;
 };
 
-//•½–Ê
+//å¹³é¢
 struct Plane {
-	//–@ü
+	//æ³•ç·š
 	Vector3 normal_ = { 0,1,0 };
 
-	//Œ´“_‚©‚ç‚Ì‹——£
+	//åŸç‚¹ã‹ã‚‰ã®è·é›¢
 	float distance_ = 0.0f;
 };
 
-//–@ü•t‚«OŠpŒ`(Œv‰ñ‚è‚ª•\–Ê)
+//æ³•ç·šä»˜ãä¸‰è§’å½¢(æ™‚è¨ˆå›ã‚ŠãŒè¡¨é¢)
 class Triangle{
 public:
-	//–@ü‚ÌZo
+	//æ³•ç·šã®ç®—å‡º
 	void ComputeNormal();
 
 public:
-	//’¸“_À•W3‚Â
+	//é ‚ç‚¹åº§æ¨™3ã¤
 	Vector3 p0_;
 	Vector3 p1_;
 	Vector3 p2_;
-	//–@üƒxƒNƒgƒ‹
+	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 	Vector3 normal_;
 };
 
-//ƒŒƒC(”¼’¼ü)
+//ãƒ¬ã‚¤(åŠç›´ç·š)
 class Ray{
 public:
-	//n“_À•W
+	//å§‹ç‚¹åº§æ¨™
 	Vector3 start_ = {0,0,0};
-	//•ûŒü
+	//æ–¹å‘
 	Vector3 dir_ = {1,0,0};
 };
