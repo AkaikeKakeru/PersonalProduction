@@ -6,9 +6,12 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "Degree.h"
+#include "MyMath.h"
 #include "WinApp.h"
 #include "Model.h"
+
+#include "BaseCollider.h"
+#include "CollisionManager.h"
 
 #pragma comment(lib, "d3dcompiler.lib")
 
@@ -24,7 +27,7 @@ ID3D12GraphicsCommandList* Object3d::cmdList_ = nullptr;
 ComPtr<ID3D12RootSignature> Object3d::rootsignature_;
 Object3d::PipelineSet Object3d::pipelineSet_;
 
-Light* Object3d::light_ = nullptr;
+LightGroup* Object3d::lightGroup_ = nullptr;
 
 void Object3d::StaticInitialize(ID3D12Device* device) {
 	// nullptrチェック
@@ -158,11 +161,11 @@ void Object3d::InitializeGraphicsPipeline() {
 	//サンプルマスクの設定
 	pipelineDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;//標準設定
 
-	//ラスタライザの設定
+														//ラスタライザの設定
 	pipelineDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;//カリングしない
 	pipelineDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;//ポリゴン内塗りつぶし
 	pipelineDesc.RasterizerState.DepthClipEnable = true;//深度クリッピングを有効に
-	// デプスステンシルステート
+														// デプスステンシルステート
 	pipelineDesc.DepthStencilState.DepthEnable = true;
 	pipelineDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	pipelineDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
@@ -171,7 +174,7 @@ void Object3d::InitializeGraphicsPipeline() {
 	// レンダーターゲットのブレンド設定
 	D3D12_RENDER_TARGET_BLEND_DESC blenddesc{};
 	blenddesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;	// RBGA全てのチャンネルを描画
-	//共通設定
+																	//共通設定
 	blenddesc.BlendEnable = true;
 	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;
 	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
@@ -198,7 +201,7 @@ void Object3d::InitializeGraphicsPipeline() {
 	pipelineDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // 0～255指定のRGBA
 	pipelineDesc.SampleDesc.Count = 1; // 1ピクセルにつき1回サンプリング
 
-	//デスクリプタレンジの設定
+									   //デスクリプタレンジの設定
 	D3D12_DESCRIPTOR_RANGE descriptorRange{};
 	descriptorRange.NumDescriptors = 1;
 	descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
@@ -212,23 +215,23 @@ void Object3d::InitializeGraphicsPipeline() {
 	rootParams[0].Descriptor.ShaderRegister = 0;					//定数バッファ番号
 	rootParams[0].Descriptor.RegisterSpace = 0;						//デフォルト値
 	rootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;	//全てのシェーダから見える
-	//定数バッファ1番
+																	//定数バッファ1番
 	rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	//種類
 	rootParams[1].Descriptor.ShaderRegister = 1;					//定数バッファ番号
 	rootParams[1].Descriptor.RegisterSpace = 0;						//デフォルト値
 	rootParams[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;	//全てのシェーダから見える
-	//テクスチャレジスタ0番
+																	//テクスチャレジスタ0番
 	rootParams[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;	//種類
 	rootParams[2].DescriptorTable.pDescriptorRanges = &descriptorRange;			//デスクリプタレンジ
 	rootParams[2].DescriptorTable.NumDescriptorRanges = 1;						//デスクリプタレンジ数
 	rootParams[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;				//全てのシェーダから見える
-	//定数バッファ2番
+																				//定数バッファ2番
 	rootParams[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	//種類
 	rootParams[3].Descriptor.ShaderRegister = 2;					//定数バッファ番号
 	rootParams[3].Descriptor.RegisterSpace = 0;						//デフォルト値
 	rootParams[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;	//全てのシェーダから見える
 
-	//テクスチャサンプラーの設定
+																	//テクスチャサンプラーの設定
 	D3D12_STATIC_SAMPLER_DESC samplerDesc{};
 	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -276,6 +279,10 @@ void Object3d::InitializeGraphicsPipeline() {
 
 bool Object3d::Initialize() {
 	worldTransform_.Initialize();
+
+	//クラス名の文字列を取得
+	name_ = typeid(*this).name();
+
 	return true;
 }
 
@@ -286,6 +293,11 @@ void Object3d::Update() {
 
 	//定数バッファへ転送
 	TransferMatrixWorld();
+
+	//衝突判定更新
+	if (collider_) {
+		collider_->Update();
+	}
 }
 
 void Object3d::Draw() {
@@ -303,7 +315,29 @@ void Object3d::Draw() {
 	cmdList_->SetGraphicsRootConstantBufferView(0, worldTransform_.constBuff_->GetGPUVirtualAddress());
 
 	//ライト描画
-	light_->Draw(cmdList_, 3);
+	lightGroup_->Draw(cmdList_, 3);
+
+	model_->Draw(cmdList_);
+}
+
+void Object3d::Draw(const WorldTransform& worldTransform)
+{
+	worldTransform_ = worldTransform;
+	// nullptrチェック
+	assert(device_);
+	assert(Object3d::cmdList_);
+
+	if (model_ == nullptr) return;
+
+	// パイプラインステートの設定
+	cmdList_->SetPipelineState(pipelineSet_.pipelinestate_.Get());
+	// ルートシグネチャの設定
+	cmdList_->SetGraphicsRootSignature(pipelineSet_.rootsignature_.Get());
+	// 定数バッファビューをセット
+	cmdList_->SetGraphicsRootConstantBufferView(0, worldTransform_.constBuff_->GetGPUVirtualAddress());
+
+	//ライト描画
+	lightGroup_->Draw(cmdList_, 3);
 
 	model_->Draw(cmdList_);
 }
@@ -315,4 +349,22 @@ void Object3d::TransferMatrixWorld() {
 	worldTransform_.constMap_->viewproj_ = matViewProjection;
 	worldTransform_.constMap_->world_ = worldTransform_.matWorld_;
 	worldTransform_.constMap_->cameraPos_ = cameraPos;
+}
+
+void Object3d::SetCollider(BaseCollider* collider) {
+	collider->SetObject(this);
+	collider_ = collider;
+
+	//衝突マネージャーに登録
+	CollisionManager::GetInstance()->AddCollider(collider);
+	//コライダーの更新
+	collider->Update();
+}
+
+Object3d::~Object3d() {
+	if (collider_) {
+		//衝突マネージャーから登録を解除
+		CollisionManager::GetInstance()->RemoveCollider(collider_);
+		delete collider_;
+	}
 }

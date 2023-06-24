@@ -147,9 +147,6 @@
     <ClCompile Include="Application\Base\FixFPS.cpp">
       <Filter>ソース ファイル\Application\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Math\Degree.cpp">
-      <Filter>ソース ファイル\Application\math</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\ConstBuffer\ViewProjection.cpp">
       <Filter>ソース ファイル\Engine\ConstBuffer</Filter>
     </ClCompile>
@@ -165,9 +162,6 @@
     <ClCompile Include="Application\Function\Random.cpp">
       <Filter>ソース ファイル\Application\Function</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Function\Collision.cpp">
-      <Filter>ソース ファイル\Application\Function</Filter>
-    </ClCompile>
     <ClCompile Include="Application\Base\Framework.cpp">
       <Filter>ソース ファイル\Application\Base</Filter>
     </ClCompile>
@@ -176,9 +170,6 @@
     </ClCompile>
     <ClCompile Include="Engine\2d\Sprite.cpp">
       <Filter>ソース ファイル\Engine\2d</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\3d\Light\Light.cpp">
-      <Filter>ソース ファイル\Engine\3d\Light</Filter>
     </ClCompile>
     <ClCompile Include="Engine\3d\Camera\Camera.cpp">
       <Filter>ソース ファイル\Engine\3d\Camera</Filter>
@@ -222,6 +213,24 @@
     <ClCompile Include="Engine\Debugger\DebugText.cpp">
       <Filter>ソース ファイル\Engine\Debugger</Filter>
     </ClCompile>
+    <ClCompile Include="Application\Function\Collider\Collision.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Function\Collider\CollisionManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Function\Collider\CollisionPrimitive.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Function\Collider\SphereCollider.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Math\MyMath.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\Light\LightGroup.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Base\DirectXBasis.h">
@@ -240,9 +249,6 @@
       <Filter>ヘッダー ファイル\Application\math</Filter>
     </ClInclude>
     <ClInclude Include="Application\Math\Matrix4.h">
-      <Filter>ヘッダー ファイル\Application\math</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\Math\Degree.h">
       <Filter>ヘッダー ファイル\Application\math</Filter>
     </ClInclude>
     <ClInclude Include="Application\Base\Input.h">
@@ -266,9 +272,6 @@
     <ClInclude Include="Application\Function\Random.h">
       <Filter>ヘッダー ファイル\Application\Function</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\Collision.h">
-      <Filter>ヘッダー ファイル\Application\Function</Filter>
-    </ClInclude>
     <ClInclude Include="Application\Base\Framework.h">
       <Filter>ヘッダー ファイル\Application\Base</Filter>
     </ClInclude>
@@ -277,9 +280,6 @@
     </ClInclude>
     <ClInclude Include="Engine\2d\Sprite.h">
       <Filter>ヘッダー ファイル\Engine\2d</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\Light\Light.h">
-      <Filter>ヘッダー ファイル\Engine\3d\Light</Filter>
     </ClInclude>
     <ClInclude Include="Engine\3d\Camera\Camera.h">
       <Filter>ヘッダー ファイル\Engine\3d\Camera</Filter>
@@ -328,6 +328,45 @@
     </ClInclude>
     <ClInclude Include="Engine\Debugger\ImGuiManager.h">
       <Filter>ヘッダー ファイル\Engine\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Player\Player.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\Collider\BaseCollider.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\Collider\Collision.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\Collider\CollisionAttribute.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\Collider\CollisionInfo.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\Collider\CollisionManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\Collider\CollisionPrimitive.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\Collider\CollisionTypes.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\Collider\RaycastHit.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\Collider\SphereCollider.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Math\MyMath.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\Light\DirectionalLight.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\Light\LightGroup.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

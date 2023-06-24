@@ -8,7 +8,7 @@
 #include "Object3d.h"
 
 #include "Camera.h"
-#include "Light.h"
+#include "LightGroup.h"
 
 #include "SceneManager.h"
 #include "ImGuiManager.h"
@@ -27,7 +27,7 @@ private:
 	DrawBasis* drawBas_ = nullptr;
 
 	Camera* camera_ = nullptr;
-	Light* light_ = nullptr;
+	LightGroup* light_ = nullptr;
 
 	//ImGuiマネージャー
 	ImGuiManager* imGuiManager_ = nullptr;

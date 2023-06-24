@@ -49,13 +49,13 @@ void Corsor::CheckRayDirection(){
 		mousePosition_.x,
 		mousePosition_.y,
 		0);
-	posNear_ = Vector3Transform(posNear_, matInverseVPV_);
+	posNear_ = Vector3TransformCoord(posNear_, matInverseVPV_);
 	//ファー
 	posFar_ = Vector3(
 		mousePosition_.x,
 		mousePosition_.y,
 		1);
-	posFar_ = Vector3Transform(posFar_, matInverseVPV_);
+	posFar_ = Vector3TransformCoord(posFar_, matInverseVPV_);
 
 	//レイ
 	rayDirection_ = posFar_ - posNear_;

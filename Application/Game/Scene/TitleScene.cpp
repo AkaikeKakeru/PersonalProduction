@@ -40,9 +40,9 @@ void TitleScene::Initialize(){
 	skydomeObj_->SetCamera(camera_);
 
 	//ライト生成
-	light_ = new Light();
-	light_ = Light::Create();
-	light_->SetLightColor({ 1,1,1 });
+	light_ = new LightGroup();
+	light_ = LightGroup::Create();
+	light_->SetAmbientColor({ 1,1,1 });
 	Object3d::SetLight(light_);
 
 	//描画基盤

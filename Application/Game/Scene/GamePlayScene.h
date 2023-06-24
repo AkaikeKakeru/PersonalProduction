@@ -8,7 +8,7 @@
 #include "Object3d.h"
 
 #include "Camera.h"
-#include "Light.h"
+#include "LightGroup.h"
 
 #include <memory>
 #include <List>
@@ -40,7 +40,7 @@ private:
 
 	Camera* camera_ = nullptr;
 	Camera* camera_player = nullptr;
-	Light* light_ = nullptr;
+	LightGroup* light_ = nullptr;
 
 	/// <summary>
 	/// オブジェクト

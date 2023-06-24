@@ -58,9 +58,9 @@ void GamePlayScene::Initialize3d() {
 	skydomeObj_->SetCamera(camera_);
 
 	//ライト生成
-	light_ = new Light();
-	light_ = Light::Create();
-	light_->SetLightColor({ 1,1,1 });
+	light_ = new LightGroup();
+	light_ = LightGroup::Create();
+	light_->SetAmbientColor({ 1,1,1 });
 	Object3d::SetLight(light_);
 }
 
@@ -167,7 +167,7 @@ void GamePlayScene::Update3d() {
 		//		if (input_->PressKey(DIK_D)) { lightDir.x += 1.0f; }
 		//		else if (input_->PressKey(DIK_A)) { lightDir.x -= 1.0f; }
 		//	}
-		light_->SetLightDir(lightDir);
+		light_->SetDirLightDir(0, lightDir);
 	}
 
 	// カメラ移動
