@@ -10,6 +10,9 @@
 #include "Camera.h"
 #include "LightGroup.h"
 
+#include "ImGuiManager.h"
+
+
 #include <memory>
 #include <List>
 
@@ -32,12 +35,15 @@ private:
 public:
 	Vector3 CreateRotationVector(Vector3 axisAngle, float angleRadian);
 
-private:
+private: //静的メンバ変数
 	//基盤
 	static DirectXBasis* dxBas_;
 	static Input* input_;
 	static DrawBasis* drawBas_;
+	//ImGuiマネージャー
+	static ImGuiManager* imGuiManager_;
 
+public: //メンバ変数
 	Camera* camera_ = nullptr;
 	Camera* camera_player = nullptr;
 	LightGroup* light_ = nullptr;

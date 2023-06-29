@@ -75,10 +75,7 @@ void TitleScene::Update(){
 void TitleScene::Draw(){
 #ifdef _DEBUG
 	imGuiManager_->Begin();
-	ImGui::Text("Hello, world");
 
-	//デモを表示
-	ImGui::ShowDemoWindow();
 	imGuiManager_->End();
 #endif
 

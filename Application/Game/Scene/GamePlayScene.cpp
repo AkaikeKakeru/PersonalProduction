@@ -5,6 +5,7 @@
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GamePlayScene::input_ = Input::GetInstance();
 DrawBasis* GamePlayScene::drawBas_ = DrawBasis::GetInstance();
+ImGuiManager* GamePlayScene::imGuiManager_ = ImGuiManager::GetInstance();
 
 void GamePlayScene::Initialize() {
 	Initialize2d();
@@ -13,14 +14,19 @@ void GamePlayScene::Initialize() {
 
 void GamePlayScene::Update() {
 	input_->Update();
-
 	Update3d();
 	Update2d();
+#ifdef _DEBUG
+	imGuiManager_->Begin();
+	imGuiManager_->End();
+#endif // DEBUG
 }
 
 void GamePlayScene::Draw() {
 #ifdef _DEBUG
+	//imGuiManager_->Begin();
 
+	//imGuiManager_->End();
 #endif
 
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
@@ -40,8 +46,8 @@ void GamePlayScene::Initialize3d() {
 	planeModel_ = new Model();
 	planeModel_ = Model::LoadFromOBJ("plane", true);
 
-	skydomeModel_ = new Model();
-	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
+	//skydomeModel_ = new Model();
+	//skydomeModel_ = Model::LoadFromOBJ("skydome", false);
 
 	planeObj_ = new Object3d();
 	planeObj_ = Object3d::Create();
@@ -51,11 +57,11 @@ void GamePlayScene::Initialize3d() {
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
 	planeObj_->SetCamera(camera_player);
 
-	skydomeObj_ = new Object3d();
-	skydomeObj_ = Object3d::Create();
-	skydomeObj_->SetModel(skydomeModel_);
-	skydomeObj_->SetScale({ 30, 30, 30 });
-	skydomeObj_->SetCamera(camera_);
+	//skydomeObj_ = new Object3d();
+	//skydomeObj_ = Object3d::Create();
+	//skydomeObj_->SetModel(skydomeModel_);
+	//skydomeObj_->SetScale({ 30, 30, 30 });
+	//skydomeObj_->SetCamera(camera_);
 
 	//ライト生成
 	light_ = new LightGroup();
@@ -76,22 +82,22 @@ void GamePlayScene::Update3d() {
 	// オブジェクト回転
 	{
 		// 現在の座標を取得
-		Vector3 rot = skydomeObj_->GetRotation();
+		//Vector3 rot = skydomeObj_->GetRotation();
 
-		// 移動後の座標を計算
+		//// 移動後の座標を計算
 
-		//回転軸アングル
-		//ここではY軸回転を指定
-		Quaternion rotation = MakeAxisAngle(
-			{ 0.0f,1.0f,0.0f }, ConvertToRadian(1.0f));
+		////回転軸アングル
+		////ここではY軸回転を指定
+		//Quaternion rotation = MakeAxisAngle(
+		//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(1.0f));
 
-		//1F当たりの回転角度を指定
-		Vector3 pointY = { 0.0f,ConvertToRadian(1.0f),0.0f };
+		////1F当たりの回転角度を指定
+		//Vector3 pointY = { 0.0f,ConvertToRadian(1.0f),0.0f };
 
-		rot += RotateVector(pointY, rotation);
+		//rot += RotateVector(pointY, rotation);
 
 		// 座標の変更を反映
-		skydomeObj_->SetRotation(rot);
+		//skydomeObj_->SetRotation(rot);
 	}
 
 	// オブジェクト移動
@@ -184,7 +190,7 @@ void GamePlayScene::Update3d() {
 	camera_->Update();
 	camera_player->Update();
 	light_->Update();
-	skydomeObj_->Update();
+	//skydomeObj_->Update();
 	planeObj_->Update();
 }
 
@@ -201,7 +207,7 @@ void GamePlayScene::Update2d() {
 }
 
 void GamePlayScene::Draw3d() {
-	skydomeObj_->Draw();
+	//skydomeObj_->Draw();
 	planeObj_->Draw();
 }
 
@@ -220,7 +226,7 @@ void GamePlayScene::Finalize() {
 	SafeDelete(planeObj_);
 	SafeDelete(skydomeObj_);
 	SafeDelete(planeModel_);
-	SafeDelete(skydomeModel_);
+	//SafeDelete(skydomeModel_);
 	SafeDelete(sprite_);
 
 	SafeDelete(light_);
