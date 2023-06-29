@@ -221,7 +221,7 @@ Matrix4 Matrix4Inverse(const Matrix4& m) {
 		for (j = 0; j < LineNum; j++) {
 			inv[i][j] = sweep[i][LineNum + j];
 
-			result.m[i][j] = inv[i][j];
+			result.m[i][j] = static_cast<float>(inv[i][j]);
 		}
 	}
 
