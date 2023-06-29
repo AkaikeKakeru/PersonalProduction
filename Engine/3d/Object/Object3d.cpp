@@ -351,6 +351,12 @@ void Object3d::TransferMatrixWorld() {
 	worldTransform_.constMap_->cameraPos_ = cameraPos;
 }
 
+void Object3d::OnCollision(const CollisionInfo& info) {
+#ifdef _DEBUG
+	CollisionInfo info_ = info;
+#endif // DEBUG
+}
+
 void Object3d::SetCollider(BaseCollider* collider) {
 	collider->SetObject(this);
 	collider_ = collider;

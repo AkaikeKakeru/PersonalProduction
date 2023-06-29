@@ -85,7 +85,7 @@ public: // メンバ関数
 	void TransferMatrixWorld();
 
 	//衝突時コールバック
-	virtual void OnCollision(const CollisionInfo& info) {}
+	virtual void OnCollision(const CollisionInfo& info);
 
 	// 座標の取得
 	const Vector3& GetPosition() const {

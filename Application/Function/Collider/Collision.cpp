@@ -14,6 +14,11 @@ bool Collision::CheckSphere2Sphere(const Sphere& sphereA,
 	float radian =
 		(sphereA.radius_ + sphereB.radius_) * (sphereA.radius_ + sphereB.radius_);
 
+	//疑似交点を計算
+	if (inter) {
+
+	}
+
 	if (distance <= radian) {
 		return true;
 	}
