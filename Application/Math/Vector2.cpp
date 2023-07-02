@@ -19,7 +19,7 @@ const Vector2& Vector2Normalize(Vector2 v) {
 	if (len != 0) {
 		return temp /= len;
 	}
-	return temp /= 1;
+	return temp /= 1.0f;
 }
 
 const float Vector2Dot(Vector2& v1, Vector2& v2) {

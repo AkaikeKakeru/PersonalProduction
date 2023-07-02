@@ -1,6 +1,6 @@
 ﻿#include "Quaternion.h"
 #include <cmath>
-
+#include "MyMath.h"
 
 Quaternion& operator+(Quaternion q0, Quaternion q1) {
 	q0.x += q1.x;
@@ -111,7 +111,7 @@ float QuaternionNorm(const Quaternion& quaternion) {
 Quaternion QuaternionNormalize(const Quaternion& quaternion) {
 	float len = QuaternionNorm(quaternion);
 
-	if (len != 0) {
+	if (len != 0.0f) {
 		return quaternion /= len;
 	}
 
@@ -128,8 +128,8 @@ Quaternion QuaternionInverse(const Quaternion& quaternion) {
 }
 
 Quaternion MakeAxisAngle(const Vector3& axis, float angle) {
-	float c = cos(angle / 2);
-	float s = sin(angle / 2);
+	float c = cosf(angle / 2.0f);
+	float s = sinf(angle / 2.0f);
 
 	Vector3 axisNormal = Vector3Normalize(axis);
 
@@ -145,7 +145,7 @@ Quaternion MakeAxisAngle(const Vector3& axis, float angle) {
 Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion) {
 	Vector3 rotated = {};
 
-	Quaternion r = { vector.x,vector.y,vector.z, 0 };
+	Quaternion r = { vector.x,vector.y,vector.z, 0.0f };
 
 	Quaternion a = QuaternionMultiplication(quaternion, r);
 
@@ -158,6 +158,13 @@ Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion) {
 	return rotated;
 }
 
+Vector3 CreateRotationVector(Vector3 axisAngle, float angleRadian) {
+	Quaternion rotation = MakeAxisAngle(axisAngle, ConvertToRadian(1.0f));
+	Vector3 point = axisAngle * angleRadian;
+
+	return RotateVector(point, rotation);
+}
+
 Matrix4 MakeRotateMatrix(const Quaternion& quaternion) {
 	Matrix4 R = {};
 
@@ -167,17 +174,17 @@ Matrix4 MakeRotateMatrix(const Quaternion& quaternion) {
 	float w = quaternion.w;
 
 	R.m[0][0] = (w * w) + (x * x) - (y * y) - (z * z);
-	R.m[0][1] = 2 * ((x * y) + (w * z));
-	R.m[0][2] = 2 * ((x * z) - (w * y));
+	R.m[0][1] = 2.0f * ((x * y) + (w * z));
+	R.m[0][2] = 2.0f * ((x * z) - (w * y));
 	R.m[0][3] = 0.0f;
 
-	R.m[1][0] = 2 * ((x * y) - (w * z));
+	R.m[1][0] = 2.0f * ((x * y) - (w * z));
 	R.m[1][1] = (w * w) - (x * x) + (y * y) - (z * z);
-	R.m[1][2] = 2 * ((y * z) + (w * x));
+	R.m[1][2] = 2.0f * ((y * z) + (w * x));
 	R.m[1][3] = 0.0f;
 
-	R.m[2][0] = 2 * ((x * z) + (w * y));
-	R.m[2][1] = 2 * ((y * z) - (w * x));
+	R.m[2][0] = 2.0f * ((x * z) + (w * y));
+	R.m[2][1] = 2.0f * ((y * z) - (w * x));
 	R.m[2][2] = (w * w) - (x * x) - (y * y) + (z * z);
 	R.m[2][3] = 0.0f;
 
@@ -202,7 +209,7 @@ Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
 	Quaternion qA = q0;
 
 	//内積が +か -かを確認
-	if (dot < 0) {
+	if (dot < 0.0f) {
 		qA = qA * -1.0f;//もう片方の回転を利用
 		dot = -dot;//内積も反転
 	}
@@ -215,9 +222,9 @@ Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
 	float theta = std::acos(dot);
 
 	//補間係数を求める
-	float scale0 = sin((1 - t) * theta) / sin(theta);
+	float scale0 = sinf((1.0f - t) * theta) / sinf(theta);
 	//補間係数を求める
-	float scale1 = sin(t * theta) / sin(theta);
+	float scale1 = sinf(t * theta) / sinf(theta);
 
 	//補間係数を用いて、補間後のQuaternionを返す
 	return scale0 * q0 + scale1 * q1;
@@ -240,9 +247,9 @@ Quaternion DirectionToDirection(const Vector3& u, const Vector3& v) {
 
 	//任意軸回転を作る
 	return Quaternion({
-		axis.x * sin(theta / 2),
-		axis.y * sin(theta / 2),
-		axis.z * sin(theta / 2),
-		cos(theta / 2)
+		axis.x * sinf(theta / 2.0f),
+		axis.y * sinf(theta / 2.0f),
+		axis.z * sinf(theta / 2.0f),
+		cosf(theta / 2.0f)
 		});
 }

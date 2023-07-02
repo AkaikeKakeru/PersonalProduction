@@ -45,6 +45,9 @@ Quaternion MakeAxisAngle(const Vector3& axis, float angle);
 //ベクトルをQuaternionで回転させた結果のベクトル
 Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion);
 
+//回転ベクトルを生成
+Vector3 CreateRotationVector(Vector3 axisAngle, float angleRadian);
+
 //Quaternionから回転行列を求める
 Matrix4 MakeRotateMatrix(const Quaternion& quaternion);
 
