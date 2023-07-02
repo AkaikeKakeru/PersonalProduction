@@ -8,13 +8,16 @@
 #include "Object3d.h"
 
 #include "Camera.h"
+#include "RailCamera.h"
+
 #include "LightGroup.h"
 
 #include "ImGuiManager.h"
 
-
 #include <memory>
 #include <List>
+
+#include "Player.h"
 
 class GamePlayScene : public BaseScene {
 public:
@@ -46,6 +49,9 @@ private: //静的メンバ変数
 public: //メンバ変数
 	Camera* camera_ = nullptr;
 	Camera* camera_player = nullptr;
+
+	RailCamera* railCamera_;
+
 	LightGroup* light_ = nullptr;
 
 	/// <summary>
@@ -60,5 +66,7 @@ public: //メンバ変数
 	/// <summary>
 	/// スプライト
 	/// </summary>
-	Sprite* sprite_ = new Sprite();
+	Sprite* sprite_ = nullptr;
+
+	Player* player_ = nullptr;
 };
