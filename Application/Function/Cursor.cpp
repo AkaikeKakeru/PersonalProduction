@@ -4,21 +4,16 @@
 
 Camera* Corsor::camera_ = nullptr;
 
-Vector3 Corsor::Get3DRethiclePosition(Camera* camera, const Object3d* object,
-	const float distance, const bool isOnScreen){
+Vector3 Corsor::Get3DRethiclePosition(Camera* camera){
 	camera_ = camera;
 
 	GetMousePosition();
-	CreateMatrixInverseViewPort(/*camera_*/);
+	CreateMatrixInverseViewPort();
 	CheckRayDirection();
 
-	Vector3 position = object->GetPosition();
+	Vector3 position;
 
-	position = rayDirection_ * distance;
-
-	if (isOnScreen) {
-		position.z -= distance;
-	}
+	position = rayDirection_;
 
 	return position;
 }
@@ -59,8 +54,12 @@ void Corsor::CheckRayDirection(){
 
 	//レイ
 	rayDirection_ = posFar_ - posNear_;
+	rayDirection_ = Vector3Normalize(rayDirection_);
+
+	//カメラからの距離
+	const float kDistanceTestObject = 50.0f;
 
 	//ニア→レイ
-	rayDirection_ = rayDirection_ - posNear_;
-	rayDirection_ = Vector3Normalize(rayDirection_);
+	rayDirection_ = (rayDirection_ - posNear_);
+	rayDirection_ *= kDistanceTestObject;
 }

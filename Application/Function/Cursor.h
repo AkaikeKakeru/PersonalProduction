@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Vector2.h"
 #include "Matrix4.h"
 
@@ -7,8 +7,7 @@
 
 class Corsor {
 public:
-	Vector3 Get3DRethiclePosition(Camera* camera, const Object3d* object,
-		const float distance, const bool isOnScreen);
+	Vector3 Get3DRethiclePosition(Camera* camera);
 
 private:
 
