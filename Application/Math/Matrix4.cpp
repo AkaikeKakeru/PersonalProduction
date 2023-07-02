@@ -113,35 +113,35 @@ Matrix4 Matrix4Transposed(const Matrix4& m) {
 	return result;
 }
 
+
 Matrix4 Matrix4Inverse(const Matrix4& m) {
-	//for文用繰り返し数
+	//Matrix4の行数 列数
 	const int LineNum = 4;
 
-	double mat[LineNum][LineNum];
-	double inv[LineNum][LineNum];
+	//逆行列を求める二次元配列
+	double mat[LineNum][LineNum] = {};
 
-	//行
-	int i = 0;
-	//列
-	int j = 0;
-	//注目対角成分が存在する列
-	int focus = 0;
+	//逆行列保存用二次元配列
+	double inv[LineNum][LineNum] = {};
 
-	//最終出力
-	Matrix4 result = {};
-	//掃き出し法用行列
+	//掃き出し法を行うための行列
 	double sweep[LineNum][LineNum * 2] = {};
 
-	//一時的な値
-	double buf = 0;
+	int i, j, focus = 0; //行、列、注目する列
+
+	//一時保存する値
+	double keep = 0;
 
 	//許容誤差
 	const double MAX_ERR = 1e-10f;
 
+	//最終出力
+	Matrix4 result = {};
+
 	//セット
-	for ( i = 0; i < LineNum; i++) {
-		for ( j = 0; j < LineNum; j++) {
-			mat[i][j] = m.m[i][j];
+	for (i = 0; i < LineNum; i++) {
+		for (j = 0; j < LineNum; j++) {
+			mat[i][j] = static_cast<double>(m.m[i][j]);
 		}
 	}
 
@@ -156,46 +156,43 @@ Matrix4 Matrix4Inverse(const Matrix4& m) {
 		}
 	}
 
+	//全ての列の対角成分に対する繰り返し
 	for (focus = 0; focus < LineNum; focus++) {
-
 		//ここから0除算対策
 
-		////最大の絶対値を注目対角成分の絶対値と仮定
-		//double max = fabs(sweep[focus][focus]);
-		//int max_i = focus;
+		//最大の絶対値を注目対角成分の絶対値と仮定
+		double max = fabs(sweep[focus][focus]);
+		int max_i = focus;
 
-		////focus列目が最大の絶対値となる行を探す
-		//for (i = focus + 1; i < LineNum; i++) {
-		//	if (fabs(sweep[i][focus]) > max) {
-		//		max = fabs(sweep[i][focus]);
-		//		max_i = i;
-		//	}
-		//}
-		////逆行列が求められないことが発覚したら、強制終了
+		//focus列目が最大の絶対値となる行を探す
+		for (i = focus + 1; i < LineNum; i++) {
+			if (fabs(sweep[i][focus]) > max) {
+				max = fabs(sweep[i][focus]);
+				max_i = i;
+			}
+		}
+		//逆行列が求められないことが発覚したら、強制終了
+		if (fabs(sweep[max_i][focus]) <= MAX_ERR) {
+			return m;
+		}
 
-		//if (fabs(sweep[max_i][focus]) <= MAX_ERR) {
-		//	return m;
-		//}
-
-		//if (focus != max_i) {
-		//	for (j = 0; j < LineNum * 2; j++) {
-		//		float tmp = sweep[max_i][j];
-		//		sweep[max_i][j] = sweep[focus][j];
-		//		sweep[focus][j] = tmp;
-		//	}
-		//}
-
+		if (focus != max_i) {
+			for (j = 0; j < LineNum * 2; j++) {
+				float tmp = static_cast<float>(sweep[max_i][j]);
+				sweep[max_i][j] = sweep[focus][j];
+				sweep[focus][j] = tmp;
+			}
+		}
 		//ここまで0除算対策
 
 		//ここから掃き出し法
-
 		//sweep[focus][focus]に掛けると1になる値
-		buf = 1 / sweep[focus][focus];
+		keep = 1 / sweep[focus][focus];
 
-		//focus行目をbuf倍する
+		//focus行目をkeep倍する
 		for (j = 0; j < LineNum * 2; j++) {
 			//sweep[focus][focus]に掛ける
-			sweep[focus][j] *= buf;
+			sweep[focus][j] *= keep;
 		}
 
 		for (i = 0; i < LineNum; i++) {
@@ -205,14 +202,13 @@ Matrix4 Matrix4Inverse(const Matrix4& m) {
 			}
 
 			//focus列目を0にするための値
-			buf = -sweep[i][focus];
+			keep = -sweep[i][focus];
 
 			for (j = 0; j < LineNum * 2; j++) {
 				//i行目にfocus行目をbuf倍した行を足す
-				sweep[i][j] += sweep[focus][j] * buf;
+				sweep[i][j] += sweep[focus][j] * keep;
 			}
 		}
-
 		//ここまで掃き出し法
 	}
 
@@ -220,32 +216,7 @@ Matrix4 Matrix4Inverse(const Matrix4& m) {
 	for (i = 0; i < LineNum; i++) {
 		for (j = 0; j < LineNum; j++) {
 			inv[i][j] = sweep[i][LineNum + j];
-
-			result.m[i][j] = static_cast<float>(inv[i][j]);
-		}
-	}
-
-	//検算
-	double inner_product = 0;
-	double ans = 0;
-	double diff = 0;
-
-	for ( i = 0; i < LineNum; i++) {
-		for ( j = 0; j < LineNum; j++) {
-			inner_product = 0.0f;
-			
-			for ( focus = 0; focus < LineNum; focus++) {
-				inner_product += mat[i][focus] * inv[focus][j];
-			}
-
-			ans = (i == j) ? 1 : 0;
-
-			diff = ans - inner_product;
-
-			if (fabs(diff) > MAX_ERR) {
-
-				return m;
-			}
+			result.m[i][j] = static_cast<float>(sweep[i][LineNum + j]);
 		}
 	}
 
@@ -253,7 +224,7 @@ Matrix4 Matrix4Inverse(const Matrix4& m) {
 }
 
 Vector3 Vector3CrossMatrix4(const Vector3& v, const Matrix4& m) {
-	Vector3 result = { 
+	Vector3 result = {
 		v.x * m.m[0][0] +
 		v.y * m.m[1][0] +
 		v.z * m.m[2][0] +
@@ -267,24 +238,24 @@ Vector3 Vector3CrossMatrix4(const Vector3& v, const Matrix4& m) {
 		v.x * m.m[0][2] +
 		v.y * m.m[1][2] +
 		v.z * m.m[2][2] +
-		0 * m.m[3][1] 
+		0 * m.m[3][1]
 	};
 
 	return result;
 }
 
 Vector3 Coord3dCrossMatrix4(const Vector3& v, const Matrix4& m) {
-	Vector3 result = { 
+	Vector3 result = {
 		v.x * m.m[0][0] +
 		v.y * m.m[1][0] +
 		v.z * m.m[2][0] +
 		1 * m.m[3][0],
-		
+
 		v.x * m.m[0][1] +
 		v.y * m.m[1][1] +
 		v.z * m.m[2][1] +
 		1 * m.m[3][1],
-		
+
 		v.x * m.m[0][2] +
 		v.y * m.m[1][2] +
 		v.z * m.m[2][2] +
@@ -295,11 +266,11 @@ Vector3 Coord3dCrossMatrix4(const Vector3& v, const Matrix4& m) {
 }
 
 Vector3 Vector3TransformCoord(const Vector3& v, const Matrix4& m) {
-	float w = 
+	float w =
 		v.x * m.m[0][3] +
 		v.y * m.m[1][3] +
 		v.z * m.m[2][3] +
-		 (1 * m.m[3][3]);
+		(1 * m.m[3][3]);
 
 	Vector3 result = {
 		(v.x * m.m[0][0] +
