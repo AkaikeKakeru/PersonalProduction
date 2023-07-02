@@ -51,9 +51,15 @@ const float Vector3Length(Vector3 v) {
 
 const Vector3& Vector3Normalize(Vector3 v) {
 	float len = Vector3Length(v);
-	if (len != 0.0f) {
-		return v /= len;
+	if (len > 0.0f) {
+		len = 1 / len;
 	}
+
+	v = {
+		v.x * len,
+		v.y * len,
+		v.z * len,};
+
 	return v;
 }
 
