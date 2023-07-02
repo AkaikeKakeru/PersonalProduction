@@ -1,4 +1,4 @@
-#include "Vector2.h"
+﻿#include "Vector2.h"
 #include <cmath> //sqrt
 
 Vector2::Vector2()

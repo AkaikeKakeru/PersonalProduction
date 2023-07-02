@@ -1,4 +1,4 @@
-#include "LightGroup.h"
+﻿#include "LightGroup.h"
 #include <cassert>
 #include "DirectXBasis.h"
 //省略
