@@ -1,7 +1,7 @@
-#pragma once
+ï»¿#pragma once
 
-//Õ“Ë‘®«
-const unsigned short COLLISION_ATTR_LANDSHAPE = 0b1 << 0;//’nŒ`
-const unsigned short COLLISION_ATTR_PLAYER = 0b1 << 1;//ƒvƒŒƒCƒ„[w‰c
-const unsigned short COLLISION_ATTR_RAY = 0b1 << 2;//ƒŒƒC‘®«
-const unsigned short COLLISION_ATTR_GOAL = 0b1 << 3;//ƒS[ƒ‹‘®«
+//è¡çªå±æ€§
+const unsigned short COLLISION_ATTR_LANDSHAPE = 0b1 << 0;//åœ°å½¢
+const unsigned short COLLISION_ATTR_PLAYER = 0b1 << 1;//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼é™£å–¶
+const unsigned short COLLISION_ATTR_RAY = 0b1 << 2;//ãƒ¬ã‚¤å±æ€§
+const unsigned short COLLISION_ATTR_GOAL = 0b1 << 3;//ã‚´ãƒ¼ãƒ«å±æ€§
