@@ -2,6 +2,9 @@
 #include "Model.h"
 #include "Object3d.h"
 #include "Camera.h"
+#include "RailCamera.h"
+#include "Sprite.h"
+#include "DrawBasis.h"
 
 class CollisionManager;
 
@@ -16,14 +19,24 @@ public://メンバ関数
 	bool Initialize() override;
 	void Update() override;
 	void Draw();
+	void DrawUI();
 	void Finalize();
 
 	//衝突時コールバック関数
 	void OnCollision(const CollisionInfo & info) override;
 
+	//照準
+	void Reticle();
+
 public: //アクセッサ
-	const Vector3& GetPosition() const { return worldTransform_.position_; }
-	float GetRadius() const { return radius_; }
+	const Vector3& GetPosition() const {
+		return worldTransform_.position_; }
+	float GetRadius() const {
+		return radius_; }
+
+	void SetWorldTransformRailCamera(WorldTransform* worldTransformRailCamera) {
+		worldTransform_.parent_ = worldTransformRailCamera;
+	}
 
 private: //静的メンバ変数
 	//衝突マネージャー
@@ -32,6 +45,12 @@ private: //静的メンバ変数
 private: //メンバ変数
 	//半径
 	float radius_ = 1.0f;
+
+	//3dレティクルのワールド変換
+	WorldTransform worldTransform3dReticle_;
+
+	//レティクル用スプライト
+	Sprite* spriteReticle_ = nullptr;
 
 public:
 	Player() = default;

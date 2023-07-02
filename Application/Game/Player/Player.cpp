@@ -8,8 +8,13 @@
 #include <Input.h>
 #include <Quaternion.h>
 
+#include "Cursor.h"
+#include "DrawBasis.h"
+#include <SafeDelete.h>
+
 Input* input_ = Input::GetInstance();
 CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
+DrawBasis* drawBas_ = DrawBasis::GetInstance();
 
 Player* Player::Create(Model* model) {
 	//オブジェクトのインスタンスを生成
@@ -47,10 +52,21 @@ bool Player::Initialize() {
 
 	collider_->SetAttribute(COLLISION_ATTR_PLAYER);
 
+	worldTransform3dReticle_.Initialize();
+
+	drawBas_->LoadTexture(1, "texture.png");
+
+	spriteReticle_ = new Sprite();
+	spriteReticle_->Initialize(drawBas_, 1);
+
+	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
+	spriteReticle_->SetSize({ 64,64 });
+
 	return true;
 }
 
 void Player::Update() {
+	camera_->Update();
 
 	Vector2 mousePosition_ =
 		input_->GetMousePosition();
@@ -60,48 +76,14 @@ void Player::Update() {
 	// 現在の座標を取得
 	Vector3 rot = Object3d::GetRotation();
 
-		//移動スピード
-		float moveSpeed = 0.4f;
-		//回転スピード
-		float rotSpeed = ConvertToRadian(90.0f);
+	Vector3 angleX = { 1.0f,0.0f,0.0f };
+	Vector3 angleY = { 0.0f,1.0f,0.0f };
+	Vector3 angleZ = { 0.0f,0.0f,1.0f };
 
-		Vector3 angleX = { 1.0f,0.0f,0.0f };
-		Vector3 angleY = { 0.0f,1.0f,0.0f };
-		Vector3 angleZ = { 0.0f,0.0f,1.0f };
-
-		//移動ベクトル
-		Vector3 moveVector = { 0.0f,0.0f,0.0f };
-		//回転ベクトル
-		Vector3 rotVector = { 0.0f,0.0f,0.0f };
-
-		//移動後の座標を計算
-		if (input_->TriggerKey(DIK_UP)) {
-			rotVector = CreateRotationVector(
-				angleX, rotSpeed);
-		}
-
-		else if (input_->TriggerKey(DIK_DOWN)) {
-			rotVector = CreateRotationVector(
-				angleX, -rotSpeed);
-		}
-
-		if (input_->TriggerKey(DIK_RIGHT)) {
-			rotVector = CreateRotationVector(
-				angleY, rotSpeed);
-		}
-
-		else if (input_->TriggerKey(DIK_LEFT)) {
-			rotVector = CreateRotationVector(
-				angleY, -rotSpeed);
-		}
-
-		moveVector.z = -moveSpeed;
-
-		rot += rotVector;
-
-		moveVector = Vector3TransformCoord(moveVector, worldTransform_.matWorld_);
-
-		position = moveVector;
+	//移動ベクトル
+	Vector3 moveVector = { 0.0f,0.0f,0.0f };
+	//回転ベクトル
+	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
 
 	// 座標の変更を反映
@@ -109,18 +91,39 @@ void Player::Update() {
 
 	// 座標の変更を反映
 	Object3d::SetPosition(position);
-
-	camera_->Update();
+	
 	Object3d::Update();
+
+	Reticle();
+
+	spriteReticle_->SetPosition(
+		{ worldTransform3dReticle_.position_.x ,
+		worldTransform3dReticle_.position_.y });
+
+	spriteReticle_->SetPosition(input_->GetMousePosition());
+
+	spriteReticle_->Update();
 }
 
 void Player::Draw() {
 	Object3d::Draw(worldTransform_);
 }
 
+void Player::DrawUI() {
+	spriteReticle_->Draw();
+}
+
 void Player::Finalize() {
+	SafeDelete(spriteReticle_);
 }
 
 void Player::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
+}
+
+void Player::Reticle() {
+	Corsor cursor;
+
+	worldTransform3dReticle_.position_ =
+		cursor.Get3DRethiclePosition(camera_);
 }
