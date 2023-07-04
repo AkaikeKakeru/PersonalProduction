@@ -54,19 +54,8 @@ void PlayerBullet::Update() {
 	// 現在の回転を取得
 	Vector3 rot = Object3d::GetRotation();
 
-	//移動ベクトル
-	Vector3 moveVector = { 0.0f,0.0f,0.0f };
-	//回転ベクトル
-	Vector3 rotVector = { 0.0f,0.0f,0.0f };
-
-	//速度
-	float speed = 2.0f;
-
-	//毎フレーム前進
-	moveVector = { 0.0f,0.0f,speed };
-
-	rot += rotVector;
-	position += moveVector;
+	//毎フレーム、ベロシティ分前進
+	position += velocity_;
 
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);

@@ -126,7 +126,6 @@ void Player::DrawUI() {
 
 void Player::Finalize() {
 	SafeDelete(spriteReticle_);
-	//SafeDelete(bullets_);
 }
 
 void Player::OnCollision(const CollisionInfo& info) {
@@ -142,12 +141,15 @@ void Player::Reticle() {
 
 void Player::Attack() {
 	if(input_->TriggerMouse(0)) {
+		//弾スピード
+		const float kBulletSpeed = 2.0f;
+		//毎フレーム前進
+		Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
+
 		//弾の生成、初期化
 		std::unique_ptr<PlayerBullet> newBullet =
 			std::make_unique<PlayerBullet>();
 
-		//newBullet->Create(model_);
-		
 		newBullet->Initialize();
 
 		newBullet->SetModel(model_);
@@ -156,6 +158,8 @@ void Player::Attack() {
 			{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
 
 		newBullet->SetPosition(GetPosition());
+
+		newBullet->SetVelocity(bulletVelocity);
 		newBullet->SetCamera(camera_);
 
 		newBullet->Update();

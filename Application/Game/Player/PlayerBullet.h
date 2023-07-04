@@ -27,8 +27,9 @@ public: //アクセッサ
 	float GetRadius() const {
 		return radius_; }
 
-	void SetWorldTransformRailCamera(WorldTransform* worldTransformRailCamera) {
-		worldTransform_.parent_ = worldTransformRailCamera;
+	//速度のセット
+	void SetVelocity(Vector3 velocity) {
+		velocity_ = velocity;
 	}
 
 private: //静的メンバ変数
@@ -38,6 +39,9 @@ private: //静的メンバ変数
 private: //メンバ変数
 	//半径
 	float radius_ = 1.0f;
+
+	//速度
+	Vector3 velocity_ = {};
 
 public:
 	PlayerBullet() = default;
