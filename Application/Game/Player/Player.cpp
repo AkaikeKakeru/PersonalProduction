@@ -96,8 +96,8 @@ void Player::Update() {
 	Attack();
 
 	//弾更新
-	if (bullet_) {
-		bullet_->Update();
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		bullet->Update();
 	}
 
 	Object3d::Update();
@@ -113,8 +113,8 @@ void Player::Update() {
 }
 
 void Player::Draw() {
-	if (bullet_) {
-		bullet_->Draw();
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		bullet->Draw();
 	}
 
 	Object3d::Draw(worldTransform_);
@@ -126,7 +126,7 @@ void Player::DrawUI() {
 
 void Player::Finalize() {
 	SafeDelete(spriteReticle_);
-	SafeDelete(bullet_);
+	//SafeDelete(bullets_);
 }
 
 void Player::OnCollision(const CollisionInfo& info) {
@@ -141,13 +141,25 @@ void Player::Reticle() {
 }
 
 void Player::Attack() {
-	if(input_->PressMouse(0)) {
+	if(input_->TriggerMouse(0)) {
 		//弾の生成、初期化
-		PlayerBullet* newBullet = newBullet->Create(model_);
+		std::unique_ptr<PlayerBullet> newBullet =
+			std::make_unique<PlayerBullet>();
+
+		//newBullet->Create(model_);
+		
+		newBullet->Initialize();
+
+		newBullet->SetModel(model_);
+		newBullet->SetScale({ 1.0f, 1.0f, 1.0f });
+		newBullet->SetRotation(CreateRotationVector(
+			{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
 
 		newBullet->SetPosition(GetPosition());
 		newBullet->SetCamera(camera_);
 
-		bullet_ = newBullet;
+		newBullet->Update();
+
+		bullets_.push_back(std::move(newBullet));
 	}
 }

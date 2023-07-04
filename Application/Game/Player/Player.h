@@ -6,7 +6,7 @@
 #include "DrawBasis.h"
 #include "PlayerBullet.h"
 
-#include <vector>
+#include <list>
 #include <memory>
 
 class CollisionManager;
@@ -59,8 +59,7 @@ private: //メンバ変数
 	Sprite* spriteReticle_ = nullptr;
 
 	//弾
-	//std::unique_ptr<PlayerBullet> bullets_;
-	PlayerBullet* bullet_ = nullptr;
+	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
 public:
 	Player() = default;
