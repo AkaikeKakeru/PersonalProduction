@@ -143,8 +143,11 @@ void Player::Attack() {
 	if(input_->TriggerMouse(0)) {
 		//弾スピード
 		const float kBulletSpeed = 2.0f;
-		//毎フレーム前進
+		//毎フレーム弾が前進する速度
 		Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
+
+		//速度ベクトルを自機の向きに合わせて回転させる
+		bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
 
 		//弾の生成、初期化
 		std::unique_ptr<PlayerBullet> newBullet =
@@ -153,10 +156,9 @@ void Player::Attack() {
 		newBullet->Initialize();
 
 		newBullet->SetModel(model_);
-		newBullet->SetScale({ 1.0f, 1.0f, 1.0f });
-		newBullet->SetRotation(CreateRotationVector(
-			{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
 
+		newBullet->SetScale(GetScale());
+		newBullet->SetRotation(GetRotation());
 		newBullet->SetPosition(GetPosition());
 
 		newBullet->SetVelocity(bulletVelocity);
