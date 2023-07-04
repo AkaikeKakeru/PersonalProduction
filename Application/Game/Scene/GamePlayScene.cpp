@@ -111,7 +111,7 @@ void GamePlayScene::Update2d() {
 }
 
 void GamePlayScene::Draw3d() {
-	skydomeObj_->Draw();
+	//skydomeObj_->Draw();
 	player_->Draw();
 }
 
