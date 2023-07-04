@@ -63,7 +63,7 @@ void GamePlayScene::Initialize3d() {
 
 	player_->SetScale({ 1.0f, 1.0f, 1.0f });
 	player_->SetRotation(CreateRotationVector(
-		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
+		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
 	player_->SetPosition({ 0.0f,-5.0f,30.0f });
 
 	player_->SetCamera(camera_);
