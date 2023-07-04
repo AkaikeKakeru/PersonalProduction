@@ -1,10 +1,13 @@
 ﻿#pragma once
 #include "Model.h"
 #include "Object3d.h"
-#include "Camera.h"
 #include "RailCamera.h"
 #include "Sprite.h"
 #include "DrawBasis.h"
+#include "PlayerBullet.h"
+
+#include <vector>
+#include <memory>
 
 class CollisionManager;
 
@@ -27,6 +30,9 @@ public://メンバ関数
 
 	//照準
 	void Reticle();
+
+	//発射攻撃
+	void Attack();
 
 public: //アクセッサ
 	const Vector3& GetPosition() const {
@@ -51,6 +57,10 @@ private: //メンバ変数
 
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
+
+	//弾
+	//std::unique_ptr<PlayerBullet> bullets_;
+	PlayerBullet* bullet_ = nullptr;
 
 public:
 	Player() = default;

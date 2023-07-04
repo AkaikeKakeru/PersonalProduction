@@ -73,7 +73,7 @@ void Player::Update() {
 
 	// 現在の座標を取得
 	Vector3 position = Object3d::GetPosition();
-	// 現在の座標を取得
+	// 現在の回転を取得
 	Vector3 rot = Object3d::GetRotation();
 
 	Vector3 angleX = { 1.0f,0.0f,0.0f };
@@ -86,15 +86,22 @@ void Player::Update() {
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
 
-	// 座標の変更を反映
+	// 座標の回転を反映
 	Object3d::SetRotation(rot);
 
 	// 座標の変更を反映
 	Object3d::SetPosition(position);
 	
+	Reticle();
+	Attack();
+
+	//弾更新
+	if (bullet_) {
+		bullet_->Update();
+	}
+
 	Object3d::Update();
 
-	Reticle();
 
 	spriteReticle_->SetPosition(
 		{ worldTransform3dReticle_.position_.x ,
@@ -106,6 +113,10 @@ void Player::Update() {
 }
 
 void Player::Draw() {
+	if (bullet_) {
+		bullet_->Draw();
+	}
+
 	Object3d::Draw(worldTransform_);
 }
 
@@ -115,6 +126,7 @@ void Player::DrawUI() {
 
 void Player::Finalize() {
 	SafeDelete(spriteReticle_);
+	SafeDelete(bullet_);
 }
 
 void Player::OnCollision(const CollisionInfo& info) {
@@ -126,4 +138,16 @@ void Player::Reticle() {
 
 	worldTransform3dReticle_.position_ =
 		cursor.Get3DRethiclePosition(camera_);
+}
+
+void Player::Attack() {
+	if(input_->PressMouse(0)) {
+		//弾の生成、初期化
+		PlayerBullet* newBullet = newBullet->Create(model_);
+
+		newBullet->SetPosition(GetPosition());
+		newBullet->SetCamera(camera_);
+
+		bullet_ = newBullet;
+	}
 }
