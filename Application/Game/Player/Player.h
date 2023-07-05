@@ -12,7 +12,7 @@
 class CollisionManager;
 
 //プレイヤー
-class Player 
+class Player
 	: public Object3d {
 public: //静的メンバ関数
 	//オブジェクト生成
@@ -23,10 +23,11 @@ public://メンバ関数
 	void Update() override;
 	void Draw();
 	void DrawUI();
+	void DrawImgui();
 	void Finalize();
 
 	//衝突時コールバック関数
-	void OnCollision(const CollisionInfo & info) override;
+	void OnCollision(const CollisionInfo& info) override;
 
 	//照準
 	void Reticle();
@@ -36,9 +37,11 @@ public://メンバ関数
 
 public: //アクセッサ
 	const Vector3& GetPosition() const {
-		return worldTransform_.position_; }
+		return worldTransform_.position_;
+	}
 	float GetRadius() const {
-		return radius_; }
+		return radius_;
+	}
 
 	void SetWorldTransformRailCamera(WorldTransform* worldTransformRailCamera) {
 		worldTransform_.parent_ = worldTransformRailCamera;
