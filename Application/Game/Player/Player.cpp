@@ -11,6 +11,7 @@
 #include "Cursor.h"
 #include "DrawBasis.h"
 #include <SafeDelete.h>
+#include <imgui.h>
 
 Input* input_ = Input::GetInstance();
 CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
@@ -88,14 +89,14 @@ void Player::Update() {
 	//自壊フラグの立った弾を削除
 	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
 		return bullet->IsDead();
-	});
+		});
 
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);
 
 	// 座標の変更を反映
 	Object3d::SetPosition(position);
-	
+
 	Reticle();
 	Attack();
 
@@ -128,6 +129,29 @@ void Player::DrawUI() {
 	spriteReticle_->Draw();
 }
 
+void Player::DrawImgui() {
+	static const int Vector3Count = 3;
+
+	float playerPos[Vector3Count] = {
+		GetPosition().x,
+		GetPosition().y,
+		GetPosition().z
+	};
+
+	float playerDir[Vector3Count] = {
+		GetRotation().x,
+		GetRotation().y,
+		GetRotation().z
+	};
+
+	ImGui::Begin("Player");
+	ImGui::SetWindowPos(ImVec2(700, 0));
+	ImGui::SetWindowSize(ImVec2(500, 100));
+	ImGui::InputFloat3("PlayerPos", playerPos);
+	ImGui::InputFloat3("PlayerDir", playerDir);
+	ImGui::End();
+}
+
 void Player::Finalize() {
 	SafeDelete(spriteReticle_);
 }
@@ -138,20 +162,34 @@ void Player::OnCollision(const CollisionInfo& info) {
 
 void Player::Reticle() {
 	Corsor cursor;
-
+	//マウスカーソルから、3D照準座標を取得する
 	worldTransform3dReticle_.position_ =
 		cursor.Get3DRethiclePosition(camera_);
+
+	worldTransform3dReticle_.UpdateMatrix();
 }
 
 void Player::Attack() {
-	if(input_->TriggerMouse(0)) {
+	if (input_->TriggerMouse(0)) {
 		//弾スピード
 		const float kBulletSpeed = 2.0f;
 		//毎フレーム弾が前進する速度
 		Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
 
 		//速度ベクトルを自機の向きに合わせて回転させる
-		bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
+		//bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
+		bulletVelocity =
+			Vector3{
+				worldTransform3dReticle_.matWorld_.m[3][0],
+				worldTransform3dReticle_.matWorld_.m[3][1],
+				worldTransform3dReticle_.matWorld_.m[3][2]
+		} - Vector3{
+				worldTransform_.matWorld_.m[3][0],
+				worldTransform_.matWorld_.m[3][1],
+				worldTransform_.matWorld_.m[3][2]
+		};
+
+		bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
 
 		//弾の生成、初期化
 		std::unique_ptr<PlayerBullet> newBullet =
@@ -161,9 +199,13 @@ void Player::Attack() {
 
 		newBullet->SetModel(model_);
 
-		newBullet->SetScale(GetScale());
-		newBullet->SetRotation(GetRotation());
-		newBullet->SetPosition(GetPosition());
+		newBullet->SetScale(worldTransform_.scale_);
+		newBullet->SetRotation(worldTransform_.rotation_);
+		newBullet->SetPosition(Vector3{
+			worldTransform_.matWorld_.m[3][0],
+			worldTransform_.matWorld_.m[3][1],
+			worldTransform_.matWorld_.m[3][2]
+			});
 
 		newBullet->SetVelocity(bulletVelocity);
 		newBullet->SetCamera(camera_);
