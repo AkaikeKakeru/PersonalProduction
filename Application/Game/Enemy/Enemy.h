@@ -3,6 +3,7 @@
 #include "Object3d.h"
 #include "Sprite.h"
 #include "DrawBasis.h"
+#include <Input.h>
 
 #include <list>
 #include <memory>
@@ -38,6 +39,10 @@ public: //アクセッサ
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
+	//入力
+	static Input* input_;
+	//スプライト基盤
+	static DrawBasis* drawBas_;
 
 private: //メンバ変数
 	//半径
