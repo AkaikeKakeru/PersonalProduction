@@ -5,17 +5,16 @@
 #include "SphereCollider.h"
 
 #include <cassert>
-#include <Input.h>
+
 #include <Quaternion.h>
 
 #include "Cursor.h"
-#include "DrawBasis.h"
 #include <SafeDelete.h>
 #include <imgui.h>
 
-Input* input_ = Input::GetInstance();
+Input* Player::input_ = Input::GetInstance();
 CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
-DrawBasis* drawBas_ = DrawBasis::GetInstance();
+DrawBasis* Player::drawBas_ = DrawBasis::GetInstance();
 
 Player* Player::Create(Model* model) {
 	//オブジェクトのインスタンスを生成
@@ -145,7 +144,7 @@ void Player::DrawImgui() {
 	};
 
 	ImGui::Begin("Player");
-	ImGui::SetWindowPos(ImVec2(700, 0));
+	ImGui::SetWindowPos(ImVec2(0, 0));
 	ImGui::SetWindowSize(ImVec2(500, 100));
 	ImGui::InputFloat3("PlayerPos", playerPos);
 	ImGui::InputFloat3("PlayerDir", playerDir);
