@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Model.h"
 #include "Object3d.h"
 #include "Sprite.h"
@@ -9,14 +9,14 @@
 
 class CollisionManager;
 
-//ƒGƒlƒ~[
+//ã‚¨ãƒãƒŸãƒ¼
 class Enemy
 	: public Object3d {
-public: //Ã“Iƒƒ“ƒoŠÖ”
-	//ƒIƒuƒWƒFƒNƒg¶¬
+public: //é™çš„ãƒ¡ãƒ³ãƒé–¢æ•°
+	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	static Enemy* Create(Model* model = nullptr);
 
-public://ƒƒ“ƒoŠÖ”
+public://ãƒ¡ãƒ³ãƒé–¢æ•°
 	bool Initialize() override;
 	void Update() override;
 	void Draw();
@@ -24,10 +24,10 @@ public://ƒƒ“ƒoŠÖ”
 	void DrawImgui();
 	void Finalize();
 
-	//Õ“ËƒR[ƒ‹ƒoƒbƒNŠÖ”
+	//è¡çªæ™‚ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 	void OnCollision(const CollisionInfo& info) override;
 
-public: //ƒAƒNƒZƒbƒT
+public: //ã‚¢ã‚¯ã‚»ãƒƒã‚µ
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_;
 	}
@@ -35,21 +35,21 @@ public: //ƒAƒNƒZƒbƒT
 		return radius_;
 	}
 
-private: //Ã“Iƒƒ“ƒo•Ï”
-	//Õ“Ëƒ}ƒl[ƒWƒƒ[
+private: //é™çš„ãƒ¡ãƒ³ãƒå¤‰æ•°
+	//è¡çªãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼
 	static CollisionManager* collisionManager_;
 
-private: //ƒƒ“ƒo•Ï”
-	//”¼Œa
+private: //ãƒ¡ãƒ³ãƒå¤‰æ•°
+	//åŠå¾„
 	float radius_ = 1.0f;
 
-	//3dƒŒƒeƒBƒNƒ‹‚Ìƒ[ƒ‹ƒh•ÏŠ·
+	//3dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›
 	WorldTransform worldTransform3dReticle_;
 
-	//ƒŒƒeƒBƒNƒ‹—pƒXƒvƒ‰ƒCƒg
+	//ãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ç”¨ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ
 	Sprite* spriteReticle_ = nullptr;
 
-	//’e
+	//å¼¾
 	//std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
 public:
