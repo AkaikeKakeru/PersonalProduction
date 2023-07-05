@@ -18,8 +18,10 @@
 #include <List>
 
 #include "Player.h"
+#include "Enemy.h"
 
-class GamePlayScene : public BaseScene {
+class GamePlayScene :
+	public BaseScene {
 public:
 	void Initialize() override;
 	void Update() override;
@@ -68,5 +70,9 @@ public: //メンバ変数
 	/// </summary>
 	Sprite* sprite_ = nullptr;
 
+	//プレイヤー
 	Player* player_ = nullptr;
+
+	//エネミー
+	Enemy* enemy_ = nullptr;
 };
