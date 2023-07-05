@@ -32,9 +32,18 @@ public: //アクセッサ
 		velocity_ = velocity;
 	}
 
+	//自壊したかを取得
+	bool IsDead() const {
+		return isDead_;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
+
+public://メンバ定数
+	//寿命<フレーム単位>
+	static const int32_t kLifeTime_ = 60 * 5;
 
 private: //メンバ変数
 	//半径
@@ -42,6 +51,12 @@ private: //メンバ変数
 
 	//速度
 	Vector3 velocity_ = {};
+
+	//自壊タイマー
+	int32_t deathTimer_ = kLifeTime_;
+
+	//自壊フラグ
+	bool isDead_ = false;
 
 public:
 	PlayerBullet() = default;

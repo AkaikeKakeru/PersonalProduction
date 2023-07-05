@@ -85,6 +85,10 @@ void Player::Update() {
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
+	//自壊フラグの立った弾を削除
+	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+		return bullet->IsDead();
+	});
 
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);

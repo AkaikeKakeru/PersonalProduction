@@ -5,9 +5,7 @@
 #include "SphereCollider.h"
 #include <cassert>
 
-//Input* input_ = Input::GetInstance();
 CollisionManager* PlayerBullet::collisionManager_ = CollisionManager::GetInstance();
-//DrawBasis* drawBas_ = DrawBasis::GetInstance();
 
 PlayerBullet* PlayerBullet::Create(Model* model) {
 	//オブジェクトのインスタンスを生成
@@ -63,6 +61,11 @@ void PlayerBullet::Update() {
 	Object3d::SetPosition(position);
 
 	Object3d::Update();
+
+	//時間経過で自壊させる
+	if (--deathTimer_ <= 0) {
+		isDead_ = true;
+	}
 }
 
 void PlayerBullet::Draw() {
