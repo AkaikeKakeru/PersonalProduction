@@ -4,18 +4,14 @@
 
 Camera* Corsor::camera_ = nullptr;
 
-Vector3 Corsor::Get3DRethiclePosition(Camera* camera){
+Vector3 Corsor::Get3DRethiclePosition(Camera* camera) {
 	camera_ = camera;
 
 	GetMousePosition();
 	CreateMatrixInverseViewPort();
 	CheckRayDirection();
 
-	Vector3 position;
-
-	position = rayDirection_;
-
-	return position;
+	return rayDirection_;
 }
 
 void Corsor::GetMousePosition() {
@@ -23,7 +19,7 @@ void Corsor::GetMousePosition() {
 	mousePosition_ = Input::GetInstance()->GetMousePosition();
 }
 
-void Corsor::CreateMatrixInverseViewPort(){
+void Corsor::CreateMatrixInverseViewPort() {
 	Matrix4 matViewPort = Matrix4Identity();
 	matViewPort.m[0][0] = static_cast<float>(WinApp::Win_Width) / 2;
 	matViewPort.m[1][1] = static_cast<float>(-(WinApp::Win_Height)) / 2;
@@ -38,7 +34,7 @@ void Corsor::CreateMatrixInverseViewPort(){
 	matInverseVPV_ = Matrix4Inverse(matVPV);
 }
 
-void Corsor::CheckRayDirection(){
+void Corsor::CheckRayDirection() {
 	//ニア
 	posNear_ = Vector3(
 		mousePosition_.x,
@@ -53,13 +49,12 @@ void Corsor::CheckRayDirection(){
 	posFar_ = Vector3TransformCoord(posFar_, matInverseVPV_);
 
 	//レイ
-	rayDirection_ = posFar_ - posNear_;
+	rayDirection_ = posNear_ - posFar_;
 	rayDirection_ = Vector3Normalize(rayDirection_);
 
 	//カメラからの距離
 	const float kDistanceTestObject = 50.0f;
 
 	//ニア→レイ
-	rayDirection_ = (rayDirection_ - posNear_);
-	rayDirection_ *= kDistanceTestObject;
+	rayDirection_ = posNear_ - (rayDirection_ * kDistanceTestObject);
 }

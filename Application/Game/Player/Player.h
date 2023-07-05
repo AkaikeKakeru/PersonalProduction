@@ -1,15 +1,18 @@
 ﻿#pragma once
 #include "Model.h"
 #include "Object3d.h"
-#include "Camera.h"
 #include "RailCamera.h"
 #include "Sprite.h"
 #include "DrawBasis.h"
+#include "PlayerBullet.h"
+
+#include <list>
+#include <memory>
 
 class CollisionManager;
 
 //プレイヤー
-class Player 
+class Player
 	: public Object3d {
 public: //静的メンバ関数
 	//オブジェクト生成
@@ -20,19 +23,25 @@ public://メンバ関数
 	void Update() override;
 	void Draw();
 	void DrawUI();
+	void DrawImgui();
 	void Finalize();
 
 	//衝突時コールバック関数
-	void OnCollision(const CollisionInfo & info) override;
+	void OnCollision(const CollisionInfo& info) override;
 
 	//照準
 	void Reticle();
 
+	//発射攻撃
+	void Attack();
+
 public: //アクセッサ
 	const Vector3& GetPosition() const {
-		return worldTransform_.position_; }
+		return worldTransform_.position_;
+	}
 	float GetRadius() const {
-		return radius_; }
+		return radius_;
+	}
 
 	void SetWorldTransformRailCamera(WorldTransform* worldTransformRailCamera) {
 		worldTransform_.parent_ = worldTransformRailCamera;
@@ -51,6 +60,9 @@ private: //メンバ変数
 
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
+
+	//弾
+	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
 public:
 	Player() = default;

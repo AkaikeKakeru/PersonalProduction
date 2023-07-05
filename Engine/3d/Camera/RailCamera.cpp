@@ -13,7 +13,7 @@ void RailCamera::Initialize(const Vector3 pos,
 void RailCamera::Update() {
 	Vector3 move = { 0.0f,0.0f,0.01f };
 
-	worldTransform_.position_ += move;
+	//worldTransform_.position_ += move;
 
 	// オブジェクト移動
 	if (input_->PressKey(DIK_W) ||
@@ -22,19 +22,19 @@ void RailCamera::Update() {
 		input_->PressKey(DIK_A)) {
 		if (input_->PressKey(DIK_W)) {
 			worldTransform_.position_ += Vector3{ 0,0.1f,0 };
-			worldTransform_.rotation_ += Vector3{ 0.1f,0,0 };
+			worldTransform_.rotation_ += Vector3{ ConvertToRadian(1.0f),0,0};
 		}
 		else if (input_->PressKey(DIK_S)) {
 			worldTransform_.position_ -= Vector3{ 0,0.1f,0 };
-			worldTransform_.rotation_ -= Vector3{ 0.1f,0,0 };
+			worldTransform_.rotation_ -= Vector3{ ConvertToRadian(1.0f),0,0 };
 		}
 		if (input_->PressKey(DIK_D)) {
 			worldTransform_.position_ += Vector3{ 0.1f,0,0 };
-			worldTransform_.rotation_ += Vector3{ 0,0.1f,0 };
+			worldTransform_.rotation_ += Vector3{ 0,ConvertToRadian(1.0f),0 };
 		}
 		else if (input_->PressKey(DIK_A)) {
 			worldTransform_.position_ -= Vector3{ 0.1f,0,0 };
-			worldTransform_.rotation_ -= Vector3{ 0,0.1f,0 };
+			worldTransform_.rotation_ -= Vector3{ 0,ConvertToRadian(1.0f),0 };
 		}
 	}
 

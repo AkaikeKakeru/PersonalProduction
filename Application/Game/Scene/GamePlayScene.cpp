@@ -1,6 +1,7 @@
 ﻿#include "GamePlayScene.h"
 #include "SafeDelete.h"
 #include "Quaternion.h"
+#include <imgui.h>
 
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GamePlayScene::input_ = Input::GetInstance();
@@ -16,19 +17,14 @@ void GamePlayScene::Update() {
 	input_->Update();
 	Update3d();
 	Update2d();
-#ifdef _DEBUG
-	imGuiManager_->Begin();
-	imGuiManager_->End();
-#endif // DEBUG
 }
 
 void GamePlayScene::Draw() {
 #ifdef _DEBUG
-	//imGuiManager_->Begin();
-
-	//imGuiManager_->End();
-#endif
-
+	imGuiManager_->Begin();
+	player_->DrawImgui();
+	imGuiManager_->End();
+#endif // DEBUG
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
 	Draw3d();
 	Object3d::PostDraw();
@@ -48,7 +44,7 @@ void GamePlayScene::Initialize3d() {
 	camera_->Update();
 
 	railCamera_ = new RailCamera();
-	railCamera_->Initialize(camera_->GetEye(),{0,0,0});
+	railCamera_->Initialize(camera_->GetEye(), { 0,0,0 });
 	railCamera_->SetTarget(camera_->GetTarget());
 	railCamera_->SetUp(camera_->GetUp());
 	railCamera_->Update();
@@ -63,7 +59,7 @@ void GamePlayScene::Initialize3d() {
 
 	player_->SetScale({ 1.0f, 1.0f, 1.0f });
 	player_->SetRotation(CreateRotationVector(
-		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
+		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
 	player_->SetPosition({ 0.0f,-5.0f,30.0f });
 
 	player_->SetCamera(camera_);
@@ -98,7 +94,7 @@ void GamePlayScene::Update3d() {
 	camera_->SetUp(railCamera_->GetUp());
 
 	camera_->Update();
-	
+
 	player_->SetWorldTransformRailCamera(railCamera_->GetWorldTransform());
 
 	light_->Update();
@@ -111,7 +107,7 @@ void GamePlayScene::Update2d() {
 }
 
 void GamePlayScene::Draw3d() {
-	skydomeObj_->Draw();
+	//skydomeObj_->Draw();
 	player_->Draw();
 }
 
