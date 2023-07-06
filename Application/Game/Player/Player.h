@@ -69,6 +69,22 @@ private: //メンバ変数
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
+private: //ImGui用
+	//Vector3の要素数
+	static const int kVector3Count_ = 3;
+
+	//Pos範囲
+	const float PosRange_ = 30.0f;
+
+	//Dir範囲
+	const float DirRange_ = ConvertToRadian(360.0f);
+
+	//ImGui用自機Pos
+	float debugPos_[kVector3Count_] = {};
+
+	//ImGui用自機Dir
+	float debugDir_[kVector3Count_] = {};
+
 public:
 	Player() = default;
 	~Player() = default;

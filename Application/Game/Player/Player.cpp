@@ -54,6 +54,11 @@ bool Player::Initialize() {
 
 	worldTransform3dReticle_.Initialize();
 
+	SetScale({ 1.0f, 1.0f, 1.0f });
+	SetRotation(CreateRotationVector(
+		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
+	SetPosition({ 0.0f,-5.0f,30.0f });
+
 	drawBas_->LoadTexture(1, "texture.png");
 
 	spriteReticle_ = new Sprite();
@@ -61,6 +66,18 @@ bool Player::Initialize() {
 
 	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
 	spriteReticle_->SetSize({ 64,64 });
+
+#ifdef _DEBUG
+	{
+		debugPos_[0] = { GetPosition().x };
+		debugPos_[1] = { GetPosition().y };
+		debugPos_[2] = { GetPosition().z };
+
+		debugDir_[0] = { GetRotation().x };
+		debugDir_[1] = { GetRotation().y };
+		debugDir_[2] = { GetRotation().z };
+	}
+#endif // _DEBUG
 
 	return true;
 }
@@ -75,6 +92,20 @@ void Player::Update() {
 	Vector3 position = Object3d::GetPosition();
 	// 現在の回転を取得
 	Vector3 rot = Object3d::GetRotation();
+
+#ifdef _DEBUG
+	{
+		position = Vector3 {
+			debugPos_[0],
+			debugPos_[1],
+			debugPos_[2], };
+
+		rot = Vector3 {
+			debugDir_[0],
+			debugDir_[1],
+			debugDir_[2], };
+	}
+#endif // _DEBUG
 
 	Vector3 angleX = { 1.0f,0.0f,0.0f };
 	Vector3 angleY = { 0.0f,1.0f,0.0f };
@@ -106,7 +137,6 @@ void Player::Update() {
 
 	Object3d::Update();
 
-
 	spriteReticle_->SetPosition(
 		{ worldTransform3dReticle_.position_.x ,
 		worldTransform3dReticle_.position_.y });
@@ -129,25 +159,21 @@ void Player::DrawUI() {
 }
 
 void Player::DrawImgui() {
-	static const int Vector3Count = 3;
+	debugPos_[0] = { GetPosition().x };
+	debugPos_[1] = { GetPosition().y };
+	debugPos_[2] = { GetPosition().z };
 
-	float playerPos[Vector3Count] = {
-		GetPosition().x,
-		GetPosition().y,
-		GetPosition().z
-	};
-
-	float playerDir[Vector3Count] = {
-		GetRotation().x,
-		GetRotation().y,
-		GetRotation().z
-	};
+	debugDir_[0] = { GetRotation().x };
+	debugDir_[1] = { GetRotation().y };
+	debugDir_[2] = { GetRotation().z };
 
 	ImGui::Begin("Player");
 	ImGui::SetWindowPos(ImVec2(0, 0));
 	ImGui::SetWindowSize(ImVec2(500, 100));
-	ImGui::InputFloat3("PlayerPos", playerPos);
-	ImGui::InputFloat3("PlayerDir", playerDir);
+	ImGui::SliderFloat3(
+		"PlayerPos", debugPos_, -PosRange_, PosRange_);
+	ImGui::SliderFloat3(
+		"PlayerDir", debugDir_, 0, DirRange_);
 	ImGui::End();
 }
 
