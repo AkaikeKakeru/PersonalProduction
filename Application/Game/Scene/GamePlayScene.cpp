@@ -59,10 +59,10 @@ void GamePlayScene::Initialize3d() {
 #pragma region Player
 	player_ = Player::Create(planeModel_);
 
-	player_->SetScale({ 1.0f, 1.0f, 1.0f });
-	player_->SetRotation(CreateRotationVector(
-		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	player_->SetPosition({ 0.0f,-5.0f,30.0f });
+	//player_->SetScale({ 1.0f, 1.0f, 1.0f });
+	//player_->SetRotation(CreateRotationVector(
+	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
+	//player_->SetPosition({ 0.0f,-5.0f,30.0f });
 
 	player_->SetCamera(camera_);
 	player_->Update();
@@ -71,10 +71,10 @@ void GamePlayScene::Initialize3d() {
 #pragma region Enemy
 	enemy_ = Enemy::Create(planeModel_);
 
-	enemy_->SetScale({ 1.0f, 1.0f, 1.0f });
-	enemy_->SetRotation(CreateRotationVector(
-		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
-	enemy_->SetPosition({ 0.0f,0.0f,100.0f });
+	//enemy_->SetScale({ 1.0f, 1.0f, 1.0f });
+	//enemy_->SetRotation(CreateRotationVector(
+	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
+	//enemy_->SetPosition({ 0.0f,0.0f,100.0f });
 
 	enemy_->SetCamera(camera_);
 	enemy_->Update();
