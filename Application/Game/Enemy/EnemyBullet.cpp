@@ -1,4 +1,4 @@
-#include "EnemyBullet.h"
+ï»¿#include "EnemyBullet.h"
 #include <Input.h>
 #include "CollisionManager.h"
 #include "CollisionAttribute.h"
@@ -8,19 +8,19 @@
 CollisionManager* EnemyBullet::collisionManager_ = CollisionManager::GetInstance();
 
 EnemyBullet* EnemyBullet::Create(Model* model) {
-	//ƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ¶¬
+	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç”Ÿæˆ
 	EnemyBullet* instance = new EnemyBullet();
 	if (instance == nullptr) {
 		return nullptr;
 	}
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	if (!instance->Initialize()) {
 		delete instance;
 		assert(0);
 	}
 
-	//ƒ‚ƒfƒ‹‚ÌƒZƒbƒg
+	//ãƒ¢ãƒ‡ãƒ«ã®ã‚»ãƒƒãƒˆ
 	if (model) {
 		instance->SetModel(model);
 	}
@@ -33,9 +33,9 @@ bool EnemyBullet::Initialize() {
 		return false;
 	}
 
-	//ƒRƒ‰ƒCƒ_|’Ç‰Á
+	//ã‚³ãƒ©ã‚¤ãƒ€ï¼è¿½åŠ 
 
-	//”¼Œa•ª‚¾‚¯‘«Œ³‚©‚ç•‚‚¢‚½À•W‚ğ‹…‚Ì’†S‚É‚·‚é
+	//åŠå¾„åˆ†ã ã‘è¶³å…ƒã‹ã‚‰æµ®ã„ãŸåº§æ¨™ã‚’çƒã®ä¸­å¿ƒã«ã™ã‚‹
 	SetCollider(new SphereCollider(
 		Vector3{ 0.0f,radius_,0.0f },
 		radius_)
@@ -47,22 +47,22 @@ bool EnemyBullet::Initialize() {
 }
 
 void EnemyBullet::Update() {
-	// Œ»İ‚ÌÀ•W‚ğæ“¾
+	// ç¾åœ¨ã®åº§æ¨™ã‚’å–å¾—
 	Vector3 position = Object3d::GetPosition();
-	// Œ»İ‚Ì‰ñ“]‚ğæ“¾
+	// ç¾åœ¨ã®å›è»¢ã‚’å–å¾—
 	Vector3 rot = Object3d::GetRotation();
 
-	//–ˆƒtƒŒ[ƒ€AƒxƒƒVƒeƒB•ª‘Oi
+	//æ¯ãƒ•ãƒ¬ãƒ¼ãƒ ã€ãƒ™ãƒ­ã‚·ãƒ†ã‚£åˆ†å‰é€²
 	position += velocity_;
 
-	// À•W‚Ì‰ñ“]‚ğ”½‰f
+	// åº§æ¨™ã®å›è»¢ã‚’åæ˜ 
 	Object3d::SetRotation(rot);
-	// À•W‚Ì•ÏX‚ğ”½‰f
+	// åº§æ¨™ã®å¤‰æ›´ã‚’åæ˜ 
 	Object3d::SetPosition(position);
 
 	Object3d::Update();
 
-	//ŠÔŒo‰ß‚Å©‰ó‚³‚¹‚é
+	//æ™‚é–“çµŒéã§è‡ªå£Šã•ã›ã‚‹
 	if (--deathTimer_ <= 0) {
 		isDead_ = true;
 	}
