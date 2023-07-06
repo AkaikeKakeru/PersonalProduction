@@ -10,6 +10,8 @@
 #include <SafeDelete.h>
 #include <imgui.h>
 
+#include "EnemyBullet.h"
+
 Input* Enemy::input_ = Input::GetInstance();
 CollisionManager* Enemy::collisionManager_ = CollisionManager::GetInstance();
 DrawBasis* Enemy::drawBas_ = DrawBasis::GetInstance();
@@ -117,10 +119,10 @@ void Enemy::Update() {
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
-	////自壊フラグの立った弾を削除
-	//bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
-	//	return bullet->IsDead();
-	//	});
+	//自壊フラグの立った弾を削除
+	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
+		return bullet->IsDead();
+		});
 
 	moveVector = { 0.0f,0.0f,kSpeed };
 	moveVector = Vector3CrossMatrix4(moveVector, worldTransform_.matWorld_);
@@ -134,12 +136,14 @@ void Enemy::Update() {
 	Object3d::SetPosition(position);
 
 	//Reticle();
-	//Attack();
+
+	//発射
+	Fire();
 
 	//弾更新
-	//for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-	//	bullet->Update();
-	//}
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
+		bullet->Update();
+	}
 
 	Object3d::Update();
 
@@ -154,6 +158,10 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw() {
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
+		bullet->Draw();
+	}
+
 	Object3d::Draw(worldTransform_);
 }
 
@@ -186,4 +194,52 @@ void Enemy::Finalize() {
 
 void Enemy::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
+}
+
+void Enemy::Fire() {
+	if (input_->TriggerMouse(0)) {
+		//弾スピード
+		const float kBulletSpeed = 2.0f;
+		//毎フレーム弾が前進する速度
+		Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
+
+		//速度ベクトルを自機の向きに合わせて回転させる
+		bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
+		
+		//bulletVelocity =
+		//	Vector3{
+		//	worldTransform3dReticle_.matWorld_.m[3][0],
+		//	worldTransform3dReticle_.matWorld_.m[3][1],
+		//	worldTransform3dReticle_.matWorld_.m[3][2]
+		//} - Vector3{
+		//		worldTransform_.matWorld_.m[3][0],
+		//		worldTransform_.matWorld_.m[3][1],
+		//		worldTransform_.matWorld_.m[3][2]
+		//};
+
+		bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
+
+		//弾の生成、初期化
+		std::unique_ptr<EnemyBullet> newBullet =
+			std::make_unique<EnemyBullet>();
+
+		newBullet->Initialize();
+
+		newBullet->SetModel(model_);
+
+		newBullet->SetScale(worldTransform_.scale_);
+		newBullet->SetRotation(worldTransform_.rotation_);
+		newBullet->SetPosition(Vector3{
+			worldTransform_.matWorld_.m[3][0],
+			worldTransform_.matWorld_.m[3][1],
+			worldTransform_.matWorld_.m[3][2]
+			});
+
+		newBullet->SetVelocity(bulletVelocity);
+		newBullet->SetCamera(camera_);
+
+		newBullet->Update();
+
+		bullets_.push_back(std::move(newBullet));
+	}
 }

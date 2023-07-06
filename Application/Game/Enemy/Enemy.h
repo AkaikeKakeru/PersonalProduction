@@ -8,6 +8,7 @@
 #include <list>
 #include <memory>
 
+class EnemyBullet;
 class CollisionManager;
 
 //エネミー
@@ -27,6 +28,9 @@ public://メンバ関数
 
 	//衝突時コールバック関数
 	void OnCollision(const CollisionInfo& info) override;
+
+	//発射
+	void Fire();
 
 public: //アクセッサ
 	const Vector3& GetPosition() const {
@@ -55,7 +59,7 @@ private: //メンバ変数
 	Sprite* spriteReticle_ = nullptr;
 
 	//弾
-	//std::list<std::unique_ptr<PlayerBullet>> bullets_;
+	std::list<std::unique_ptr<EnemyBullet>> bullets_;
 
 private: //ImGui用
 	//Vector3の要素数
