@@ -2,11 +2,15 @@
 #include "SafeDelete.h"
 #include "Quaternion.h"
 #include <imgui.h>
+#include "Player.h"
+#include "Enemy.h"
+#include "CollisionManager.h"
 
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GamePlayScene::input_ = Input::GetInstance();
 DrawBasis* GamePlayScene::drawBas_ = DrawBasis::GetInstance();
 ImGuiManager* GamePlayScene::imGuiManager_ = ImGuiManager::GetInstance();
+CollisionManager* GamePlayScene::collisionManager_ = CollisionManager::GetInstance();
 
 void GamePlayScene::Initialize() {
 	Initialize2d();
@@ -15,13 +19,18 @@ void GamePlayScene::Initialize() {
 
 void GamePlayScene::Update() {
 	input_->Update();
+
+
 	Update3d();
 	Update2d();
+	
+	collisionManager_->CheckAllCollisions();
 }
 
 void GamePlayScene::Draw() {
 #ifdef _DEBUG
 	imGuiManager_->Begin();
+	enemy_->DrawImgui();
 	player_->DrawImgui();
 	imGuiManager_->End();
 #endif // DEBUG
@@ -55,21 +64,37 @@ void GamePlayScene::Initialize3d() {
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
 
+#pragma region Player
 	player_ = Player::Create(planeModel_);
 
-	player_->SetScale({ 1.0f, 1.0f, 1.0f });
-	player_->SetRotation(CreateRotationVector(
-		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	player_->SetPosition({ 0.0f,-5.0f,30.0f });
+	//player_->SetScale({ 1.0f, 1.0f, 1.0f });
+	//player_->SetRotation(CreateRotationVector(
+	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
+	//player_->SetPosition({ 0.0f,-5.0f,30.0f });
 
 	player_->SetCamera(camera_);
 	player_->Update();
+#pragma endregion
 
+#pragma region Enemy
+	enemy_ = Enemy::Create(planeModel_);
+
+	//enemy_->SetScale({ 1.0f, 1.0f, 1.0f });
+	//enemy_->SetRotation(CreateRotationVector(
+	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
+	//enemy_->SetPosition({ 0.0f,0.0f,100.0f });
+
+	enemy_->SetCamera(camera_);
+	enemy_->Update();
+#pragma endregion
+
+#pragma region Skydome
 	skydomeObj_ = new Object3d();
 	skydomeObj_ = Object3d::Create();
 	skydomeObj_->SetModel(skydomeModel_);
 	skydomeObj_->SetScale({ 30, 30, 30 });
 	skydomeObj_->SetCamera(camera_);
+#pragma endregion
 
 	//ライト生成
 	light_ = new LightGroup();
@@ -101,6 +126,7 @@ void GamePlayScene::Update3d() {
 
 	skydomeObj_->Update();
 	player_->Update();
+	enemy_->Update();
 }
 
 void GamePlayScene::Update2d() {
@@ -108,10 +134,12 @@ void GamePlayScene::Update2d() {
 
 void GamePlayScene::Draw3d() {
 	//skydomeObj_->Draw();
+	enemy_->Draw();
 	player_->Draw();
 }
 
 void GamePlayScene::Draw2d() {
+	enemy_->DrawUI();
 	player_->DrawUI();
 }
 
@@ -126,6 +154,9 @@ void GamePlayScene::Finalize() {
 	SafeDelete(skydomeObj_);
 	SafeDelete(planeModel_);
 	SafeDelete(skydomeModel_);
+
+	enemy_->Finalize();
+	SafeDelete(enemy_);
 
 	player_->Finalize();
 	SafeDelete(player_);

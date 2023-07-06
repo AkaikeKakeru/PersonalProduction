@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Model.h"
 #include "Object3d.h"
-#include "RailCamera.h"
 #include "Sprite.h"
 #include "DrawBasis.h"
 #include <Input.h>
@@ -9,15 +8,15 @@
 #include <list>
 #include <memory>
 
-class PlayerBullet;
+class EnemyBullet;
 class CollisionManager;
 
-//プレイヤー
-class Player
+//エネミー
+class Enemy
 	: public Object3d {
 public: //静的メンバ関数
 	//オブジェクト生成
-	static Player* Create(Model* model = nullptr);
+	static Enemy* Create(Model* model = nullptr);
 
 public://メンバ関数
 	bool Initialize() override;
@@ -30,11 +29,8 @@ public://メンバ関数
 	//衝突時コールバック関数
 	void OnCollision(const CollisionInfo& info) override;
 
-	//照準
-	void Reticle();
-
-	//発射攻撃
-	void Attack();
+	//発射
+	void Fire();
 
 public: //アクセッサ
 	const Vector3& GetPosition() const {
@@ -42,10 +38,6 @@ public: //アクセッサ
 	}
 	float GetRadius() const {
 		return radius_;
-	}
-
-	void SetWorldTransformRailCamera(WorldTransform* worldTransformRailCamera) {
-		worldTransform_.parent_ = worldTransformRailCamera;
 	}
 
 private: //静的メンバ変数
@@ -67,7 +59,7 @@ private: //メンバ変数
 	Sprite* spriteReticle_ = nullptr;
 
 	//弾
-	std::list<std::unique_ptr<PlayerBullet>> bullets_;
+	std::list<std::unique_ptr<EnemyBullet>> bullets_;
 
 private: //ImGui用
 	//Vector3の要素数
@@ -79,13 +71,13 @@ private: //ImGui用
 	//Dir範囲
 	const float DirRange_ = ConvertToRadian(360.0f);
 
-	//ImGui用自機Pos
+	//ImGui用敵Pos
 	float debugPos_[kVector3Count_] = {};
 
-	//ImGui用自機Dir
+	//ImGui用敵Dir
 	float debugDir_[kVector3Count_] = {};
 
 public:
-	Player() = default;
-	~Player() = default;
+	Enemy() = default;
+	~Enemy() = default;
 };

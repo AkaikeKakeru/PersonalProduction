@@ -1,26 +1,24 @@
-﻿#include "Player.h"
+﻿#include "Enemy.h"
 
 #include "CollisionManager.h"
 #include "CollisionAttribute.h"
 #include "SphereCollider.h"
 
 #include <cassert>
-
 #include <Quaternion.h>
 
-#include "Cursor.h"
 #include <SafeDelete.h>
 #include <imgui.h>
 
-#include "PlayerBullet.h"
+#include "EnemyBullet.h"
 
-Input* Player::input_ = Input::GetInstance();
-CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
-DrawBasis* Player::drawBas_ = DrawBasis::GetInstance();
+Input* Enemy::input_ = Input::GetInstance();
+CollisionManager* Enemy::collisionManager_ = CollisionManager::GetInstance();
+DrawBasis* Enemy::drawBas_ = DrawBasis::GetInstance();
 
-Player* Player::Create(Model* model) {
+Enemy* Enemy::Create(Model* model) {
 	//オブジェクトのインスタンスを生成
-	Player* instance = new Player();
+	Enemy* instance = new Enemy();
 	if (instance == nullptr) {
 		return nullptr;
 	}
@@ -39,7 +37,7 @@ Player* Player::Create(Model* model) {
 	return instance;
 }
 
-bool Player::Initialize() {
+bool Enemy::Initialize() {
 	if (!Object3d::Initialize()) {
 		return false;
 	}
@@ -52,22 +50,23 @@ bool Player::Initialize() {
 		radius_)
 	);
 
-	collider_->SetAttribute(COLLISION_ATTR_PLAYER);
+	collider_->SetAttribute(COLLISION_ATTR_ENEMYS);
 
 	worldTransform3dReticle_.Initialize();
 
 	SetScale({ 1.0f, 1.0f, 1.0f });
 	SetRotation(CreateRotationVector(
-		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	SetPosition({ 0.0f,-5.0f,30.0f });
+		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
+	SetPosition({ 0.0f,0.0f,100.0f });
 
-	drawBas_->LoadTexture(1, "texture.png");
 
-	spriteReticle_ = new Sprite();
-	spriteReticle_->Initialize(drawBas_, 1);
+	//drawBas_->LoadTexture(1, "texture.png");
 
-	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
-	spriteReticle_->SetSize({ 64,64 });
+	//spriteReticle_ = new Sprite();
+	//spriteReticle_->Initialize(drawBas_, 1);
+
+	//spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
+	//spriteReticle_->SetSize({ 64,64 });
 
 #ifdef _DEBUG
 	{
@@ -84,7 +83,7 @@ bool Player::Initialize() {
 	return true;
 }
 
-void Player::Update() {
+void Enemy::Update() {
 	camera_->Update();
 
 	Vector2 mousePosition_ =
@@ -113,15 +112,22 @@ void Player::Update() {
 	Vector3 angleY = { 0.0f,1.0f,0.0f };
 	Vector3 angleZ = { 0.0f,0.0f,1.0f };
 
+	const float kSpeed = 0.2f;
+
 	//移動ベクトル
 	Vector3 moveVector = { 0.0f,0.0f,0.0f };
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
 	//自壊フラグの立った弾を削除
-	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
 		return bullet->IsDead();
 		});
+
+	moveVector = { 0.0f,0.0f,kSpeed };
+	moveVector = Vector3CrossMatrix4(moveVector, worldTransform_.matWorld_);
+
+	position += moveVector;
 
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);
@@ -129,38 +135,41 @@ void Player::Update() {
 	// 座標の変更を反映
 	Object3d::SetPosition(position);
 
-	Reticle();
-	Attack();
+	//Reticle();
+
+	//発射
+	Fire();
 
 	//弾更新
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
 		bullet->Update();
 	}
 
 	Object3d::Update();
 
-	spriteReticle_->SetPosition(
-		{ worldTransform3dReticle_.position_.x ,
-		worldTransform3dReticle_.position_.y });
 
-	spriteReticle_->SetPosition(input_->GetMousePosition());
+	//spriteReticle_->SetPosition(
+	//	{ worldTransform3dReticle_.position_.x ,
+	//	worldTransform3dReticle_.position_.y });
 
-	spriteReticle_->Update();
+	//spriteReticle_->SetPosition(input_->GetMousePosition());
+
+	//spriteReticle_->Update();
 }
 
-void Player::Draw() {
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+void Enemy::Draw() {
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
 		bullet->Draw();
 	}
 
 	Object3d::Draw(worldTransform_);
 }
 
-void Player::DrawUI() {
-	spriteReticle_->Draw();
+void Enemy::DrawUI() {
+	//spriteReticle_->Draw();
 }
 
-void Player::DrawImgui() {
+void Enemy::DrawImgui() {
 	debugPos_[0] = { GetPosition().x };
 	debugPos_[1] = { GetPosition().y };
 	debugPos_[2] = { GetPosition().z };
@@ -169,34 +178,25 @@ void Player::DrawImgui() {
 	debugDir_[1] = { GetRotation().y };
 	debugDir_[2] = { GetRotation().z };
 
-	ImGui::Begin("Player");
-	ImGui::SetWindowPos(ImVec2(0, 0));
+	ImGui::Begin("Enemy");
+	ImGui::SetWindowPos(ImVec2(700, 0));
 	ImGui::SetWindowSize(ImVec2(500, 100));
 	ImGui::SliderFloat3(
-		"PlayerPos", debugPos_, -PosRange_, PosRange_);
+		"EnemyPos", debugPos_, -PosRange_, PosRange_);
 	ImGui::SliderFloat3(
-		"PlayerDir", debugDir_, 0, DirRange_);
+		"EnemyDir", debugDir_, 0, DirRange_);
 	ImGui::End();
 }
 
-void Player::Finalize() {
-	SafeDelete(spriteReticle_);
+void Enemy::Finalize() {
+	//SafeDelete(spriteReticle_);
 }
 
-void Player::OnCollision(const CollisionInfo& info) {
+void Enemy::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
 }
 
-void Player::Reticle() {
-	Corsor cursor;
-	//マウスカーソルから、3D照準座標を取得する
-	worldTransform3dReticle_.position_ =
-		cursor.Get3DRethiclePosition(camera_);
-
-	worldTransform3dReticle_.UpdateMatrix();
-}
-
-void Player::Attack() {
+void Enemy::Fire() {
 	if (input_->TriggerMouse(0)) {
 		//弾スピード
 		const float kBulletSpeed = 2.0f;
@@ -204,23 +204,24 @@ void Player::Attack() {
 		Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
 
 		//速度ベクトルを自機の向きに合わせて回転させる
-		//bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
-		bulletVelocity =
-			Vector3{
-				worldTransform3dReticle_.matWorld_.m[3][0],
-				worldTransform3dReticle_.matWorld_.m[3][1],
-				worldTransform3dReticle_.matWorld_.m[3][2]
-		} - Vector3{
-				worldTransform_.matWorld_.m[3][0],
-				worldTransform_.matWorld_.m[3][1],
-				worldTransform_.matWorld_.m[3][2]
-		};
+		bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
+		
+		//bulletVelocity =
+		//	Vector3{
+		//	worldTransform3dReticle_.matWorld_.m[3][0],
+		//	worldTransform3dReticle_.matWorld_.m[3][1],
+		//	worldTransform3dReticle_.matWorld_.m[3][2]
+		//} - Vector3{
+		//		worldTransform_.matWorld_.m[3][0],
+		//		worldTransform_.matWorld_.m[3][1],
+		//		worldTransform_.matWorld_.m[3][2]
+		//};
 
 		bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
 
 		//弾の生成、初期化
-		std::unique_ptr<PlayerBullet> newBullet =
-			std::make_unique<PlayerBullet>();
+		std::unique_ptr<EnemyBullet> newBullet =
+			std::make_unique<EnemyBullet>();
 
 		newBullet->Initialize();
 

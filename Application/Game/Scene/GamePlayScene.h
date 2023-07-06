@@ -17,9 +17,12 @@
 #include <memory>
 #include <List>
 
-#include "Player.h"
+class Player;
+class Enemy;
+class CollisionManager;
 
-class GamePlayScene : public BaseScene {
+class GamePlayScene :
+	public BaseScene {
 public:
 	void Initialize() override;
 	void Update() override;
@@ -45,6 +48,8 @@ private: //静的メンバ変数
 	static DrawBasis* drawBas_;
 	//ImGuiマネージャー
 	static ImGuiManager* imGuiManager_;
+	//衝突マネージャー
+	static CollisionManager* collisionManager_;
 
 public: //メンバ変数
 	Camera* camera_ = nullptr;
@@ -68,5 +73,9 @@ public: //メンバ変数
 	/// </summary>
 	Sprite* sprite_ = nullptr;
 
+	//プレイヤー
 	Player* player_ = nullptr;
+
+	//エネミー
+	Enemy* enemy_ = nullptr;
 };
