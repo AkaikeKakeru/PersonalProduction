@@ -17,8 +17,9 @@
 #include <memory>
 #include <List>
 
-#include "Player.h"
-#include "Enemy.h"
+class Player;
+class Enemy;
+class CollisionManager;
 
 class GamePlayScene :
 	public BaseScene {
@@ -47,6 +48,8 @@ private: //静的メンバ変数
 	static DrawBasis* drawBas_;
 	//ImGuiマネージャー
 	static ImGuiManager* imGuiManager_;
+	//衝突マネージャー
+	static CollisionManager* collisionManager_;
 
 public: //メンバ変数
 	Camera* camera_ = nullptr;

@@ -2,11 +2,15 @@
 #include "SafeDelete.h"
 #include "Quaternion.h"
 #include <imgui.h>
+#include "Player.h"
+#include "Enemy.h"
+#include "CollisionManager.h"
 
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GamePlayScene::input_ = Input::GetInstance();
 DrawBasis* GamePlayScene::drawBas_ = DrawBasis::GetInstance();
 ImGuiManager* GamePlayScene::imGuiManager_ = ImGuiManager::GetInstance();
+CollisionManager* GamePlayScene::collisionManager_ = CollisionManager::GetInstance();
 
 void GamePlayScene::Initialize() {
 	Initialize2d();
@@ -15,8 +19,12 @@ void GamePlayScene::Initialize() {
 
 void GamePlayScene::Update() {
 	input_->Update();
+
+
 	Update3d();
 	Update2d();
+	
+	collisionManager_->CheckAllCollisions();
 }
 
 void GamePlayScene::Draw() {
