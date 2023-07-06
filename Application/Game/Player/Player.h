@@ -4,12 +4,12 @@
 #include "RailCamera.h"
 #include "Sprite.h"
 #include "DrawBasis.h"
-#include "PlayerBullet.h"
 #include <Input.h>
 
 #include <list>
 #include <memory>
 
+class PlayerBullet;
 class CollisionManager;
 
 //プレイヤー

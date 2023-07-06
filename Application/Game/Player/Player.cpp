@@ -12,6 +12,8 @@
 #include <SafeDelete.h>
 #include <imgui.h>
 
+#include "PlayerBullet.h"
+
 Input* Player::input_ = Input::GetInstance();
 CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
 DrawBasis* Player::drawBas_ = DrawBasis::GetInstance();
