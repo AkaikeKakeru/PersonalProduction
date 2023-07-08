@@ -3,6 +3,7 @@
 #include "ViewProjection.h"
 
 #include "Input.h"
+#include <vector>
 
 //レールカメラ
 class RailCamera {
@@ -13,6 +14,10 @@ public://メンバ関数
 
 	void DrawImGui();
 
+	Vector3 SplinePosition(
+		const std::vector<Vector3>& points,
+		size_t startIndex,
+		float t);
 public:
 	static Input* input_;
 
@@ -46,6 +51,29 @@ private://メンバ変数
 	WorldTransform worldTransform_;
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
+
+	Vector3 splinePosStart_= { 0.0f,0.0f,0.0f };
+	Vector3 splinePos1_ = { 30.0f,0.0f,50.0f };
+	Vector3 splinePos2_ = { -30.0f,0.0f,100.0f };
+	Vector3 splinePosEnd_ = { 0.0f,0.0f,0.0f };
+
+	const float kTotalTime_ = 60.0f * 5;
+
+	float nowTime_ = 0.0f;
+	float endTime_ = kTotalTime_;
+
+	//P1からスタートする。
+	size_t startIndex_ = 1;
+
+	//先頭と最後に、制御点を1個ずつ追加しておく
+	std::vector<Vector3> points_{ 
+		splinePosStart_,
+		splinePosStart_,
+		splinePos1_,
+		splinePos2_,
+		splinePosEnd_,
+		splinePosEnd_
+	};
 
 private: //ImGui用
 	//Vector3の要素数
