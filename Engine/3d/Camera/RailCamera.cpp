@@ -1,4 +1,5 @@
 ﻿#include "RailCamera.h"
+#include <imgui.h>
 
 Input* RailCamera::input_ = Input::GetInstance();
 
@@ -8,6 +9,18 @@ void RailCamera::Initialize(const Vector3 pos,
 	worldTransform_.rotation_ = rotaRadianAngle;
 
 	viewProjection_.Initialize();
+
+#ifdef _DEBUG
+	{
+		debugPos_[0] = { worldTransform_.position_.x };
+		debugPos_[1] = { worldTransform_.position_.y };
+		debugPos_[2] = { worldTransform_.position_.z };
+
+		debugDir_[0] = { worldTransform_.rotation_.x };
+		debugDir_[1] = { worldTransform_.rotation_.y };
+		debugDir_[2] = { worldTransform_.rotation_.z };
+	}
+#endif // _DEBUG
 }
 
 void RailCamera::Update() {
@@ -40,6 +53,20 @@ void RailCamera::Update() {
 
 	worldTransform_.UpdateMatrix();
 
+//#ifdef _DEBUG
+//	{
+//		worldTransform_.position_ = Vector3 {
+//			debugPos_[0],
+//			debugPos_[1],
+//			debugPos_[2], };
+//
+//		worldTransform_.rotation_ = Vector3 {
+//			debugDir_[0],
+//			debugDir_[1],
+//			debugDir_[2], };
+//	}
+//#endif // _DEBUG
+
 	viewProjection_.eye_ = {
 		worldTransform_.matWorld_.m[3][0],
 		worldTransform_.matWorld_.m[3][1],
@@ -61,4 +88,23 @@ void RailCamera::Update() {
 	//ビュープロジェクション更新
 	viewProjection_.UpdateMatrix();
 	viewProjection_.TransferMatrix();
+}
+
+void RailCamera::DrawImGui() {
+	debugPos_[0] = { worldTransform_.position_.x };
+	debugPos_[1] = { worldTransform_.position_.y };
+	debugPos_[2] = { worldTransform_.position_.z };
+
+	debugDir_[0] = { worldTransform_.rotation_.x };
+	debugDir_[1] = { worldTransform_.rotation_.y };
+	debugDir_[2] = { worldTransform_.rotation_.z };
+
+	ImGui::Begin("RailCamera");
+	ImGui::SetWindowPos(ImVec2(0, 300));
+	ImGui::SetWindowSize(ImVec2(500, 100));
+	ImGui::SliderFloat3(
+		"RailCameraPos", debugPos_, -PosRange_, PosRange_);
+	ImGui::SliderFloat3(
+		"RailCameraDir", debugDir_, 0, DirRange_);
+	ImGui::End();
 }

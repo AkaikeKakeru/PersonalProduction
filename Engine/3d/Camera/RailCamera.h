@@ -11,6 +11,8 @@ public://メンバ関数
 		const Vector3 rotaRadianAngle);
 	void Update();
 
+	void DrawImGui();
+
 public:
 	static Input* input_;
 
@@ -44,4 +46,21 @@ private://メンバ変数
 	WorldTransform worldTransform_;
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
+
+private: //ImGui用
+	//Vector3の要素数
+	static const int kVector3Count_ = 3;
+
+	//Pos範囲
+	const float PosRange_ = 30.0f;
+
+	//Dir範囲
+	const float DirRange_ = ConvertToRadian(360.0f);
+
+	//ImGui用レールカメラPos
+	float debugPos_[kVector3Count_] = {};
+
+	//ImGui用レールカメラDir
+	float debugDir_[kVector3Count_] = {};
+
 };
