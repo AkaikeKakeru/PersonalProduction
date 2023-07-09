@@ -117,6 +117,13 @@ void GamePlayScene::Update3d() {
 		light_->SetDirLightDir(0, lightDir);
 	}
 
+	if(enemy_->IsDead()){
+		railCamera_->SetPhaseAdvance(true);
+
+		enemy_->SetIsDead(false);
+		enemy_->SetPosition({ 70.0f,0.0f,80.0f });
+	}
+
 	railCamera_->Update();
 
 	camera_->SetEye(railCamera_->GetEye());
