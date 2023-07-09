@@ -68,6 +68,8 @@ public: //メンバ変数
 	Object3d* skydomeObj_ = nullptr;
 	Model* skydomeModel_ = nullptr;
 
+	Model* bulletModel_ = nullptr;
+
 	/// <summary>
 	/// スプライト
 	/// </summary>
