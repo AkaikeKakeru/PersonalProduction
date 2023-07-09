@@ -30,6 +30,7 @@ void GamePlayScene::Update() {
 void GamePlayScene::Draw() {
 #ifdef _DEBUG
 	imGuiManager_->Begin();
+	railCamera_->DrawImGui();
 	enemy_->DrawImgui();
 	player_->DrawImgui();
 	imGuiManager_->End();

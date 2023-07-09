@@ -77,4 +77,5 @@ void EnemyBullet::Finalize() {
 
 void EnemyBullet::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
+	isDead_ = true;
 }
