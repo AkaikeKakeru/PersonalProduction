@@ -61,13 +61,17 @@ void GamePlayScene::Initialize3d() {
 
 	planeModel_ = new Model();
 	planeModel_ = Model::LoadFromOBJ("plane", true);
+	planeEnemyModel_ = Model::LoadFromOBJ("planeEnemy", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
 
+	bulletModel_ = new Model();
+	bulletModel_ = Model::LoadFromOBJ("missile", true);
+
 #pragma region Player
 	player_ = Player::Create(planeModel_);
-
+	player_->SetBulletModel(bulletModel_);
 	//player_->SetScale({ 1.0f, 1.0f, 1.0f });
 	//player_->SetRotation(CreateRotationVector(
 	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
@@ -78,8 +82,8 @@ void GamePlayScene::Initialize3d() {
 #pragma endregion
 
 #pragma region Enemy
-	enemy_ = Enemy::Create(planeModel_);
-
+	enemy_ = Enemy::Create(planeEnemyModel_);
+	enemy_->SetBulletModel(bulletModel_);
 	//enemy_->SetScale({ 1.0f, 1.0f, 1.0f });
 	//enemy_->SetRotation(CreateRotationVector(
 	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
@@ -93,7 +97,7 @@ void GamePlayScene::Initialize3d() {
 	skydomeObj_ = new Object3d();
 	skydomeObj_ = Object3d::Create();
 	skydomeObj_->SetModel(skydomeModel_);
-	skydomeObj_->SetScale({ 30, 30, 30 });
+	skydomeObj_->SetScale({ 200, 200, 200 });
 	skydomeObj_->SetCamera(camera_);
 #pragma endregion
 
@@ -111,6 +115,10 @@ void GamePlayScene::Update3d() {
 	{
 		static Vector3 lightDir = { 0,1,5 };
 		light_->SetDirLightDir(0, lightDir);
+	}
+
+	if(enemy_->IsDead()){
+		railCamera_->SetPhaseAdvance(true);
 	}
 
 	railCamera_->Update();
@@ -134,7 +142,7 @@ void GamePlayScene::Update2d() {
 }
 
 void GamePlayScene::Draw3d() {
-	//skydomeObj_->Draw();
+	skydomeObj_->Draw();
 	enemy_->Draw();
 	player_->Draw();
 }
@@ -153,8 +161,6 @@ Vector3 GamePlayScene::CreateRotationVector(Vector3 axisAngle, float angleRadian
 
 void GamePlayScene::Finalize() {
 	SafeDelete(skydomeObj_);
-	SafeDelete(planeModel_);
-	SafeDelete(skydomeModel_);
 
 	enemy_->Finalize();
 	SafeDelete(enemy_);
@@ -165,4 +171,9 @@ void GamePlayScene::Finalize() {
 	SafeDelete(light_);
 	SafeDelete(railCamera_);
 	SafeDelete(camera_);
+
+	SafeDelete(bulletModel_);
+	SafeDelete(planeEnemyModel_);
+	SafeDelete(planeModel_);
+	SafeDelete(skydomeModel_);
 }

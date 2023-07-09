@@ -45,22 +45,44 @@ void RailCamera::Update() {
 	float timeRate = nowTime_ / endTime_;
 
 	//時間経過
-	if (timeRate >= 1.0f) {
-		if (startIndex_ < points_.size() - 3) {
-			startIndex_++;
-			timeRate -= 1.0f;
+	if (isPhaseAdvance_) {
+		if (phaseIndex_ < points_.size() - 3) {
+			phaseIndex_++;
+			nowTime_ = 0.0f;
 		}
 		else {
-			startIndex_ = 1;
+			phaseIndex_ = 1;
 			timeRate = 1.0f;
 		}
+
+		isPhaseAdvance_ = false;
 	}
 
 	if (nowTime_ >= kTotalTime_) {
-		nowTime_ = 0.0f;
+		nowTime_ = kTotalTime_;
 	}
 	else {
 		nowTime_ += 1.0f;
+	}
+
+	{
+	//if (timeRate >= 1.0f) {
+	//	if (phaseIndex_ < points_.size() - 3) {
+	//		phaseIndex_++;
+	//		timeRate -= 1.0f;
+	//	}
+	//	else {
+	//		phaseIndex_ = 1;
+	//		timeRate = 1.0f;
+	//	}
+	//}
+
+	//if (nowTime_ >= kTotalTime_) {
+	//	nowTime_ = 0.0f;
+	//}
+	//else {
+	//	nowTime_ += 1.0f;
+	//}
 	}
 
 	//座標更新
@@ -72,7 +94,7 @@ void RailCamera::Update() {
 		splinePosEnd_);
 
 	updatePos =
-		SplinePosition(points_, startIndex_, timeRate);
+		SplinePosition(points_, phaseIndex_, timeRate);
 
 	SetSplinePoint(
 		splineDirStart_,
@@ -81,7 +103,7 @@ void RailCamera::Update() {
 		splineDirEnd_);
 
 	updateRota =
-		SplinePosition(points_, startIndex_, timeRate);
+		SplinePosition(points_, phaseIndex_, timeRate);
 
 	// オブジェクト移動
 	if (input_->PressKey(DIK_W) ||
@@ -161,7 +183,7 @@ void RailCamera::DrawImGui() {
 	debugDir_[2] = { worldTransform_.rotation_.z };
 
 	ImGui::Begin("RailCamera");
-	ImGui::SetWindowPos(ImVec2(0, 300));
+	ImGui::SetWindowPos(ImVec2(0, 150));
 	ImGui::SetWindowSize(ImVec2(500, 100));
 	ImGui::SliderFloat3(
 		"RailCameraPos", debugPos_, -PosRange_, PosRange_);

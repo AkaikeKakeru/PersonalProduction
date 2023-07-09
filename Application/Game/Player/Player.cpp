@@ -224,7 +224,7 @@ void Player::Attack() {
 
 		newBullet->Initialize();
 
-		newBullet->SetModel(model_);
+		newBullet->SetModel(bulletModel_);
 
 		newBullet->SetScale(worldTransform_.scale_);
 		newBullet->SetRotation(worldTransform_.rotation_);

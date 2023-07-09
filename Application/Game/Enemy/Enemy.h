@@ -40,6 +40,19 @@ public: //アクセッサ
 		return radius_;
 	}
 
+	//弾モデルのセット
+	void SetBulletModel(Model* bulletModel) {
+		bulletModel_ = bulletModel;
+	}
+
+	//デスフラグの取得
+	bool IsDead() {
+		return isDead_;
+	}
+	//デスフラグのセット
+	void SetIsDead(bool isDead) {
+		isDead_ = isDead;
+	}
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -60,6 +73,12 @@ private: //メンバ変数
 
 	//弾
 	std::list<std::unique_ptr<EnemyBullet>> bullets_;
+
+	//弾モデル
+	Model* bulletModel_ = nullptr;
+
+	//デスフラグ
+	bool isDead_ = false;
 
 private: //ImGui用
 	//Vector3の要素数

@@ -57,6 +57,11 @@ public://アクセッサ
 		};
 	}
 
+	//フェーズ進行フラグのセット
+	void SetPhaseAdvance(bool isPhaseAdvance) {
+		isPhaseAdvance_ = isPhaseAdvance;
+	}
+
 private://メンバ変数
 	//ワールド変換
 	WorldTransform worldTransform_;
@@ -78,8 +83,8 @@ private://メンバ変数
 	float nowTime_ = 0.0f;
 	float endTime_ = kTotalTime_;
 
-	//P1からスタートする。
-	size_t startIndex_ = 1;
+	//フェーズ番号
+	size_t phaseIndex_ = 1;
 
 	//先頭と最後に、制御点を1個ずつ追加しておく
 	std::vector<Vector3> points_{
@@ -90,6 +95,9 @@ private://メンバ変数
 		splinePosEnd_,
 		splinePosEnd_
 	};
+
+	//フェーズ進行フラグ
+	bool isPhaseAdvance_ = false;
 
 private: //ImGui用
 	//Vector3の要素数

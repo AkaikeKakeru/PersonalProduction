@@ -48,6 +48,11 @@ public: //アクセッサ
 		worldTransform_.parent_ = worldTransformRailCamera;
 	}
 
+	//弾モデルのセット
+	void SetBulletModel(Model* bulletModel) {
+		bulletModel_ = bulletModel;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -68,6 +73,9 @@ private: //メンバ変数
 
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
+
+	//弾モデル
+	Model* bulletModel_ = nullptr;
 
 private: //ImGui用
 	//Vector3の要素数
