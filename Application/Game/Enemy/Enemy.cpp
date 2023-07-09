@@ -57,7 +57,7 @@ bool Enemy::Initialize() {
 	SetScale({ 1.0f, 1.0f, 1.0f });
 	SetRotation(CreateRotationVector(
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
-	SetPosition({ 0.0f,0.0f,100.0f });
+	SetPosition({ -70.0f,0.0f,30.0f });
 
 
 	//drawBas_->LoadTexture(1, "texture.png");
@@ -95,18 +95,19 @@ void Enemy::Update() {
 	Vector3 rot = Object3d::GetRotation();
 
 #ifdef _DEBUG
-	{
-		position = Vector3 {
-			debugPos_[0],
-			debugPos_[1],
-			debugPos_[2], };
+	//{
+	//	position = Vector3 {
+	//		debugPos_[0],
+	//		debugPos_[1],
+	//		debugPos_[2], };
 
-		rot = Vector3 {
-			debugDir_[0],
-			debugDir_[1],
-			debugDir_[2], };
-	}
+	//	rot = Vector3 {
+	//		debugDir_[0],
+	//		debugDir_[1],
+	//		debugDir_[2], };
+	//}
 #endif // _DEBUG
+
 
 	Vector3 angleX = { 1.0f,0.0f,0.0f };
 	Vector3 angleY = { 0.0f,1.0f,0.0f };
@@ -127,7 +128,7 @@ void Enemy::Update() {
 	moveVector = { 0.0f,0.0f,kSpeed };
 	moveVector = Vector3CrossMatrix4(moveVector, worldTransform_.matWorld_);
 
-	position += moveVector;
+	//position += moveVector;
 
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);
@@ -138,7 +139,7 @@ void Enemy::Update() {
 	//Reticle();
 
 	//発射
-	Fire();
+	//Fire();
 
 	//弾更新
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
@@ -194,6 +195,8 @@ void Enemy::Finalize() {
 
 void Enemy::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
+
+	isDead_ = true;
 }
 
 void Enemy::Fire() {
