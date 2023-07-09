@@ -61,6 +61,7 @@ void GamePlayScene::Initialize3d() {
 
 	planeModel_ = new Model();
 	planeModel_ = Model::LoadFromOBJ("plane", true);
+	planeEnemyModel_ = Model::LoadFromOBJ("planeEnemy", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
@@ -81,7 +82,7 @@ void GamePlayScene::Initialize3d() {
 #pragma endregion
 
 #pragma region Enemy
-	enemy_ = Enemy::Create(planeModel_);
+	enemy_ = Enemy::Create(planeEnemyModel_);
 	enemy_->SetBulletModel(bulletModel_);
 	//enemy_->SetScale({ 1.0f, 1.0f, 1.0f });
 	//enemy_->SetRotation(CreateRotationVector(
@@ -168,6 +169,7 @@ void GamePlayScene::Finalize() {
 	SafeDelete(camera_);
 
 	SafeDelete(bulletModel_);
+	SafeDelete(planeEnemyModel_);
 	SafeDelete(planeModel_);
 	SafeDelete(skydomeModel_);
 }
