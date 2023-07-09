@@ -77,4 +77,5 @@ void PlayerBullet::Finalize() {
 
 void PlayerBullet::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
+	isDead_ = true;
 }
