@@ -86,6 +86,11 @@ bool Enemy::Initialize() {
 void Enemy::Update() {
 	camera_->Update();
 
+	if(IsDead()){
+		SetPosition({ 70.0f,0.0f,80.0f });
+		SetIsDead(false);
+	}
+
 	Vector2 mousePosition_ =
 		input_->GetMousePosition();
 
