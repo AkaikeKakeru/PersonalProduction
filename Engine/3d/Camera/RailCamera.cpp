@@ -10,6 +10,16 @@ void RailCamera::Initialize(const Vector3 pos,
 
 	viewProjection_.Initialize();
 
+	splinePosStart_ = { 0.0f,0.0f,0.0f };
+	splinePos1_ = { 30.0f,0.0f,50.0f };
+	splinePos2_ = { -30.0f,0.0f,100.0f };
+	splinePosEnd_ = { 0.0f,0.0f,0.0f };
+
+	splineDirStart_ = { 0.0f,0.0f,0.0f };
+	splineDir1_ = { 0.0f, -ConvertToRadian(90), 0.0f };
+	splineDir2_ = { 0.0f,ConvertToRadian(90),0.0f };
+	splineDirEnd_ = { 0.0f,0.0f,0.0f };
+
 #ifdef _DEBUG
 	{
 		debugPos_[0] = { worldTransform_.position_.x };
@@ -27,21 +37,8 @@ void RailCamera::Update() {
 	Vector3 movePos = { 0.0f,0.0f,0.0f };
 	Vector3 moveRot = { 0.0f,0.0f,0.0f };
 
-
 	Vector3 updatePos = worldTransform_.position_;
 	Vector3 updateRota = worldTransform_.rotation_;
-
-
-	/*Vector3 destination = 
-	CatmullRomSpline(pos0_,pos1_,pos2_,pos3_, nowTime_ / endTime_);*/
-
-	//move = worldTransform_.position_ - destination;
-	//move = Vector3Normalize(move);
-
-	//move *= 2.0f;
-
-	//worldTransform_.position_ += move;
-
 
 	//経過時間
 	//timeRateが1.0f以上になったら、次の区間へ進む
@@ -61,14 +58,30 @@ void RailCamera::Update() {
 
 	if (nowTime_ >= kTotalTime_) {
 		nowTime_ = 0.0f;
-	} 
+	}
 	else {
 		nowTime_ += 1.0f;
 	}
 
 	//座標更新
-	updatePos = 
-		SplinePosition(points_,startIndex_,timeRate);
+
+	SetSplinePoint(
+		splinePosStart_,
+		splinePos1_,
+		splinePos2_,
+		splinePosEnd_);
+
+	updatePos =
+		SplinePosition(points_, startIndex_, timeRate);
+
+	SetSplinePoint(
+		splineDirStart_,
+		splineDir1_,
+		splineDir2_,
+		splineDirEnd_);
+
+	updateRota =
+		SplinePosition(points_, startIndex_, timeRate);
 
 	// オブジェクト移動
 	if (input_->PressKey(DIK_W) ||

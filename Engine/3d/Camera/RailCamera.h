@@ -46,16 +46,32 @@ public://アクセッサ
 	void SetUp(const Vector3& up) {
 		viewProjection_.up_ = up; }
 
+	//スプライン中間点のセット
+	void SetSplinePoint(
+		Vector3 p0,
+		Vector3 p1,
+		Vector3 p2,
+		Vector3 p3 ) {
+		points_ = {
+			p0,p0,p1,p2,p3,p3
+		};
+	}
+
 private://メンバ変数
 	//ワールド変換
 	WorldTransform worldTransform_;
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
-	Vector3 splinePosStart_= { 0.0f,0.0f,0.0f };
-	Vector3 splinePos1_ = { 30.0f,0.0f,50.0f };
-	Vector3 splinePos2_ = { -30.0f,0.0f,100.0f };
-	Vector3 splinePosEnd_ = { 0.0f,0.0f,0.0f };
+	Vector3 splinePosStart_ = {};
+	Vector3 splinePos1_ = {};
+	Vector3 splinePos2_ = {};
+	Vector3 splinePosEnd_ = {};
+
+	Vector3 splineDirStart_ = {};
+	Vector3 splineDir1_ = {};
+	Vector3 splineDir2_ = {};
+	Vector3 splineDirEnd_ = {};
 
 	const float kTotalTime_ = 60.0f * 5;
 
@@ -66,7 +82,7 @@ private://メンバ変数
 	size_t startIndex_ = 1;
 
 	//先頭と最後に、制御点を1個ずつ追加しておく
-	std::vector<Vector3> points_{ 
+	std::vector<Vector3> points_{
 		splinePosStart_,
 		splinePosStart_,
 		splinePos1_,
