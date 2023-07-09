@@ -97,7 +97,7 @@ void GamePlayScene::Initialize3d() {
 	skydomeObj_ = new Object3d();
 	skydomeObj_ = Object3d::Create();
 	skydomeObj_->SetModel(skydomeModel_);
-	skydomeObj_->SetScale({ 30, 30, 30 });
+	skydomeObj_->SetScale({ 200, 200, 200 });
 	skydomeObj_->SetCamera(camera_);
 #pragma endregion
 
@@ -119,9 +119,6 @@ void GamePlayScene::Update3d() {
 
 	if(enemy_->IsDead()){
 		railCamera_->SetPhaseAdvance(true);
-
-		enemy_->SetIsDead(false);
-		enemy_->SetPosition({ 70.0f,0.0f,80.0f });
 	}
 
 	railCamera_->Update();
@@ -145,7 +142,7 @@ void GamePlayScene::Update2d() {
 }
 
 void GamePlayScene::Draw3d() {
-	//skydomeObj_->Draw();
+	skydomeObj_->Draw();
 	enemy_->Draw();
 	player_->Draw();
 }
