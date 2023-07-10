@@ -11,6 +11,7 @@
 #include <imgui.h>
 
 #include "EnemyBullet.h"
+#include "GamePlayScene.h"
 
 Input* Enemy::input_ = Input::GetInstance();
 CollisionManager* Enemy::collisionManager_ = CollisionManager::GetInstance();
@@ -125,11 +126,6 @@ void Enemy::Update() {
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
-	//自壊フラグの立った弾を削除
-	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
-		return bullet->IsDead();
-		});
-
 	moveVector = { 0.0f,0.0f,kSpeed };
 	moveVector = Vector3CrossMatrix4(moveVector, worldTransform_.matWorld_);
 
@@ -144,15 +140,9 @@ void Enemy::Update() {
 	//Reticle();
 
 	//発射
-	//Fire();
-
-	//弾更新
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
-		bullet->Update();
-	}
+	Fire();
 
 	Object3d::Update();
-
 
 	//spriteReticle_->SetPosition(
 	//	{ worldTransform3dReticle_.position_.x ,
@@ -164,10 +154,6 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw() {
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
-		bullet->Draw();
-	}
-
 	Object3d::Draw(worldTransform_);
 }
 
@@ -248,6 +234,6 @@ void Enemy::Fire() {
 
 		newBullet->Update();
 
-		bullets_.push_back(std::move(newBullet));
+		gameScene_->AddEnemyBullet(std::move(newBullet));
 	}
 }
