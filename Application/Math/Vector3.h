@@ -22,7 +22,7 @@ public:
 //長さ
 const float Vector3Length(Vector3 v);
 //正規化
-const Vector3& Vector3Normalize(Vector3 v);
+Vector3 Vector3Normalize(Vector3 v);
 //内積
 const float Vector3Dot(const Vector3& v1, const Vector3& v2);
 //外積

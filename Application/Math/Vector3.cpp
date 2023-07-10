@@ -49,7 +49,7 @@ const float Vector3Length(Vector3 v) {
 	return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
 }
 
-const Vector3& Vector3Normalize(Vector3 v) {
+Vector3 Vector3Normalize(Vector3 v) {
 	float len = Vector3Length(v);
 	if (len > 0.0f) {
 		len = 1 / len;
