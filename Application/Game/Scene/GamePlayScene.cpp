@@ -2,8 +2,6 @@
 #include "SafeDelete.h"
 #include "Quaternion.h"
 #include <imgui.h>
-#include "Player.h"
-#include "Enemy.h"
 #include "CollisionManager.h"
 
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
@@ -83,6 +81,7 @@ void GamePlayScene::Initialize3d() {
 
 #pragma region Enemy
 	enemy_ = Enemy::Create(planeEnemyModel_);
+	enemy_->SetGameScene(this);
 	enemy_->SetBulletModel(bulletModel_);
 	//enemy_->SetScale({ 1.0f, 1.0f, 1.0f });
 	//enemy_->SetRotation(CreateRotationVector(
@@ -117,6 +116,11 @@ void GamePlayScene::Update3d() {
 		light_->SetDirLightDir(0, lightDir);
 	}
 
+	//自壊フラグの立った弾を削除
+	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
+		return bullet->IsDead();
+		});
+
 	if(enemy_->IsDead()){
 		railCamera_->SetPhaseAdvance(true);
 	}
@@ -135,6 +139,10 @@ void GamePlayScene::Update3d() {
 
 	skydomeObj_->Update();
 	player_->Update();
+	//弾更新
+	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+		bullet->Update();
+	}
 	enemy_->Update();
 }
 
@@ -144,6 +152,9 @@ void GamePlayScene::Update2d() {
 void GamePlayScene::Draw3d() {
 	skydomeObj_->Draw();
 	enemy_->Draw();
+	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+		bullet->Draw();
+	}
 	player_->Draw();
 }
 
@@ -157,6 +168,11 @@ Vector3 GamePlayScene::CreateRotationVector(Vector3 axisAngle, float angleRadian
 	Vector3 point = axisAngle * angleRadian;
 
 	return RotateVector(point, rotation);
+}
+
+void GamePlayScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet) {
+	//リストに登録
+	enemyBullets_.push_back(std::move(enemyBullet));
 }
 
 void GamePlayScene::Finalize() {

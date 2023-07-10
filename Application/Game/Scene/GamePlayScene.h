@@ -9,16 +9,16 @@
 
 #include "Camera.h"
 #include "RailCamera.h"
-
 #include "LightGroup.h"
-
 #include "ImGuiManager.h"
 
 #include <memory>
 #include <List>
 
-class Player;
-class Enemy;
+#include "Player.h"
+#include "Enemy.h"
+#include "EnemyBullet.h"
+
 class CollisionManager;
 
 class GamePlayScene :
@@ -41,6 +41,8 @@ private:
 public:
 	Vector3 CreateRotationVector(Vector3 axisAngle, float angleRadian);
 
+	//敵弾を追加
+	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
 private: //静的メンバ変数
 	//基盤
 	static DirectXBasis* dxBas_;
@@ -81,4 +83,7 @@ public: //メンバ変数
 
 	//エネミー
 	Enemy* enemy_ = nullptr;
+
+	//エネミー弾
+	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
 };
