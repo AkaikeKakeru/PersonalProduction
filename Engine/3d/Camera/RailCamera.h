@@ -5,6 +5,8 @@
 #include "Input.h"
 #include <vector>
 
+class GamePlayScene;
+
 //レールカメラ
 class RailCamera {
 public://メンバ関数
@@ -62,11 +64,18 @@ public://アクセッサ
 		isPhaseAdvance_ = isPhaseAdvance;
 	}
 
+	//ゲームシーンのセット
+	void SetGameScene(GamePlayScene* gameScene) {
+		gameScene_ = gameScene;
+	}
+
 private://メンバ変数
 	//ワールド変換
 	WorldTransform worldTransform_;
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
+
+	GamePlayScene* gameScene_ = nullptr;;
 
 	Vector3 splinePosStart_ = {};
 	Vector3 splinePos1_ = {};

@@ -55,6 +55,7 @@ void GamePlayScene::Initialize3d() {
 
 	railCamera_ = new RailCamera();
 	railCamera_->Initialize(camera_->GetEye(), { 0,0,0 });
+	railCamera_->SetGameScene(this);
 	railCamera_->SetTarget(camera_->GetTarget());
 	railCamera_->SetUp(camera_->GetUp());
 	railCamera_->Update();
@@ -87,6 +88,7 @@ void GamePlayScene::Initialize3d() {
 			{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)),
 		{ 1.0f, 1.0f, 1.0f });
 
+	{
 	//std::unique_ptr<Enemy> newEnemy =
 	//	std::make_unique<Enemy>();
 	//newEnemy->Initialize();
@@ -101,7 +103,8 @@ void GamePlayScene::Initialize3d() {
 	//newEnemy->Update();
 	////リストに登録
 	//enemys_.push_back(std::move(newEnemy));
-
+	}
+	{
 	//enemy_ = Enemy::Create(planeEnemyModel_);
 	//enemy_->SetGameScene(this);
 	//enemy_->SetBulletModel(bulletModel_);
@@ -112,6 +115,7 @@ void GamePlayScene::Initialize3d() {
 
 	//enemy_->SetCamera(camera_);
 	//enemy_->Update();
+	}
 #pragma endregion
 
 #pragma region Skydome
@@ -143,15 +147,26 @@ void GamePlayScene::Update3d() {
 		return bullet->IsDead();
 		});
 
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		if(enemy->IsDead()){
-			railCamera_->SetPhaseAdvance(true);
-			AddEnemy({ 70.0f,0.0f,80.0f },
-				CreateRotationVector(
-					{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)),
-				{ 1.0f,1.0f,1.0f });
-		}
+	//for (std::unique_ptr<Enemy>& enemy : enemys_) {
+	//	if(enemy->IsDead()){
+	//		//railCamera_->SetPhaseAdvance(true);
+	//		//AddEnemy({ 70.0f,0.0f,80.0f },
+	//		//	CreateRotationVector(
+	//		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)),
+	//		//	{ 1.0f,1.0f,1.0f });
+
+	//	}
+	//}
+
+	if (enemys_.size() == 0) {
+		phaseIndex_++;
+		railCamera_->SetPhaseAdvance(true);
+		AddEnemy({ 70.0f,0.0f,80.0f },
+			CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)),
+			{ 1.0f,1.0f,1.0f });
 	}
+
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
 		return enemy->IsDead();
 		});
