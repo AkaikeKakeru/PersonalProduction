@@ -43,6 +43,9 @@ public:
 
 	//敵弾を追加
 	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
+	//敵を追加
+	void AddEnemy(const Vector3 pos,const Vector3 rota,const Vector3 scale);
+
 private: //静的メンバ変数
 	//基盤
 	static DirectXBasis* dxBas_;
@@ -82,7 +85,9 @@ public: //メンバ変数
 	Player* player_ = nullptr;
 
 	//エネミー
-	Enemy* enemy_ = nullptr;
+	std::list<std::unique_ptr<Enemy>> enemys_;
+
+	//Enemy* enemy_ = nullptr;
 
 	//エネミー弾
 	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
