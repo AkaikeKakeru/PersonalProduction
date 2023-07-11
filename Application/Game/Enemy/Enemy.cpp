@@ -55,10 +55,10 @@ bool Enemy::Initialize() {
 
 	worldTransform3dReticle_.Initialize();
 
-	SetScale({ 1.0f, 1.0f, 1.0f });
-	SetRotation(CreateRotationVector(
-		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
-	SetPosition({ -70.0f,0.0f,30.0f });
+	//SetScale({ 1.0f, 1.0f, 1.0f });
+	//SetRotation(CreateRotationVector(
+	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
+	//SetPosition({ -70.0f,0.0f,30.0f });
 
 
 	//drawBas_->LoadTexture(1, "texture.png");
@@ -86,11 +86,6 @@ bool Enemy::Initialize() {
 
 void Enemy::Update() {
 	camera_->Update();
-
-	if(IsDead()){
-		SetPosition({ 70.0f,0.0f,80.0f });
-		SetIsDead(false);
-	}
 
 	Vector2 mousePosition_ =
 		input_->GetMousePosition();
