@@ -135,7 +135,7 @@ void Enemy::Update() {
 	//Reticle();
 
 	//発射
-	Fire();
+	//Fire();
 
 	Object3d::Update();
 
