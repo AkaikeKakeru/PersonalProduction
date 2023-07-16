@@ -14,7 +14,7 @@ void RailCamera::Initialize(const Vector3 pos,
 	splinePosStart_ = { 0.0f,0.0f,0.0f };
 	splinePos1_ = { 30.0f,0.0f,50.0f };
 	splinePos2_ = { -30.0f,0.0f,100.0f };
-	splinePosEnd_ = { 0.0f,0.0f,0.0f };
+	splinePosEnd_ = { 0.0f,0.0f,150.0f };
 
 	splineDirStart_ = { 0.0f,0.0f,0.0f };
 	splineDir1_ = { 0.0f, -ConvertToRadian(90), 0.0f };
