@@ -87,7 +87,7 @@ private://メンバ変数
 	Vector3 splineDir2_ = {};
 	Vector3 splineDirEnd_ = {};
 
-	const float kTotalTime_ = 60.0f * 5;
+	const float kTotalTime_ = 60.0f * 2.0f;
 
 	float nowTime_ = 0.0f;
 	float endTime_ = kTotalTime_;
