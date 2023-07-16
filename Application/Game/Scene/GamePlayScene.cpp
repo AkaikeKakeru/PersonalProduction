@@ -85,8 +85,18 @@ void GamePlayScene::Initialize3d() {
 #pragma region Enemy
 	AddEnemy({ -70.0f,0.0f,30.0f },
 		CreateRotationVector(
-			{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)),
+			{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
 		{ 1.0f, 1.0f, 1.0f });
+
+	AddEnemy({ -70.0f,0.0f,60.0f },
+		CreateRotationVector(
+			{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+		{ 1.0f,1.0f,1.0f });
+
+	AddEnemy({ -70.0f,10.0f,45.0f },
+		CreateRotationVector(
+			{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+		{ 1.0f,1.0f,1.0f });
 
 	{
 	//std::unique_ptr<Enemy> newEnemy =
@@ -163,7 +173,12 @@ void GamePlayScene::Update3d() {
 		railCamera_->SetPhaseAdvance(true);
 		AddEnemy({ 70.0f,0.0f,80.0f },
 			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)),
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
+			{ 1.0f,1.0f,1.0f });
+
+		AddEnemy({ 70.0f,-10.0f,60.0f },
+			CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
 			{ 1.0f,1.0f,1.0f });
 	}
 
