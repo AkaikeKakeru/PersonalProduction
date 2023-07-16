@@ -41,7 +41,7 @@ bool EnemyBullet::Initialize() {
 		radius_)
 	);
 
-	collider_->SetAttribute(COLLISION_ATTR_PLAYER);
+	collider_->SetAttribute(COLLISION_ATTR_ENEMYS);
 
 	return true;
 }

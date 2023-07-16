@@ -9,16 +9,16 @@
 
 #include "Camera.h"
 #include "RailCamera.h"
-
 #include "LightGroup.h"
-
 #include "ImGuiManager.h"
 
 #include <memory>
 #include <List>
 
-class Player;
-class Enemy;
+#include "Player.h"
+#include "Enemy.h"
+#include "EnemyBullet.h"
+
 class CollisionManager;
 
 class GamePlayScene :
@@ -40,6 +40,16 @@ private:
 	void Draw2d();
 public:
 	Vector3 CreateRotationVector(Vector3 axisAngle, float angleRadian);
+
+	//敵弾を追加
+	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
+	//敵を追加
+	void AddEnemy(const Vector3 pos,const Vector3 rota,const Vector3 scale);
+
+	//フェーズ番号取得
+	size_t GetPhaseIndex() {
+		return phaseIndex_;
+	}
 
 private: //静的メンバ変数
 	//基盤
@@ -80,5 +90,13 @@ public: //メンバ変数
 	Player* player_ = nullptr;
 
 	//エネミー
-	Enemy* enemy_ = nullptr;
+	std::list<std::unique_ptr<Enemy>> enemys_;
+
+	//Enemy* enemy_ = nullptr;
+
+	//エネミー弾
+	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
+
+	//フェーズ番号
+	size_t phaseIndex_ = 1;
 };

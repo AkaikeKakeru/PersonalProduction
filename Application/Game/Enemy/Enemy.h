@@ -8,7 +8,7 @@
 #include <list>
 #include <memory>
 
-class EnemyBullet;
+class GamePlayScene;
 class CollisionManager;
 
 //エネミー
@@ -53,6 +53,12 @@ public: //アクセッサ
 	void SetIsDead(bool isDead) {
 		isDead_ = isDead;
 	}
+
+	//ゲームシーンのセット
+	void SetGameScene(GamePlayScene* gameScene) {
+		gameScene_ = gameScene;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -62,6 +68,9 @@ private: //静的メンバ変数
 	static DrawBasis* drawBas_;
 
 private: //メンバ変数
+	//ゲームシーン
+	GamePlayScene* gameScene_ = nullptr;
+
 	//半径
 	float radius_ = 1.0f;
 
@@ -70,9 +79,6 @@ private: //メンバ変数
 
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
-
-	//弾
-	std::list<std::unique_ptr<EnemyBullet>> bullets_;
 
 	//弾モデル
 	Model* bulletModel_ = nullptr;

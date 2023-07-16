@@ -1,4 +1,5 @@
 ﻿#include "RailCamera.h"
+#include "GamePlayScene.h"
 #include <imgui.h>
 
 Input* RailCamera::input_ = Input::GetInstance();
@@ -13,7 +14,7 @@ void RailCamera::Initialize(const Vector3 pos,
 	splinePosStart_ = { 0.0f,0.0f,0.0f };
 	splinePos1_ = { 30.0f,0.0f,50.0f };
 	splinePos2_ = { -30.0f,0.0f,100.0f };
-	splinePosEnd_ = { 0.0f,0.0f,0.0f };
+	splinePosEnd_ = { 0.0f,0.0f,150.0f };
 
 	splineDirStart_ = { 0.0f,0.0f,0.0f };
 	splineDir1_ = { 0.0f, -ConvertToRadian(90), 0.0f };
@@ -46,12 +47,10 @@ void RailCamera::Update() {
 
 	//時間経過
 	if (isPhaseAdvance_) {
-		if (phaseIndex_ < points_.size() - 3) {
-			phaseIndex_++;
+		if (gameScene_->GetPhaseIndex() < points_.size() - 3) {
 			nowTime_ = 0.0f;
 		}
 		else {
-			phaseIndex_ = 1;
 			timeRate = 1.0f;
 		}
 
@@ -94,7 +93,7 @@ void RailCamera::Update() {
 		splinePosEnd_);
 
 	updatePos =
-		SplinePosition(points_, phaseIndex_, timeRate);
+		SplinePosition(points_, gameScene_->GetPhaseIndex(), timeRate);
 
 	SetSplinePoint(
 		splineDirStart_,
@@ -103,7 +102,7 @@ void RailCamera::Update() {
 		splineDirEnd_);
 
 	updateRota =
-		SplinePosition(points_, phaseIndex_, timeRate);
+		SplinePosition(points_, gameScene_->GetPhaseIndex(), timeRate);
 
 	// オブジェクト移動
 	if (input_->PressKey(DIK_W) ||
@@ -136,8 +135,8 @@ void RailCamera::Update() {
 
 	worldTransform_.UpdateMatrix();
 
-	//#ifdef _DEBUG
-	//	{
+	#ifdef _DEBUG
+		{
 	//		worldTransform_.position_ = Vector3 {
 	//			debugPos_[0],
 	//			debugPos_[1],
@@ -147,8 +146,8 @@ void RailCamera::Update() {
 	//			debugDir_[0],
 	//			debugDir_[1],
 	//			debugDir_[2], };
-	//	}
-	//#endif // _DEBUG
+		}
+	#endif // _DEBUG
 
 	viewProjection_.eye_ = {
 		worldTransform_.matWorld_.m[3][0],

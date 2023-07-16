@@ -2,8 +2,6 @@
 #include "SafeDelete.h"
 #include "Quaternion.h"
 #include <imgui.h>
-#include "Player.h"
-#include "Enemy.h"
 #include "CollisionManager.h"
 
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
@@ -31,7 +29,9 @@ void GamePlayScene::Draw() {
 #ifdef _DEBUG
 	imGuiManager_->Begin();
 	railCamera_->DrawImGui();
-	enemy_->DrawImgui();
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		enemy->DrawImgui();
+	}
 	player_->DrawImgui();
 	imGuiManager_->End();
 #endif // DEBUG
@@ -55,6 +55,7 @@ void GamePlayScene::Initialize3d() {
 
 	railCamera_ = new RailCamera();
 	railCamera_->Initialize(camera_->GetEye(), { 0,0,0 });
+	railCamera_->SetGameScene(this);
 	railCamera_->SetTarget(camera_->GetTarget());
 	railCamera_->SetUp(camera_->GetUp());
 	railCamera_->Update();
@@ -82,15 +83,49 @@ void GamePlayScene::Initialize3d() {
 #pragma endregion
 
 #pragma region Enemy
-	enemy_ = Enemy::Create(planeEnemyModel_);
-	enemy_->SetBulletModel(bulletModel_);
+	AddEnemy({ -70.0f,0.0f,30.0f },
+		CreateRotationVector(
+			{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+		{ 1.0f, 1.0f, 1.0f });
+
+	AddEnemy({ -70.0f,0.0f,60.0f },
+		CreateRotationVector(
+			{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+		{ 1.0f,1.0f,1.0f });
+
+	AddEnemy({ -70.0f,10.0f,45.0f },
+		CreateRotationVector(
+			{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+		{ 1.0f,1.0f,1.0f });
+
+	{
+	//std::unique_ptr<Enemy> newEnemy =
+	//	std::make_unique<Enemy>();
+	//newEnemy->Initialize();
+
+	//newEnemy->SetScale({ 1.0f, 1.0f, 1.0f });
+	//newEnemy->SetRotation(CreateRotationVector(
+	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
+	//newEnemy->SetPosition({ -70.0f,0.0f,30.0f });
+
+	//newEnemy->SetModel(planeEnemyModel_);
+	//newEnemy->SetCamera(camera_);
+	//newEnemy->Update();
+	////リストに登録
+	//enemys_.push_back(std::move(newEnemy));
+	}
+	{
+	//enemy_ = Enemy::Create(planeEnemyModel_);
+	//enemy_->SetGameScene(this);
+	//enemy_->SetBulletModel(bulletModel_);
 	//enemy_->SetScale({ 1.0f, 1.0f, 1.0f });
 	//enemy_->SetRotation(CreateRotationVector(
 	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
 	//enemy_->SetPosition({ 0.0f,0.0f,100.0f });
 
-	enemy_->SetCamera(camera_);
-	enemy_->Update();
+	//enemy_->SetCamera(camera_);
+	//enemy_->Update();
+	}
 #pragma endregion
 
 #pragma region Skydome
@@ -117,9 +152,39 @@ void GamePlayScene::Update3d() {
 		light_->SetDirLightDir(0, lightDir);
 	}
 
-	if(enemy_->IsDead()){
+	//自壊フラグの立った弾を削除
+	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
+		return bullet->IsDead();
+		});
+
+	//for (std::unique_ptr<Enemy>& enemy : enemys_) {
+	//	if(enemy->IsDead()){
+	//		//railCamera_->SetPhaseAdvance(true);
+	//		//AddEnemy({ 70.0f,0.0f,80.0f },
+	//		//	CreateRotationVector(
+	//		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)),
+	//		//	{ 1.0f,1.0f,1.0f });
+
+	//	}
+	//}
+
+	if (enemys_.size() == 0) {
+		phaseIndex_++;
 		railCamera_->SetPhaseAdvance(true);
+		AddEnemy({ 70.0f,0.0f,80.0f },
+			CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
+			{ 1.0f,1.0f,1.0f });
+
+		AddEnemy({ 70.0f,-10.0f,60.0f },
+			CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
+			{ 1.0f,1.0f,1.0f });
 	}
+
+	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
+		return enemy->IsDead();
+		});
 
 	railCamera_->Update();
 
@@ -135,7 +200,14 @@ void GamePlayScene::Update3d() {
 
 	skydomeObj_->Update();
 	player_->Update();
-	enemy_->Update();
+	//弾更新
+	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+		bullet->Update();
+	}
+
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		enemy->Update();
+	}
 }
 
 void GamePlayScene::Update2d() {
@@ -143,12 +215,21 @@ void GamePlayScene::Update2d() {
 
 void GamePlayScene::Draw3d() {
 	skydomeObj_->Draw();
-	enemy_->Draw();
+
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		enemy->Draw();
+	}
+	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+		bullet->Draw();
+	}
+
 	player_->Draw();
 }
 
 void GamePlayScene::Draw2d() {
-	enemy_->DrawUI();
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		enemy->DrawUI();
+	}
 	player_->DrawUI();
 }
 
@@ -159,11 +240,41 @@ Vector3 GamePlayScene::CreateRotationVector(Vector3 axisAngle, float angleRadian
 	return RotateVector(point, rotation);
 }
 
+void GamePlayScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet) {
+	//リストに登録
+	enemyBullets_.push_back(std::move(enemyBullet));
+}
+
+void GamePlayScene::AddEnemy(
+	const Vector3 pos,
+	const Vector3 rota,
+	const Vector3 scale) {
+	std::unique_ptr<Enemy> newEnemy =
+		std::make_unique<Enemy>();
+	newEnemy->Initialize();
+	newEnemy->SetGameScene(this);
+
+	newEnemy->SetScale(scale);
+	newEnemy->SetRotation(rota);
+	newEnemy->SetPosition(pos);
+
+	newEnemy->SetModel(planeEnemyModel_);
+	newEnemy->SetBulletModel(bulletModel_);
+
+	newEnemy->SetCamera(camera_);
+	newEnemy->Update();
+	//リストに登録
+	enemys_.push_back(std::move(newEnemy));
+}
+
 void GamePlayScene::Finalize() {
 	SafeDelete(skydomeObj_);
 
-	enemy_->Finalize();
-	SafeDelete(enemy_);
+
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		enemy->Finalize();
+	}
+	//SafeDelete(enemy_);
 
 	player_->Finalize();
 	SafeDelete(player_);

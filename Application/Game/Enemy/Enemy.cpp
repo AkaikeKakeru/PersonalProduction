@@ -11,6 +11,7 @@
 #include <imgui.h>
 
 #include "EnemyBullet.h"
+#include "GamePlayScene.h"
 
 Input* Enemy::input_ = Input::GetInstance();
 CollisionManager* Enemy::collisionManager_ = CollisionManager::GetInstance();
@@ -54,10 +55,10 @@ bool Enemy::Initialize() {
 
 	worldTransform3dReticle_.Initialize();
 
-	SetScale({ 1.0f, 1.0f, 1.0f });
-	SetRotation(CreateRotationVector(
-		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
-	SetPosition({ -70.0f,0.0f,30.0f });
+	//SetScale({ 1.0f, 1.0f, 1.0f });
+	//SetRotation(CreateRotationVector(
+	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
+	//SetPosition({ -70.0f,0.0f,30.0f });
 
 
 	//drawBas_->LoadTexture(1, "texture.png");
@@ -85,11 +86,6 @@ bool Enemy::Initialize() {
 
 void Enemy::Update() {
 	camera_->Update();
-
-	if(IsDead()){
-		SetPosition({ 70.0f,0.0f,80.0f });
-		SetIsDead(false);
-	}
 
 	Vector2 mousePosition_ =
 		input_->GetMousePosition();
@@ -125,11 +121,6 @@ void Enemy::Update() {
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
-	//自壊フラグの立った弾を削除
-	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
-		return bullet->IsDead();
-		});
-
 	moveVector = { 0.0f,0.0f,kSpeed };
 	moveVector = Vector3CrossMatrix4(moveVector, worldTransform_.matWorld_);
 
@@ -146,13 +137,7 @@ void Enemy::Update() {
 	//発射
 	//Fire();
 
-	//弾更新
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
-		bullet->Update();
-	}
-
 	Object3d::Update();
-
 
 	//spriteReticle_->SetPosition(
 	//	{ worldTransform3dReticle_.position_.x ,
@@ -164,10 +149,6 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw() {
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
-		bullet->Draw();
-	}
-
 	Object3d::Draw(worldTransform_);
 }
 
@@ -248,6 +229,6 @@ void Enemy::Fire() {
 
 		newBullet->Update();
 
-		bullets_.push_back(std::move(newBullet));
+		gameScene_->AddEnemyBullet(std::move(newBullet));
 	}
 }

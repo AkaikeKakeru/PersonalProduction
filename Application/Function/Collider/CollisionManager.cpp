@@ -20,6 +20,11 @@ void CollisionManager::CheckAllCollisions() {
 			BaseCollider* colA = *itA;
 			BaseCollider* colB = *itB;
 
+			//属性が違わなければスキップ
+			if ((colA->attribute_ & colB->attribute_)) {
+				continue;
+			}
+
 			if (colA->GetShapeType() == COLLISIONSHAPE_SPHERE
 				&& colB->GetShapeType() == COLLISIONSHAPE_SPHERE) {
 				//ともに球
