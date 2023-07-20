@@ -43,14 +43,17 @@ void RailCamera::Update() {
 
 	//経過時間
 	//timeRateが1.0f以上になったら、次の区間へ進む
-	float timeRate = nowTime_ / endTime_;
+	float timeRate = 0.0f;
 
 	//時間経過
 	if (isPhaseAdvance_) {
-		if (gameScene_->GetPhaseIndex() < points_.size() - 3) {
+		if (phaseIndex_ < points_.size() - 3) {
+			phaseIndex_ = gameScene_->GetPhaseIndex();
 			nowTime_ = 0.0f;
+			timeRate -= 1.0f;
 		}
 		else {
+			phaseIndex_ = 1;
 			timeRate = 1.0f;
 		}
 
@@ -85,6 +88,9 @@ void RailCamera::Update() {
 	}
 
 	//座標更新
+	//経過時間
+	//timeRateが1.0f以上になったら、次の区間へ進む
+	timeRate = nowTime_ / endTime_;
 
 	SetSplinePoint(
 		splinePosStart_,
