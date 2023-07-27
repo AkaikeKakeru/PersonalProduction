@@ -83,21 +83,6 @@ void GamePlayScene::Initialize3d() {
 #pragma endregion
 
 #pragma region Enemy
-	AddEnemy({ -70.0f,0.0f,30.0f },
-		CreateRotationVector(
-			{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-		{ 1.0f, 1.0f, 1.0f });
-
-	AddEnemy({ -70.0f,0.0f,60.0f },
-		CreateRotationVector(
-			{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-		{ 1.0f,1.0f,1.0f });
-
-	AddEnemy({ -70.0f,10.0f,45.0f },
-		CreateRotationVector(
-			{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-		{ 1.0f,1.0f,1.0f });
-
 	{
 	//std::unique_ptr<Enemy> newEnemy =
 	//	std::make_unique<Enemy>();
@@ -132,7 +117,7 @@ void GamePlayScene::Initialize3d() {
 	skydomeObj_ = new Object3d();
 	skydomeObj_ = Object3d::Create();
 	skydomeObj_->SetModel(skydomeModel_);
-	skydomeObj_->SetScale({ 200, 200, 200 });
+	skydomeObj_->SetScale({ 600, 600, 600 });
 	skydomeObj_->SetCamera(camera_);
 #pragma endregion
 
@@ -157,29 +142,12 @@ void GamePlayScene::Update3d() {
 		return bullet->IsDead();
 		});
 
-	//for (std::unique_ptr<Enemy>& enemy : enemys_) {
-	//	if(enemy->IsDead()){
-	//		//railCamera_->SetPhaseAdvance(true);
-	//		//AddEnemy({ 70.0f,0.0f,80.0f },
-	//		//	CreateRotationVector(
-	//		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)),
-	//		//	{ 1.0f,1.0f,1.0f });
-
-	//	}
-	//}
-
 	if (enemys_.size() == 0) {
-		phaseIndex_++;
-		railCamera_->SetPhaseAdvance(true);
-		AddEnemy({ 70.0f,0.0f,80.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
-			{ 1.0f,1.0f,1.0f });
-
-		AddEnemy({ 70.0f,-10.0f,60.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
-			{ 1.0f,1.0f,1.0f });
+		if (phaseIndex_ < kFinalPhaseIndex_) {
+			SightNextEnemy();
+			phaseIndex_++;
+			railCamera_->SetPhaseAdvance(true);
+		}
 	}
 
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
@@ -267,6 +235,54 @@ void GamePlayScene::AddEnemy(
 	enemys_.push_back(std::move(newEnemy));
 }
 
+void GamePlayScene::SightNextEnemy() {
+	switch (phaseIndex_) {
+	case 0:
+		AddEnemy({ -70.0f,0.0f,30.0f },
+			CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+			{ 1.0f, 1.0f, 1.0f });
+
+		AddEnemy({ -70.0f,0.0f,60.0f },
+			CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+			{ 1.0f,1.0f,1.0f });
+
+		AddEnemy({ -70.0f,10.0f,45.0f },
+			CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+			{ 1.0f,1.0f,1.0f });
+		break;
+
+	case 1:
+		AddEnemy({ 70.0f,0.0f,80.0f },
+			CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
+			{ 1.0f,1.0f,1.0f });
+
+		AddEnemy({ 70.0f,-10.0f,60.0f },
+			CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
+			{ 1.0f,1.0f,1.0f });
+		break;
+
+	case 2:
+		AddEnemy({ 40.0f,10.0f,300.0f },
+			CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)),
+			{ 1.0f,1.0f,1.0f });
+
+		AddEnemy({ -50.0f,10.0f,300.0f },
+			CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)),
+			{ 1.0f,1.0f,1.0f });
+		break;
+
+	default:
+		break;
+	}
+}
+
 void GamePlayScene::Finalize() {
 	SafeDelete(skydomeObj_);
 
@@ -274,12 +290,12 @@ void GamePlayScene::Finalize() {
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Finalize();
 	}
-	//SafeDelete(enemy_);
 
 	player_->Finalize();
 	SafeDelete(player_);
 
 	SafeDelete(light_);
+	railCamera_->Finalize();
 	SafeDelete(railCamera_);
 	SafeDelete(camera_);
 

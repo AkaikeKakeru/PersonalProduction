@@ -38,6 +38,10 @@ private:
 
 	void Draw3d();
 	void Draw2d();
+
+public://定数
+	const int kFinalPhaseIndex_ = 3;
+
 public:
 	Vector3 CreateRotationVector(Vector3 axisAngle, float angleRadian);
 
@@ -45,6 +49,9 @@ public:
 	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
 	//敵を追加
 	void AddEnemy(const Vector3 pos,const Vector3 rota,const Vector3 scale);
+
+	//次の敵の湧き情報を調べる
+	void SightNextEnemy();
 
 	//フェーズ番号取得
 	size_t GetPhaseIndex() {
@@ -98,5 +105,5 @@ public: //メンバ変数
 	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
 
 	//フェーズ番号
-	size_t phaseIndex_ = 1;
+	size_t phaseIndex_ = 0;
 };

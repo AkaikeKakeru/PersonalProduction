@@ -11,15 +11,15 @@ void RailCamera::Initialize(const Vector3 pos,
 
 	viewProjection_.Initialize();
 
-	splinePosStart_ = { 0.0f,0.0f,0.0f };
-	splinePos1_ = { 30.0f,0.0f,50.0f };
-	splinePos2_ = { -30.0f,0.0f,100.0f };
-	splinePosEnd_ = { 0.0f,0.0f,150.0f };
+	splinePositions_.push_back(Vector3(0.0f, 0.0f, 0.0f));
+	splinePositions_.push_back(Vector3(30.0f, 0.0f, 50.0f));
+	splinePositions_.push_back(Vector3(-30.0f, 0.0f, 100.0f));
+	splinePositions_.push_back(Vector3(0.0f, 0.0f, 150.0f));
 
-	splineDirStart_ = { 0.0f,0.0f,0.0f };
-	splineDir1_ = { 0.0f, -ConvertToRadian(90), 0.0f };
-	splineDir2_ = { 0.0f,ConvertToRadian(90),0.0f };
-	splineDirEnd_ = { 0.0f,0.0f,0.0f };
+	splineDirections_.push_back(Vector3(0.0f, 0.0f, 0.0f));
+	splineDirections_.push_back(Vector3(0.0f, -ConvertToRadian(90), 0.0f));
+	splineDirections_.push_back(Vector3(0.0f, ConvertToRadian(90), 0.0f));
+	splineDirections_.push_back(Vector3(0.0f, 0.0f, 0.0f));
 
 #ifdef _DEBUG
 	{
@@ -43,14 +43,19 @@ void RailCamera::Update() {
 
 	//経過時間
 	//timeRateが1.0f以上になったら、次の区間へ進む
-	float timeRate = nowTime_ / endTime_;
+	float timeRate = 0.0f;
 
 	//時間経過
 	if (isPhaseAdvance_) {
-		if (gameScene_->GetPhaseIndex() < points_.size() - 3) {
+		if (phaseIndex_ < points_.size() - 3) {
+			phaseIndex_ = gameScene_->GetPhaseIndex();
 			nowTime_ = 0.0f;
+			timeRate -= 1.0f;
+
+			SightNextPhasePosition();
 		}
 		else {
+			phaseIndex_ = 1;
 			timeRate = 1.0f;
 		}
 
@@ -65,41 +70,40 @@ void RailCamera::Update() {
 	}
 
 	{
-	//if (timeRate >= 1.0f) {
-	//	if (phaseIndex_ < points_.size() - 3) {
-	//		phaseIndex_++;
-	//		timeRate -= 1.0f;
-	//	}
-	//	else {
-	//		phaseIndex_ = 1;
-	//		timeRate = 1.0f;
-	//	}
-	//}
+		//if (timeRate >= 1.0f) {
+		//	if (phaseIndex_ < points_.size() - 3) {
+		//		phaseIndex_++;
+		//		timeRate -= 1.0f;
+		//	}
+		//	else {
+		//		phaseIndex_ = 1;
+		//		timeRate = 1.0f;
+		//	}
+		//}
 
-	//if (nowTime_ >= kTotalTime_) {
-	//	nowTime_ = 0.0f;
-	//}
-	//else {
-	//	nowTime_ += 1.0f;
-	//}
+		//if (nowTime_ >= kTotalTime_) {
+		//	nowTime_ = 0.0f;
+		//}
+		//else {
+		//	nowTime_ += 1.0f;
+		//}
 	}
 
 	//座標更新
+	//経過時間
+	//timeRateが1.0f以上になったら、次の区間へ進む
+	timeRate = nowTime_ / endTime_;
 
 	SetSplinePoint(
-		splinePosStart_,
-		splinePos1_,
-		splinePos2_,
-		splinePosEnd_);
+		splinePositions_,
+		railIndex_);
 
 	updatePos =
 		SplinePosition(points_, gameScene_->GetPhaseIndex(), timeRate);
 
 	SetSplinePoint(
-		splineDirStart_,
-		splineDir1_,
-		splineDir2_,
-		splineDirEnd_);
+		splineDirections_,
+		railIndex_);
 
 	updateRota =
 		SplinePosition(points_, gameScene_->GetPhaseIndex(), timeRate);
@@ -135,19 +139,19 @@ void RailCamera::Update() {
 
 	worldTransform_.UpdateMatrix();
 
-	#ifdef _DEBUG
-		{
-	//		worldTransform_.position_ = Vector3 {
-	//			debugPos_[0],
-	//			debugPos_[1],
-	//			debugPos_[2], };
-	//
-	//		worldTransform_.rotation_ = Vector3 {
-	//			debugDir_[0],
-	//			debugDir_[1],
-	//			debugDir_[2], };
-		}
-	#endif // _DEBUG
+#ifdef _DEBUG
+	{
+		//		worldTransform_.position_ = Vector3 {
+		//			debugPos_[0],
+		//			debugPos_[1],
+		//			debugPos_[2], };
+		//
+		//		worldTransform_.rotation_ = Vector3 {
+		//			debugDir_[0],
+		//			debugDir_[1],
+		//			debugDir_[2], };
+	}
+#endif // _DEBUG
 
 	viewProjection_.eye_ = {
 		worldTransform_.matWorld_.m[3][0],
@@ -170,6 +174,19 @@ void RailCamera::Update() {
 	//ビュープロジェクション更新
 	viewProjection_.UpdateMatrix();
 	viewProjection_.TransferMatrix();
+}
+
+void RailCamera::Finalize() {
+	size_t posSize = splinePositions_.size();
+	size_t dirSize = splineDirections_.size();
+
+	for (size_t i = 0; i < posSize; i++) {
+		splinePositions_.pop_back();
+	}
+
+	for (size_t i = 0; i < dirSize; i++) {
+		splineDirections_.pop_back();
+	}
 }
 
 void RailCamera::DrawImGui() {
@@ -211,4 +228,23 @@ Vector3 RailCamera::SplinePosition(
 	Vector3 position = CatmullRomSpline(p0, p1, p2, p3, t);
 
 	return position;
+}
+
+void RailCamera::SightNextPhasePosition() {
+	Vector3 sightPos = splinePositions_[phaseIndex_ + 1];
+	Vector3 sightRota = splineDirections_[phaseIndex_ + 1];
+
+	sightPos.z += 100.0f;
+
+	if (phaseIndex_ % 2 == 0) {
+		sightPos.x = +30.0f;
+		sightRota.y = -ConvertToRadian(90);
+	}
+	else {
+		sightPos.x = -30.0f;
+		sightRota.y = ConvertToRadian(90);
+	}
+
+	splinePositions_.push_back(sightPos);
+	splineDirections_.push_back(sightRota);
 }
