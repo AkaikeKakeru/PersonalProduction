@@ -267,12 +267,12 @@ void GamePlayScene::SightNextEnemy() {
 		break;
 
 	case 2:
-		AddEnemy({ 40.0f,10.0f,300.0f },
+		AddEnemy({ 50.0f,10.0f,70.0f },
 			CreateRotationVector(
 				{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)),
 			{ 1.0f,1.0f,1.0f });
 
-		AddEnemy({ -50.0f,10.0f,300.0f },
+		AddEnemy({ -50.0f,10.0f,70.0f },
 			CreateRotationVector(
 				{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)),
 			{ 1.0f,1.0f,1.0f });
