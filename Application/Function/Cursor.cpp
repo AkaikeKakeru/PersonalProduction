@@ -1,22 +1,17 @@
 ﻿#include "Cursor.h"
 #include "Input.h"
 #include <WinApp.h>
+#include <cassert>
 
 Camera* Corsor::camera_ = nullptr;
 
 Vector3 Corsor::Get3DRethiclePosition(Camera* camera) {
 	camera_ = camera;
 
-	GetMousePosition();
 	CreateMatrixInverseViewPort();
 	CheckRayDirection();
 
 	return rayDirection_;
-}
-
-void Corsor::GetMousePosition() {
-	//マウスの座標を取得
-	mousePosition_ = Input::GetInstance()->GetMousePosition();
 }
 
 void Corsor::CreateMatrixInverseViewPort() {
@@ -35,6 +30,12 @@ void Corsor::CreateMatrixInverseViewPort() {
 }
 
 void Corsor::CheckRayDirection() {
+	assert(distance_);
+	
+	//マウスの座標を取得
+	Vector2 mousePosition_ = 
+		Input::GetInstance()->GetMousePosition();
+
 	//ニア
 	posNear_ = Vector3(
 		mousePosition_.x,
@@ -52,9 +53,6 @@ void Corsor::CheckRayDirection() {
 	rayDirection_ = posNear_ - posFar_;
 	rayDirection_ = Vector3Normalize(rayDirection_);
 
-	//カメラからの距離
-	const float kDistanceTestObject = 50.0f;
-
 	//ニア→レイ
-	rayDirection_ = posNear_ - (rayDirection_ * kDistanceTestObject);
+	rayDirection_ = posNear_ - (rayDirection_ * distance_);
 }
