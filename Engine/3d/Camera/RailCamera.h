@@ -14,13 +14,22 @@ public://メンバ関数
 		const Vector3 rotaRadianAngle);
 	void Update();
 
+	void Finalize();
+
 	void DrawImGui();
 
 	Vector3 SplinePosition(
 		const std::vector<Vector3>& points,
 		size_t startIndex,
 		float t);
-public:
+
+	void SightNextPhasePosition();
+
+public://定数
+	//ファイナルフェーズ番号
+	const size_t kFinalPhaseIndex_ = 3;
+
+public://静的メンバ変数
 	static Input* input_;
 
 public://アクセッサ
@@ -48,9 +57,9 @@ public://アクセッサ
 	void SetUp(const Vector3& up) {
 		viewProjection_.up_ = up; }
 
-	//スプライン中間点のセット
+	//スプライン中間点のセット	
 	void SetSplinePoint(
-		Vector3 p0,
+	Vector3 p0,
 		Vector3 p1,
 		Vector3 p2,
 		Vector3 p3 ) {
@@ -59,6 +68,19 @@ public://アクセッサ
 		};
 	}
 
+	void SetSplinePoint(
+		std::vector<Vector3> splineList,
+		size_t phaseIndex) {
+		points_ = {
+			splineList[phaseIndex - 1],
+			splineList[phaseIndex - 1],
+			splineList[phaseIndex],
+			splineList[phaseIndex + 1],
+			splineList[phaseIndex + 2],
+			splineList[phaseIndex + 2]
+		};
+	}
+	 
 	//フェーズ進行フラグのセット
 	void SetPhaseAdvance(bool isPhaseAdvance) {
 		isPhaseAdvance_ = isPhaseAdvance;
@@ -75,17 +97,17 @@ private://メンバ変数
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
+	//ゲームシーン
 	GamePlayScene* gameScene_ = nullptr;;
 
-	Vector3 splinePosStart_ = {};
-	Vector3 splinePos1_ = {};
-	Vector3 splinePos2_ = {};
-	Vector3 splinePosEnd_ = {};
+	//次の座標
+	Vector3 nextPos_;
 
-	Vector3 splineDirStart_ = {};
-	Vector3 splineDir1_ = {};
-	Vector3 splineDir2_ = {};
-	Vector3 splineDirEnd_ = {};
+	//スプラインで移動する座標ベクトルコンテナ
+	std::vector<Vector3> splinePositions_;
+
+	//スプラインで回転する方向ベクトルコンテナ
+	std::vector<Vector3> splineDirections_;
 
 	const float kTotalTime_ = 60.0f * 2.0f;
 
@@ -95,15 +117,11 @@ private://メンバ変数
 	//フェーズ番号
 	size_t phaseIndex_ = 1;
 
+	//レール番号
+	size_t railIndex_ = 1;
+
 	//先頭と最後に、制御点を1個ずつ追加しておく
-	std::vector<Vector3> points_{
-		splinePosStart_,
-		splinePosStart_,
-		splinePos1_,
-		splinePos2_,
-		splinePosEnd_,
-		splinePosEnd_
-	};
+	std::vector<Vector3> points_;
 
 	//フェーズ進行フラグ
 	bool isPhaseAdvance_ = false;
