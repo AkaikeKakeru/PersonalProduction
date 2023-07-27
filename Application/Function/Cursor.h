@@ -6,22 +6,34 @@
 #include "Camera.h"
 
 class Corsor {
-public:
+public: //アクセッサ
+	//3D照準位置取得
 	Vector3 Get3DRethiclePosition(Camera* camera);
 
-private:
+	//距離のセット
+	void SetDistance(float distance) {
+		distance_ = distance;
+	}
 
-void GetMousePosition();
-void CreateMatrixInverseViewPort(/*const Camera* camera*/);
-void CheckRayDirection();
+private: //固有関数
+	//ビューポート行列の逆行列生成
+	void CreateMatrixInverseViewPort();
+	//レイの方向を確認
+	void CheckRayDirection();
 
-private:
+private: //メンバ変数
+	//カメラ
 	static Camera* camera_;
-
+	//ビュープロジェクションビューポートの逆行列
 	Matrix4 matInverseVPV_ = Matrix4Identity();
-	Vector2 mousePosition_ = {};
 
+	//ニア位置
 	Vector3 posNear_ = {};
+	//ファー位置
 	Vector3 posFar_ = {};
+	//レイの方向
 	Vector3 rayDirection_ = {};
+
+	//カメラからの距離
+	float distance_ = 50.0f;
 };
