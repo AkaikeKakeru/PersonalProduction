@@ -3,6 +3,7 @@
 #include "Quaternion.h"
 #include <imgui.h>
 #include "CollisionManager.h"
+#include "SceneManager.h"
 
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GamePlayScene::input_ = Input::GetInstance();
@@ -148,6 +149,10 @@ void GamePlayScene::Update3d() {
 			phaseIndex_++;
 			railCamera_->SetPhaseAdvance(true);
 		}
+		else {
+			//シーンの切り替えを依頼
+			SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		}
 	}
 
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
@@ -267,12 +272,7 @@ void GamePlayScene::SightNextEnemy() {
 		break;
 
 	case 2:
-		AddEnemy({ 50.0f,10.0f,70.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)),
-			{ 1.0f,1.0f,1.0f });
-
-		AddEnemy({ -50.0f,10.0f,70.0f },
+		AddEnemy({ 0.0f,10.0f,270.0f },
 			CreateRotationVector(
 				{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)),
 			{ 1.0f,1.0f,1.0f });
