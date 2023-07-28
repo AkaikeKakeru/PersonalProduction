@@ -181,6 +181,11 @@ void GamePlayScene::Update3d() {
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Update();
 	}
+
+	if (player_->IsDead()) {
+		//シーンの切り替えを依頼
+		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+	}
 }
 
 void GamePlayScene::Update2d() {
@@ -285,8 +290,6 @@ void GamePlayScene::SightNextEnemy() {
 
 void GamePlayScene::Finalize() {
 	SafeDelete(skydomeObj_);
-
-
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Finalize();
 	}
