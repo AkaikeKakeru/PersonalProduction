@@ -39,10 +39,10 @@ void GameOverScene::Initialize(){
 	//skydomeObj_->SetModel(skydomeModel_);
 	//skydomeObj_->SetCamera(camera_);
 
-	////ライト生成
-	//light_ = new LightGroup();
-	//light_ = LightGroup::Create();
-	//light_->SetAmbientColor({ 1,1,1 });
+	//ライト生成
+	light_ = new LightGroup();
+	light_ = LightGroup::Create();
+	light_->SetAmbientColor({ 1,1,1 });
 	//Object3d::SetLight(light_);
 
 	////描画基盤
