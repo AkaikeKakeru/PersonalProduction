@@ -139,6 +139,15 @@ void Player::Update() {
 
 	Object3d::Update();
 
+	if (isDamage_) {
+		life_ -= 5.0f;
+		isDamage_ = false;
+	}
+
+	if (life_ <= 0.0f) {
+		isDead_ = true;
+	}
+
 	spriteReticle_->SetPosition(
 		{ worldTransform3dReticle_.position_.x ,
 		worldTransform3dReticle_.position_.y });
@@ -185,6 +194,8 @@ void Player::Finalize() {
 
 void Player::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
+
+	isDamage_ = true;
 }
 
 void Player::Reticle() {

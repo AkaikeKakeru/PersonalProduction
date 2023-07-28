@@ -165,6 +165,8 @@
     <ClCompile Include="Application\Game\Enemy\EnemyBullet.cpp" />
     <ClCompile Include="Application\Game\Player\Player.cpp" />
     <ClCompile Include="Application\Game\Player\PlayerBullet.cpp" />
+    <ClCompile Include="Application\Game\Scene\GameClearScene.cpp" />
+    <ClCompile Include="Application\Game\Scene\GameOverScene.cpp" />
     <ClCompile Include="Application\Game\Scene\GamePlayScene.cpp" />
     <ClCompile Include="Application\Game\Scene\Manager\BaseScene.cpp" />
     <ClCompile Include="Application\Math\MyMath.cpp" />
@@ -215,8 +217,10 @@
     <ClInclude Include="Application\Game\GameMain.h" />
     <ClInclude Include="Application\Game\Player\Player.h" />
     <ClInclude Include="Application\Game\Player\PlayerBullet.h" />
+    <ClInclude Include="Application\Game\Scene\GameClearScene.h" />
     <ClInclude Include="Application\Game\Scene\Manager\AbstractSceneFactory.h" />
     <ClInclude Include="Application\Game\Scene\Manager\BaseScene.h" />
+    <ClInclude Include="Application\Game\Scene\GameOverScene.h" />
     <ClInclude Include="Application\Math\MyMath.h" />
     <ClInclude Include="Application\Math\Quaternion.h" />
     <ClInclude Include="Engine\3d\Camera\RailCamera.h" />

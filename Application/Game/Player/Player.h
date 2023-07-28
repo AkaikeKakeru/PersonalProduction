@@ -36,6 +36,9 @@ public://メンバ関数
 	//発射攻撃
 	void Attack();
 
+public: //定数
+	const float kDefaultPlayerLife_ = 10.0f;
+
 public: //アクセッサ
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_;
@@ -51,6 +54,36 @@ public: //アクセッサ
 	//弾モデルのセット
 	void SetBulletModel(Model* bulletModel) {
 		bulletModel_ = bulletModel;
+	}
+
+	//体力取得
+	float GetLife() {
+		return life_;
+	}
+
+	//体力のセット
+	void SetLife(float life) {
+		life_ = life;
+	}
+
+	//デスフラグの取得
+	bool IsDead() {
+		return isDead_;
+	}
+
+	//デスフラグのセット
+	void SetIsDead(bool isDead) {
+		isDead_ = isDead;
+	}
+
+	//ダメージフラグの取得
+	bool IsDamage() {
+		return isDamage_;
+	}
+
+	//ダメージフラグのセット
+	void SetIsDamage(bool isDamage) {
+		isDamage_ = isDamage;
 	}
 
 private: //静的メンバ変数
@@ -76,6 +109,15 @@ private: //メンバ変数
 
 	//弾モデル
 	Model* bulletModel_ = nullptr;
+
+	//体力
+	float life_ = kDefaultPlayerLife_;
+
+	//デスフラグ
+	bool isDead_ = false;
+
+	//ダメージフラグ
+	bool isDamage_ = false; 
 
 private: //ImGui用
 	//Vector3の要素数
