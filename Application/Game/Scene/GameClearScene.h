@@ -2,10 +2,12 @@
 #include "BaseScene.h"
 
 #include "Input.h"
-//#include "DrawBasis.h"
-//#include "Model.h"
-//#include "Sprite.h"
-//#include "Object3d.h"
+#include "SpriteBasis.h"
+#include "Sprite.h"
+#include "Object3d.h"
+#include "Model.h"
+
+#include "Text.h"
 
 #include "Camera.h"
 #include "LightGroup.h"
@@ -24,7 +26,7 @@ public:
 private:
 	static DirectXBasis* dxBas_;
 	static Input* input_;
-	//DrawBasis* drawBas_ = nullptr;
+	static SpriteBasis* spriteBas_;
 
 	Camera* camera_ = nullptr;
 	LightGroup* light_ = nullptr;
@@ -36,12 +38,16 @@ private:
 	/// オブジェクト
 	/// </summary>
 	/// <summary>
-	//Object3d* planeObj_ = nullptr;
-	//Model* planeModel_ = nullptr;
+	Object3d* planeObj_ = nullptr;
+	Model* planeModel_ = nullptr;
 
-	//Object3d* skydomeObj_ = nullptr;
-	//Model* skydomeModel_ = nullptr;
-	///// スプライト
-	///// </summary>
-	//Sprite* sprite_ = new Sprite();
+	Object3d* skydomeObj_ = nullptr;
+	Model* skydomeModel_ = nullptr;
+
+	/// スプライト
+	/// </summary>
+	Sprite* sprite_ = nullptr;
+
+	///テキスト
+	Text* text_ = nullptr;
 };
