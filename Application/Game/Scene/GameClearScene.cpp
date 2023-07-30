@@ -70,11 +70,21 @@ void GameClearScene::Initialize(){
 void GameClearScene::Update(){
 	input_->Update();
 
-	if (buttonTitle_->ChackClick(input_->TriggerMouse(0))) {
+	buttonTitle_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+	buttonRetry_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+
+	if (buttonTitle_->ChackClick(input_->PressMouse(0))) {
+		buttonTitle_->SetColor({ 0.4f,0.4f,0.4f,1.0f });
+	}
+	else if (buttonRetry_->ChackClick(input_->PressMouse(0))){
+		buttonRetry_->SetColor({ 0.4f,0.4f,0.4f,1.0f });
+	}
+
+	if (buttonTitle_->ChackClick(input_->ReleaseMouse(0))) {
 		//シーンの切り替えを依頼
 		SceneManager::GetInstance()->ChangeScene("TITLE");
 	}
-	else if (buttonRetry_->ChackClick(input_->TriggerMouse(0))){
+	else if (buttonRetry_->ChackClick(input_->ReleaseMouse(0))){
 		//シーンの切り替えを依頼
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}
