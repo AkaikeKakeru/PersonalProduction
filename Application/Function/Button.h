@@ -8,6 +8,7 @@ public://メンバ関数
 	void Initialize(uint32_t index);
 	void Update();
 	void Draw();
+	void Finalize();
 
 	//マウスクリックを確認
 	bool ChackClick(bool whichMouseButtonWasPressed);

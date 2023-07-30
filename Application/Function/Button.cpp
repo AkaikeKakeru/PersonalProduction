@@ -1,6 +1,7 @@
 ﻿#include "Button.h"
 #include "Input.h"
 #include "SpriteBasis.h"
+#include "SafeDelete.h"
 
 void Button::Initialize(uint32_t index) {
 	sprite_ = new Sprite();
@@ -20,6 +21,10 @@ void Button::Update() {
 
 void Button::Draw() {
 	sprite_->Draw();
+}
+
+void Button::Finalize() {
+	SafeDelete(sprite_);
 }
 
 bool Button::ChackClick(bool whichMouseButtonWasPressed) {
