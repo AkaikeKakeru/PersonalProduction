@@ -210,7 +210,7 @@
     <ClCompile Include="Engine\Debugger\ImGuiManager.cpp">
       <Filter>ソース ファイル\Engine\Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Debugger\DebugText.cpp">
+    <ClCompile Include="Engine\Debugger\Text.cpp">
       <Filter>ソース ファイル\Engine\Debugger</Filter>
     </ClCompile>
     <ClCompile Include="Application\Function\Collider\Collision.cpp">
@@ -341,7 +341,7 @@
     <ClInclude Include="Application\Game\Scene\Manager\BaseScene.h">
       <Filter>ヘッダー ファイル\Application\Game\Scene\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Debugger\DebugText.h">
+    <ClInclude Include="Engine\Debugger\Text.h">
       <Filter>ヘッダー ファイル\Engine\Debugger</Filter>
     </ClInclude>
     <ClInclude Include="Application\Math\Quaternion.h">

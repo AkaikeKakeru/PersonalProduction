@@ -186,7 +186,7 @@
     <ClCompile Include="Application\Base\Framework.cpp" />
     <ClCompile Include="Application\Game\GameMain.cpp" />
     <ClCompile Include="Application\Base\Input.cpp" />
-    <ClCompile Include="Engine\Debugger\DebugText.cpp" />
+    <ClCompile Include="Engine\Debugger\Text.cpp" />
     <ClCompile Include="Engine\Debugger\ImGuiManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\3d\Object\Material.cpp" />
@@ -233,7 +233,7 @@
     <ClInclude Include="Engine\Audio\Audio.h" />
     <ClInclude Include="Engine\3d\Camera\Camera.h" />
     <ClInclude Include="Application\Function\Cursor.h" />
-    <ClInclude Include="Engine\Debugger\DebugText.h" />
+    <ClInclude Include="Engine\Debugger\Text.h" />
     <ClInclude Include="Application\Base\DirectXBasis.h" />
     <ClInclude Include="Engine\2d\SpriteBasis.h" />
     <ClInclude Include="Application\Base\FixFPS.h" />
