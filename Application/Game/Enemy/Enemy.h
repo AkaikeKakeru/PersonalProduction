@@ -9,6 +9,7 @@
 #include <memory>
 
 class GamePlayScene;
+class Player;
 class CollisionManager;
 
 //エネミー
@@ -63,6 +64,11 @@ public: //アクセッサ
 		gameScene_ = gameScene;
 	}
 
+	//プレイヤーのセット
+	void SetPlayer(Player* player) {
+		player_ = player;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -74,6 +80,9 @@ private: //静的メンバ変数
 private: //メンバ変数
 	//ゲームシーン
 	GamePlayScene* gameScene_ = nullptr;
+
+	//プレイヤー
+	Player* player_ = nullptr;
 
 	//半径
 	float radius_ = 1.0f;

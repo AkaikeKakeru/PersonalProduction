@@ -192,26 +192,50 @@ void Enemy::OnCollision(const CollisionInfo& info) {
 }
 
 void Enemy::Fire() {
+	assert(player_);
+
 	//弾スピード
 	const float kBulletSpeed = 2.0f;
+
+	{
+
+	////速度ベクトルを自機の向きに合わせて回転させる
+	//bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
+
+	////bulletVelocity =
+	////	Vector3{
+	////	worldTransform3dReticle_.matWorld_.m[3][0],
+	////	worldTransform3dReticle_.matWorld_.m[3][1],
+	////	worldTransform3dReticle_.matWorld_.m[3][2]
+	////} - Vector3{
+	////		worldTransform_.matWorld_.m[3][0],
+	////		worldTransform_.matWorld_.m[3][1],
+	////		worldTransform_.matWorld_.m[3][2]
+	////};
+
+	//bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
+	}
+
+//	bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
+
+	Vector3 worldPos = {
+		worldTransform_.matWorld_.m[3][0],
+		worldTransform_.matWorld_.m[3][1],
+		worldTransform_.matWorld_.m[3][2]
+	};
+
+	Vector3 worldPosPlayer = {
+		player_->GetMatWorld().m[3][0],
+		player_->GetMatWorld().m[3][1],
+		player_->GetMatWorld().m[3][2],
+	};
+
 	//毎フレーム弾が前進する速度
-	Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
+	Vector3 bulletVelocity = worldPosPlayer - worldPos ;
 
-	//速度ベクトルを自機の向きに合わせて回転させる
-	bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
+	bulletVelocity = Vector3Normalize(bulletVelocity);
 
-	//bulletVelocity =
-	//	Vector3{
-	//	worldTransform3dReticle_.matWorld_.m[3][0],
-	//	worldTransform3dReticle_.matWorld_.m[3][1],
-	//	worldTransform3dReticle_.matWorld_.m[3][2]
-	//} - Vector3{
-	//		worldTransform_.matWorld_.m[3][0],
-	//		worldTransform_.matWorld_.m[3][1],
-	//		worldTransform_.matWorld_.m[3][2]
-	//};
-
-	bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
+	bulletVelocity *= kBulletSpeed;
 
 	//弾の生成、初期化
 	std::unique_ptr<EnemyBullet> newBullet =

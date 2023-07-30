@@ -231,6 +231,7 @@ void GamePlayScene::AddEnemy(
 		std::make_unique<Enemy>();
 	newEnemy->Initialize();
 	newEnemy->SetGameScene(this);
+	newEnemy->SetPlayer(player_);
 
 	newEnemy->SetScale(scale);
 	newEnemy->SetRotation(rota);
