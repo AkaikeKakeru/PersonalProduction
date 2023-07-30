@@ -2,7 +2,7 @@
 #include "Model.h"
 #include "Object3d.h"
 #include "Sprite.h"
-#include "DrawBasis.h"
+#include "SpriteBasis.h"
 
 class CollisionManager;
 

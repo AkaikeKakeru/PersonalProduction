@@ -16,7 +16,7 @@
 
 Input* Player::input_ = Input::GetInstance();
 CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
-DrawBasis* Player::drawBas_ = DrawBasis::GetInstance();
+SpriteBasis* Player::spriteBas_ = SpriteBasis::GetInstance();
 
 Player* Player::Create(Model* model) {
 	//オブジェクトのインスタンスを生成
@@ -61,10 +61,8 @@ bool Player::Initialize() {
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
 	SetPosition({ 0.0f,-5.0f,30.0f });
 
-	drawBas_->LoadTexture(1, "texture.png");
-
 	spriteReticle_ = new Sprite();
-	spriteReticle_->Initialize(drawBas_, 1);
+	spriteReticle_->Initialize(1);
 
 	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
 	spriteReticle_->SetSize({ 64,64 });

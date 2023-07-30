@@ -7,6 +7,7 @@
 
 DirectXBasis* TitleScene::dxBas_ = DirectXBasis::GetInstance();
 Input* TitleScene::input_ = Input::GetInstance();
+SpriteBasis* TitleScene::spriteBas_ = SpriteBasis::GetInstance();
 
 void TitleScene::Initialize(){
 	/// 描画初期化
@@ -45,15 +46,8 @@ void TitleScene::Initialize(){
 	light_->SetAmbientColor({ 1,1,1 });
 	Object3d::SetLight(light_);
 
-	//描画基盤
-	drawBas_ = DrawBasis::GetInstance();
-	drawBas_->Initialize();
-
-	drawBas_->LoadTexture(0, "texture.png");
-
 	//描画スプライト
-
-	sprite_->Initialize(drawBas_,0);
+	sprite_->Initialize(0);
 }
 
 void TitleScene::Update(){
@@ -88,11 +82,11 @@ void TitleScene::Draw(){
 	Object3d::PostDraw();
 
 	//スプライト本命処理
-	drawBas_->PreDraw();
+	SpriteBasis::GetInstance()->PreDraw();
 
 	sprite_->Draw();
 
-	drawBas_->PostDraw();
+	SpriteBasis::GetInstance()->PostDraw();
 }
 
 void TitleScene::Finalize(){
