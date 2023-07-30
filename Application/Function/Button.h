@@ -40,6 +40,11 @@ public://アクセッサ
 		sprite_ = sprite;
 	}
 
+	//スプライトカラーのセット
+	void SetColor(const Vector4& color) {
+		sprite_->SetColor(color);
+	}
+
 private://メンバ変数
 	Vector2 pos_;//中心位置
 	Vector2 size_;//サイズ
