@@ -3,7 +3,7 @@
 #include "Object3d.h"
 #include "RailCamera.h"
 #include "Sprite.h"
-#include "DrawBasis.h"
+#include "SpriteBasis.h"
 #include <Input.h>
 
 #include <list>
@@ -92,7 +92,7 @@ private: //静的メンバ変数
 	//入力
 	static Input* input_;
 	//スプライト基盤
-	static DrawBasis* drawBas_;
+	static SpriteBasis* spriteBas_;
 
 private: //メンバ変数
 	//半径

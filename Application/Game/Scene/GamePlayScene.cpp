@@ -7,7 +7,7 @@
 
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GamePlayScene::input_ = Input::GetInstance();
-DrawBasis* GamePlayScene::drawBas_ = DrawBasis::GetInstance();
+SpriteBasis* GamePlayScene::spriteBas_ = SpriteBasis::GetInstance();
 ImGuiManager* GamePlayScene::imGuiManager_ = ImGuiManager::GetInstance();
 CollisionManager* GamePlayScene::collisionManager_ = CollisionManager::GetInstance();
 
@@ -40,9 +40,9 @@ void GamePlayScene::Draw() {
 	Draw3d();
 	Object3d::PostDraw();
 
-	drawBas_->PreDraw();
+	SpriteBasis::GetInstance()->PreDraw();
 	Draw2d();
-	drawBas_->PostDraw();
+	SpriteBasis::GetInstance()->PostDraw();
 }
 
 void GamePlayScene::Initialize3d() {

@@ -78,15 +78,17 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)External\DirectXTex;$(SolutionDir)imgui;$(IncludePath);$(SolutionDir)External\imGui</IncludePath>
+    <IncludePath>$(SolutionDir)External\DirectXTex;$(ProjectDir)lib\fbx_sdk\include;$(SolutionDir)imgui;$(IncludePath);$(SolutionDir)External\imGui</IncludePath>
     <IntDir>$(SolutionDir)..\Generated\Obj\$(ProjectName)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)..\Generated\Outputs\$(Configuration)\</OutDir>
+    <LibraryPath>$(ProjectDir)lib\fbx_sdk\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)External\DirectXTex;$(SolutionDir)imGui;$(IncludePath);$(SolutionDir)External\imGui</IncludePath>
+    <IncludePath>$(SolutionDir)External\DirectXTex;$(ProjectDir)lib\fbx_sdk\include;$(SolutionDir)imGui;$(IncludePath);$(SolutionDir)External\imGui</IncludePath>
     <IntDir>$(SolutionDir)..\Generated\Obj\$(ProjectName)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)..\Generated\Outputs\$(Configuration)\</OutDir>
+    <LibraryPath>$(ProjectDir)lib\fbx_sdk\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -133,6 +135,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/ignore:4049 /ignore:4098 %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,9 +157,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libfbxsdk-mt.lib;libxml2-mt.lib;zlib-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application\Function\Button.cpp" />
     <ClCompile Include="Application\Function\Collider\Collision.cpp" />
     <ClCompile Include="Application\Function\Collider\CollisionManager.cpp" />
     <ClCompile Include="Application\Function\Collider\CollisionPrimitive.cpp" />
@@ -177,12 +182,12 @@
     <ClCompile Include="Engine\3d\Camera\Camera.cpp" />
     <ClCompile Include="Application\Function\Cursor.cpp" />
     <ClCompile Include="Application\Base\DirectXBasis.cpp" />
-    <ClCompile Include="Engine\2d\DrawBasis.cpp" />
+    <ClCompile Include="Engine\2d\SpriteBasis.cpp" />
     <ClCompile Include="Application\Base\FixFPS.cpp" />
     <ClCompile Include="Application\Base\Framework.cpp" />
     <ClCompile Include="Application\Game\GameMain.cpp" />
     <ClCompile Include="Application\Base\Input.cpp" />
-    <ClCompile Include="Engine\Debugger\DebugText.cpp" />
+    <ClCompile Include="Engine\Debugger\Text.cpp" />
     <ClCompile Include="Engine\Debugger\ImGuiManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\3d\Object\Material.cpp" />
@@ -203,6 +208,7 @@
     <ClCompile Include="Engine\ConstBuffer\WorldTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\Function\Button.h" />
     <ClInclude Include="Application\Function\Collider\BaseCollider.h" />
     <ClInclude Include="Application\Function\Collider\Collision.h" />
     <ClInclude Include="Application\Function\Collider\CollisionAttribute.h" />
@@ -229,9 +235,9 @@
     <ClInclude Include="Engine\Audio\Audio.h" />
     <ClInclude Include="Engine\3d\Camera\Camera.h" />
     <ClInclude Include="Application\Function\Cursor.h" />
-    <ClInclude Include="Engine\Debugger\DebugText.h" />
+    <ClInclude Include="Engine\Debugger\Text.h" />
     <ClInclude Include="Application\Base\DirectXBasis.h" />
-    <ClInclude Include="Engine\2d\DrawBasis.h" />
+    <ClInclude Include="Engine\2d\SpriteBasis.h" />
     <ClInclude Include="Application\Base\FixFPS.h" />
     <ClInclude Include="Application\Base\Framework.h" />
     <ClInclude Include="Application\Game\Scene\GamePlayScene.h" />

@@ -1,6 +1,6 @@
 ﻿#include "Framework.h"
 #include "Object3d.h"
-#include "DrawBasis.h"
+#include "SpriteBasis.h"
 #include "TitleScene.h"
 #include <imgui.h>
 
@@ -60,8 +60,12 @@ void Framework::Initialize(){
 	Object3d::StaticInitialize(dxBas_->GetDevice().Get());
 
 	//描画基盤(スプライト)
-	DrawBasis::GetInstance();
-	DrawBasis::Initialize();
+	SpriteBasis* spriteBas = SpriteBasis::GetInstance();
+	spriteBas->Initialize();
+	spriteBas->LoadTexture(0, "texture.png");
+	spriteBas->LoadTexture(1, "texture.png");
+
+	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");
 
 	//ライト静的初期化
 	LightGroup::StaticInitialize(dxBas_->GetDevice().Get());

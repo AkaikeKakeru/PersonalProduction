@@ -15,7 +15,7 @@
 
 Input* Enemy::input_ = Input::GetInstance();
 CollisionManager* Enemy::collisionManager_ = CollisionManager::GetInstance();
-DrawBasis* Enemy::drawBas_ = DrawBasis::GetInstance();
+SpriteBasis* Enemy::spriteBas_ = SpriteBasis::GetInstance();
 
 Enemy* Enemy::Create(Model* model) {
 	//オブジェクトのインスタンスを生成

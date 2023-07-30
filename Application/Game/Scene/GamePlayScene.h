@@ -2,7 +2,7 @@
 #include "BaseScene.h"
 
 #include "Input.h"
-#include "DrawBasis.h"
+#include "SpriteBasis.h"
 #include "Model.h"
 #include "Sprite.h"
 #include "Object3d.h"
@@ -62,7 +62,7 @@ private: //静的メンバ変数
 	//基盤
 	static DirectXBasis* dxBas_;
 	static Input* input_;
-	static DrawBasis* drawBas_;
+	static SpriteBasis* spriteBas_;
 	//ImGuiマネージャー
 	static ImGuiManager* imGuiManager_;
 	//衝突マネージャー

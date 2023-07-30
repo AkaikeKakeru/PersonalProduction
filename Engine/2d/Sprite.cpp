@@ -4,11 +4,12 @@
 #include "WinApp.h"
 #include <cassert>
 
-void Sprite::Initialize(DrawBasis* drawBas, uint32_t textureIndex) {
-	assert(drawBas);
-	drawBas_ = drawBas;
-	device_ = drawBas_->GetDevice();
-	cmdList_ = drawBas_->GetCommandList();
+SpriteBasis* Sprite::spriteBas_ = SpriteBasis::GetInstance();
+
+void Sprite::Initialize(uint32_t textureIndex) {
+	assert(spriteBas_);
+	device_ = spriteBas_->GetDevice();
+	cmdList_ = spriteBas_->GetCommandList();
 
 	//テクスチャサイズをイメージに合わせる
 	if (textureIndex != UINT32_MAX) {
@@ -60,7 +61,7 @@ void Sprite::Update() {
 	vertices_[RightBottom].pos = Vector3(dir_.right, dir_.bottom, 0);
 	vertices_[RightTop].pos = Vector3(dir_.right, dir_.top, 0);
 
-	ID3D12Resource* textureBuffer = drawBas_->GetTextureBuffer(textureIndex_);
+	ID3D12Resource* textureBuffer = spriteBas_->GetTextureBuffer(textureIndex_);
 	//指定番号の画像が読み込み済みなら
 	if (textureBuffer) {
 		//テクスチャ情報取得
@@ -101,7 +102,7 @@ void Sprite::Draw() {
 	}
 
 	//描画用テクスチャコマンド
-	drawBas_->SetTextureCommand(textureIndex_);
+	spriteBas_->SetTextureCommand(textureIndex_);
 
 	//頂点バッファビューの設定コマンド
 	cmdList_->IASetVertexBuffers(0, 1, &vbView_);
@@ -300,7 +301,7 @@ void Sprite::ReCalcMatWorld() {
 }
 
 void Sprite::AdjustTextureSize() {
-	ID3D12Resource* textureBuffer = drawBas_->GetTextureBuffer(textureIndex_);
+	ID3D12Resource* textureBuffer = spriteBas_->GetTextureBuffer(textureIndex_);
 	assert(textureBuffer);
 
 	//テクスチャ情報取得

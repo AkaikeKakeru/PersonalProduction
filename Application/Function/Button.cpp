@@ -1,13 +1,12 @@
-#include "Button.h"
-
+ï»¿#include "Button.h"
 #include "Input.h"
-
-#include "DrawBasis.h"
+#include "SpriteBasis.h"
+#include "SafeDelete.h"
 
 void Button::Initialize(uint32_t index) {
 	sprite_ = new Sprite();
 	sprite_->SetAnchorPoint({ 0.5f, 0.5f });
-	sprite_->Initialize(DrawBasis::GetInstance(), index);
+	sprite_->Initialize(index);
 
 	pos_ = { 0,0 };
 	size_ = { 10,10 };
@@ -24,11 +23,15 @@ void Button::Draw() {
 	sprite_->Draw();
 }
 
+void Button::Finalize() {
+	SafeDelete(sprite_);
+}
+
 bool Button::ChackClick(bool whichMouseButtonWasPressed) {
 	Vector2 mousePosition = Input::GetInstance()->GetMousePosition();
 
 	if (whichMouseButtonWasPressed) {
-		//ƒ{ƒ^ƒ“‚ÆAƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ªd‚È‚Á‚Ä‚¢‚éó‘Ô‚©‚Ç‚¤‚©
+		//ãƒœã‚¿ãƒ³ã¨ã€ãƒžã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ãŒé‡ãªã£ã¦ã„ã‚‹çŠ¶æ…‹ã‹ã©ã†ã‹
 		if(mousePosition.x > 
 			(pos_.x - (size_.x / 2)) &&
 			mousePosition.x < 

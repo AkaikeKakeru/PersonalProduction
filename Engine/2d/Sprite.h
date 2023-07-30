@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "DrawBasis.h"
+#include "SpriteBasis.h"
 #include "Matrix4.h"
 #include "Vector3.h"
 
@@ -49,7 +49,7 @@ private://構造体
 	}VerticesParts;
 
 public://基本関数
-	void Initialize(DrawBasis* drawBas, uint32_t textureIndex = UINT32_MAX);
+	void Initialize(uint32_t textureIndex = UINT32_MAX);
 	void Update();
 	void Draw();
 
@@ -127,6 +127,9 @@ private://定数
 	static const int kVerticesNum = 4;
 
 private://メンバ変数
+	//Sprite基盤
+	static SpriteBasis* spriteBas_;
+
 	//ワールド変換
 	WorldTransform worldTransform_;
 	//上下左右
@@ -151,9 +154,6 @@ private://メンバ変数
 
 	//平行投影変換行列
 	Matrix4 matOrtGrapricProjection_;
-
-	//Draw基盤
-	DrawBasis* drawBas_ = nullptr;
 
 	//デバイス
 	ComPtr<ID3D12Device> device_;

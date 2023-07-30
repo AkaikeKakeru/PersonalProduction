@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "DrawBasis.h"
+#include "SpriteBasis.h"
 #include "Sprite.h"
 
 class DebugText {
@@ -16,7 +16,7 @@ public://定数
 	static const int fontLineCount_ = 14;	// フォント画像内1行分の文字数
 
 private://メンバ変数
-	DrawBasis* drawBas_ = nullptr;
+	static SpriteBasis* spriteBas_;
 
 	//スプライトデータ配列
 	Sprite* sprites_[maxCharCount_] = {};

@@ -1,5 +1,7 @@
 ﻿#include "DebugText.h"
 
+SpriteBasis* DebugText::spriteBas_ = SpriteBasis::GetInstance();
+
 DebugText::~DebugText() {
 	for (int i = 0; i < _countof(sprites_); i++) {
 		delete sprites_[i];
@@ -7,12 +9,10 @@ DebugText::~DebugText() {
 }
 
 void DebugText::Initialize(UINT fontTexNum) {
-	drawBas_ = DrawBasis::GetInstance();
-
 	for (int i = 0; i < _countof(sprites_); i++) {
 		// スプライト生成
 		sprites_[i] = new Sprite();
-		sprites_[i]->Initialize(drawBas_, fontTexNum);
+		sprites_[i]->Initialize(fontTexNum);
 	}
 }
 
