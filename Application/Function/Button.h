@@ -1,47 +1,47 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Vector2.h"
 #include "Sprite.h"
 
 class Button {
-public://ƒƒ“ƒoŠÖ”
+public://ãƒ¡ãƒ³ãƒé–¢æ•°
 	void Initialize(uint32_t index);
 	void Update();
 	void Draw();
 
-	//ƒ}ƒEƒXƒNƒŠƒbƒN‚ğŠm”F
+	//ãƒã‚¦ã‚¹ã‚¯ãƒªãƒƒã‚¯ã‚’ç¢ºèª
 	bool ChackClick(bool whichMouseButtonWasPressed);
 
-public://ƒAƒNƒZƒbƒT
-	//’†SˆÊ’uæ“¾
+public://ã‚¢ã‚¯ã‚»ãƒƒã‚µ
+	//ä¸­å¿ƒä½ç½®å–å¾—
 	const Vector2& GetPosition() {
 		return pos_;
 	}
-	//ƒTƒCƒYæ“¾
+	//ã‚µã‚¤ã‚ºå–å¾—
 	const Vector2& GetSize() {
 		return size_;
 	}
-	//ƒXƒvƒ‰ƒCƒgæ“¾
+	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆå–å¾—
 	Sprite* GetSprite() {
 		return sprite_;
 	}
 
-	//’†SˆÊ’uƒZƒbƒg
+	//ä¸­å¿ƒä½ç½®ã‚»ãƒƒãƒˆ
 	void SetPosition(const Vector2& position) {
 		pos_ = position;
 	}
-	//ƒTƒCƒYƒZƒbƒg
+	//ã‚µã‚¤ã‚ºã‚»ãƒƒãƒˆ
 	void SetSize(const Vector2& size) {
 		size_ = size;
 	}
-	//ƒXƒvƒ‰ƒCƒgƒZƒbƒg
+	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚»ãƒƒãƒˆ
 	void SetSprite(Sprite* sprite) {
 		sprite_ = sprite;
 	}
 
-private://ƒƒ“ƒo•Ï”
-	Vector2 pos_;//’†SˆÊ’u
-	Vector2 size_;//ƒTƒCƒY
+private://ãƒ¡ãƒ³ãƒå¤‰æ•°
+	Vector2 pos_;//ä¸­å¿ƒä½ç½®
+	Vector2 size_;//ã‚µã‚¤ã‚º
 
 	Sprite* sprite_;
 };

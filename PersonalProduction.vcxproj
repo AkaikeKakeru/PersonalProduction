@@ -161,6 +161,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application\Function\Button.cpp" />
     <ClCompile Include="Application\Function\Collider\Collision.cpp" />
     <ClCompile Include="Application\Function\Collider\CollisionManager.cpp" />
     <ClCompile Include="Application\Function\Collider\CollisionPrimitive.cpp" />
@@ -207,6 +208,7 @@
     <ClCompile Include="Engine\ConstBuffer\WorldTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\Function\Button.h" />
     <ClInclude Include="Application\Function\Collider\BaseCollider.h" />
     <ClInclude Include="Application\Function\Collider\Collision.h" />
     <ClInclude Include="Application\Function\Collider\CollisionAttribute.h" />
