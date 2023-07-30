@@ -53,31 +53,58 @@ void GameClearScene::Initialize(){
 	//テキスト
 	text_ = new Text();
 	text_->Initialize(Framework::kTextTextureIndex_);
+
+	//ボタン
+
+	buttonTitle_ = new Button();
+	buttonTitle_->Initialize(0);
+	buttonTitle_->SetPosition({ 300.0f ,500.0f });
+	buttonTitle_->SetSize({ 400.0f,96.0f });
+
+	buttonRetry_ = new Button();
+	buttonRetry_->Initialize(0);
+	buttonRetry_->SetPosition({WinApp::Win_Width - 300.0f ,500.0f });
+	buttonRetry_->SetSize({ 400.0f,96.0f });
 }
 
 void GameClearScene::Update(){
 	input_->Update();
+
+	if (buttonTitle_->ChackClick(input_->TriggerMouse(0))) {
+		//シーンの切り替えを依頼
+		SceneManager::GetInstance()->ChangeScene("TITLE");
+	}
+	else if (buttonRetry_->ChackClick(input_->TriggerMouse(0))){
+		//シーンの切り替えを依頼
+		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+	}
 
 	light_->Update();
 
 	skydomeObj_->Update();
 	planeObj_->Update();
 
+	buttonRetry_->Update();
+	buttonTitle_->Update();
+
 	sprite_->Update();
 
-	if (input_->TriggerKey(DIK_BACK)) {
-		//シーンの切り替えを依頼
-		SceneManager::GetInstance()->ChangeScene("TITLE");
-	}
-	else if (input_->TriggerKey(DIK_RETURN)) {
-		//シーンの切り替えを依頼
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
-	}
+	float textSize = 5.0f;
+
+	text_->Print("Title",
+		buttonTitle_->GetPosition().x - (text_->fontWidth_ * 2.0f * 5.0f),
+		buttonTitle_->GetPosition().y,
+		textSize);
+
+	text_->Print("Retry",
+		buttonRetry_->GetPosition().x - (text_->fontWidth_ * 2.0f * 5.0f),
+		buttonRetry_->GetPosition().y,
+		textSize);
 
 	text_->Print("GAME CLEAR!",
-		WinApp::Win_Width/4 + text_->fontWidth_ * 6.5f,
-		WinApp::Win_Height/2,
-		5.0f);
+		WinApp::Win_Width / 2 - (text_->fontWidth_ * 2.0f * 11.0f),
+		WinApp::Win_Height / 2,
+		textSize);
 }
 
 void GameClearScene::Draw(){
@@ -100,6 +127,9 @@ void GameClearScene::Draw(){
 
 	sprite_->Draw();
 
+	buttonRetry_->Draw();
+	buttonTitle_->Draw();
+
 	text_->DrawAll();
 
 	SpriteBasis::GetInstance()->PostDraw();
@@ -114,5 +144,12 @@ void GameClearScene::Finalize(){
 
 	SafeDelete(light_);
 	SafeDelete(camera_);
+
+	buttonRetry_->Finalize();
+	SafeDelete(buttonRetry_);
+
+	buttonTitle_->Finalize();
+	SafeDelete(buttonTitle_);
+
 	SafeDelete(text_);
 }

@@ -8,6 +8,7 @@
 #include "Model.h"
 
 #include "Text.h"
+#include "Button.h"
 
 #include "Camera.h"
 #include "LightGroup.h"
@@ -48,6 +49,10 @@ private:
 	/// </summary>
 	Sprite* sprite_ = nullptr;
 
-	///テキスト
+	//テキスト
 	Text* text_ = nullptr;
+
+	//ボタン
+	Button* buttonTitle_ = nullptr;
+	Button* buttonRetry_ = nullptr;
 };
