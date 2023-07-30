@@ -1,4 +1,4 @@
-﻿#include "DrawBasis.h"
+﻿#include "SpriteBasis.h"
 #include <d3d12.h>
 #include <d3dcompiler.h>
 #include <wrl.h>
@@ -13,47 +13,47 @@ template <class T>
 using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 //デフォルトテクスチャ格納ディレクトリ
-std::string DrawBasis::kDefaultTextureDhirectoryPath = "Resource/";
+std::string SpriteBasis::kDefaultTextureDhirectoryPath = "Resource/";
 
-//Draw基盤
-DirectXBasis* DrawBasis::dxBas_ = nullptr;
+//DirectX基盤
+DirectXBasis* SpriteBasis::dxBas_ = nullptr;
 
 //デバイス
-ComPtr<ID3D12Device> DrawBasis::device_;
+ComPtr<ID3D12Device> SpriteBasis::device_;
 //コマンドリスト
-ComPtr<ID3D12GraphicsCommandList> DrawBasis::cmdList_;
+ComPtr<ID3D12GraphicsCommandList> SpriteBasis::cmdList_;
 
 /// <summary>
 /// パイプライン
 /// </summary>
 
 //頂点シェーダオブジェクト
-ComPtr<ID3DBlob> DrawBasis::vsBlob_;
+ComPtr<ID3DBlob> SpriteBasis::vsBlob_;
 //ピクセルシェーダオブジェクト
-ComPtr<ID3DBlob> DrawBasis::psBlob_;
+ComPtr<ID3DBlob> SpriteBasis::psBlob_;
 //エラーオブジェクト
-ComPtr<ID3DBlob> DrawBasis::errorBlob_;
+ComPtr<ID3DBlob> SpriteBasis::errorBlob_;
 //頂点レイアウト
-D3D12_INPUT_ELEMENT_DESC DrawBasis::inputLayout_[kInputLayoutElement];
+D3D12_INPUT_ELEMENT_DESC SpriteBasis::inputLayout_[kInputLayoutElement];
 //グラフィックスパイプラインデスク
-D3D12_GRAPHICS_PIPELINE_STATE_DESC DrawBasis::pipelineDesc_{};
+D3D12_GRAPHICS_PIPELINE_STATE_DESC SpriteBasis::pipelineDesc_{};
 //ルートシグネイチャ
-ComPtr<ID3D12RootSignature> DrawBasis::rootSignature_;
+ComPtr<ID3D12RootSignature> SpriteBasis::rootSignature_;
 //パイプラインステート
-ComPtr<ID3D12PipelineState> DrawBasis::pipelineState_;
+ComPtr<ID3D12PipelineState> SpriteBasis::pipelineState_;
 
 /// <summary>
 /// テクスチャ
 /// </summary>
 
 //デスクリプタヒープ
-ComPtr<ID3D12DescriptorHeap> DrawBasis::srvHeap_;
+ComPtr<ID3D12DescriptorHeap> SpriteBasis::srvHeap_;
 //インクリメントサイズ
-UINT DrawBasis::incrementSize_;
+UINT SpriteBasis::incrementSize_;
 //テクスチャ格納ディレクトリ
-std::string DrawBasis::textureDhirectoryPath_;
+std::string SpriteBasis::textureDhirectoryPath_;
 
-void DrawBasis::Initialize() {
+void SpriteBasis::Initialize() {
 	dxBas_ = DirectXBasis::GetInstance();
 
 	device_ = dxBas_->GetDevice();
@@ -73,7 +73,7 @@ void DrawBasis::Initialize() {
 	CreateGraphicsPipeline();
 }
 
-void DrawBasis::PreDraw() {
+void SpriteBasis::PreDraw() {
 	//パイプラインステートとルートシグネイチャの設定コマンド
 	cmdList_->SetPipelineState(pipelineState_.Get());
 	cmdList_->SetGraphicsRootSignature(rootSignature_.Get());
@@ -86,7 +86,7 @@ void DrawBasis::PreDraw() {
 	cmdList_->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
 
-void DrawBasis::SetTextureCommand(uint32_t textureIndex) {
+void SpriteBasis::SetTextureCommand(uint32_t textureIndex) {
 	////SRVヒープの先頭ハンドルを取得(SRVを指しているはず)
 	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = srvHeap_->GetGPUDescriptorHandleForHeapStart();
 	for (size_t i = 0; i < textureIndex; i++) {
@@ -96,11 +96,11 @@ void DrawBasis::SetTextureCommand(uint32_t textureIndex) {
 	cmdList_->SetGraphicsRootDescriptorTable(1, srvGpuHandle);
 }
 
-void DrawBasis::PostDraw() {
+void SpriteBasis::PostDraw() {
 
 }
 
-void DrawBasis::CompileShaderFile() {
+void SpriteBasis::CompileShaderFile() {
 	HRESULT result;
 
 	//頂点シェーダの読み込みとコンパイル
@@ -154,7 +154,7 @@ void DrawBasis::CompileShaderFile() {
 	}
 }
 
-void DrawBasis::AssembleVertexLayout() {
+void SpriteBasis::AssembleVertexLayout() {
 	//頂点レイアウト
 	enum LayoutElement {
 		Position,
@@ -182,14 +182,14 @@ void DrawBasis::AssembleVertexLayout() {
 	};
 }
 
-void DrawBasis::CreateGraphicsPipeline() {
+void SpriteBasis::CreateGraphicsPipeline() {
 	AssembleGraphicsPipeline();
 	GenerateRootSignature();
 	GeneratePipelineState();
 	GenerateDescriptorHeap();
 }
 
-void DrawBasis::AssembleGraphicsPipeline() {
+void SpriteBasis::AssembleGraphicsPipeline() {
 	//グラフィックスパイプライン設定
 
 //シェーダ情報を組み込む
@@ -254,7 +254,7 @@ void DrawBasis::AssembleGraphicsPipeline() {
 	pipelineDesc_.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;//0～255指定のRGBA
 	pipelineDesc_.SampleDesc.Count = 1;//1ピクセルにつき1回サンプリング
 }
-void DrawBasis::GenerateRootSignature() {
+void SpriteBasis::GenerateRootSignature() {
 	HRESULT result;
 
 	//デスクリプタレンジの設定
@@ -322,7 +322,7 @@ void DrawBasis::GenerateRootSignature() {
 	pipelineDesc_.pRootSignature = rootSignature_.Get();
 }
 
-void DrawBasis::GeneratePipelineState() {
+void SpriteBasis::GeneratePipelineState() {
 	HRESULT result;
 	//パイプラインステートの生成
 	result = device_->CreateGraphicsPipelineState(
@@ -331,7 +331,7 @@ void DrawBasis::GeneratePipelineState() {
 	assert(SUCCEEDED(result));
 }
 
-void DrawBasis::LoadTexture(uint32_t textureIndex, const std::string& fileName) {
+void SpriteBasis::LoadTexture(uint32_t textureIndex, const std::string& fileName) {
 	//ディレクトリパスとファイル名を連結して、フルパスを得る
 	std::string fullPath = textureDhirectoryPath_ + fileName;//「Resources」+「○○.拡張子」
 
@@ -348,7 +348,7 @@ void DrawBasis::LoadTexture(uint32_t textureIndex, const std::string& fileName) 
 	CreateShaderResourceView(textureIndex);
 }
 
-void DrawBasis::GenerateTextureBuffer(uint32_t textureIndex, const wchar_t* wfileName) {
+void SpriteBasis::GenerateTextureBuffer(uint32_t textureIndex, const wchar_t* wfileName) {
 	HRESULT result;
 
 	TexMetadata metadata{};
@@ -419,7 +419,7 @@ void DrawBasis::GenerateTextureBuffer(uint32_t textureIndex, const wchar_t* wfil
 	}
 }
 
-void DrawBasis::GenerateDescriptorHeap() {
+void SpriteBasis::GenerateDescriptorHeap() {
 	HRESULT result;
 
 	//デスクリプタヒープの設定
@@ -434,7 +434,7 @@ void DrawBasis::GenerateDescriptorHeap() {
 	assert(SUCCEEDED(result));
 }
 
-void DrawBasis::CreateShaderResourceView(uint32_t textureIndex) {
+void SpriteBasis::CreateShaderResourceView(uint32_t textureIndex) {
 	//SRVヒープの先頭アドレスを取得
 	srvHandle_ = srvHeap_->GetCPUDescriptorHandleForHeapStart();
 	for (size_t i = 0; i < textureIndex; i++) {
@@ -457,7 +457,7 @@ void DrawBasis::CreateShaderResourceView(uint32_t textureIndex) {
 		srvHandle_);
 }
 
-DrawBasis* DrawBasis::GetInstance() {
-	static DrawBasis instance;
+SpriteBasis* SpriteBasis::GetInstance() {
+	static SpriteBasis instance;
 	return &instance;
 }

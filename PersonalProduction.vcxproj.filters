@@ -165,7 +165,7 @@
     <ClCompile Include="Application\Base\Framework.cpp">
       <Filter>ソース ファイル\Application\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\2d\DrawBasis.cpp">
+    <ClCompile Include="Engine\2d\SpriteBasis.cpp">
       <Filter>ソース ファイル\Engine\2d</Filter>
     </ClCompile>
     <ClCompile Include="Engine\2d\Sprite.cpp">
@@ -296,7 +296,7 @@
     <ClInclude Include="Application\Base\Framework.h">
       <Filter>ヘッダー ファイル\Application\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\2d\DrawBasis.h">
+    <ClInclude Include="Engine\2d\SpriteBasis.h">
       <Filter>ヘッダー ファイル\Engine\2d</Filter>
     </ClInclude>
     <ClInclude Include="Engine\2d\Sprite.h">

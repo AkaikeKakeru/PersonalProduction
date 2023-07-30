@@ -181,7 +181,7 @@
     <ClCompile Include="Engine\3d\Camera\Camera.cpp" />
     <ClCompile Include="Application\Function\Cursor.cpp" />
     <ClCompile Include="Application\Base\DirectXBasis.cpp" />
-    <ClCompile Include="Engine\2d\DrawBasis.cpp" />
+    <ClCompile Include="Engine\2d\SpriteBasis.cpp" />
     <ClCompile Include="Application\Base\FixFPS.cpp" />
     <ClCompile Include="Application\Base\Framework.cpp" />
     <ClCompile Include="Application\Game\GameMain.cpp" />
@@ -235,7 +235,7 @@
     <ClInclude Include="Application\Function\Cursor.h" />
     <ClInclude Include="Engine\Debugger\DebugText.h" />
     <ClInclude Include="Application\Base\DirectXBasis.h" />
-    <ClInclude Include="Engine\2d\DrawBasis.h" />
+    <ClInclude Include="Engine\2d\SpriteBasis.h" />
     <ClInclude Include="Application\Base\FixFPS.h" />
     <ClInclude Include="Application\Base\Framework.h" />
     <ClInclude Include="Application\Game\Scene\GamePlayScene.h" />
