@@ -25,7 +25,7 @@ public:
 	static SceneManager* GetSceneManager(){ return sceneManager_; }
 
 public: //定数
-	const int kTextTextureIndex_ = 100;
+	static const int kTextTextureIndex_ = 100;
 
 private:
 	//ウィンドウアプリ
