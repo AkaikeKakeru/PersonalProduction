@@ -134,8 +134,14 @@ void Enemy::Update() {
 
 	//Reticle();
 
-	//発射
-	//Fire();
+	fireTimer_--;
+
+	if (fireTimer_ <= 0) {
+		//発射
+		Fire();
+		//発射タイマーを初期化
+		fireTimer_ = kFireInterval;
+	}
 
 	Object3d::Update();
 
@@ -186,49 +192,47 @@ void Enemy::OnCollision(const CollisionInfo& info) {
 }
 
 void Enemy::Fire() {
-	if (input_->TriggerMouse(0)) {
-		//弾スピード
-		const float kBulletSpeed = 2.0f;
-		//毎フレーム弾が前進する速度
-		Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
+	//弾スピード
+	const float kBulletSpeed = 2.0f;
+	//毎フレーム弾が前進する速度
+	Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
 
-		//速度ベクトルを自機の向きに合わせて回転させる
-		bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
-		
-		//bulletVelocity =
-		//	Vector3{
-		//	worldTransform3dReticle_.matWorld_.m[3][0],
-		//	worldTransform3dReticle_.matWorld_.m[3][1],
-		//	worldTransform3dReticle_.matWorld_.m[3][2]
-		//} - Vector3{
-		//		worldTransform_.matWorld_.m[3][0],
-		//		worldTransform_.matWorld_.m[3][1],
-		//		worldTransform_.matWorld_.m[3][2]
-		//};
+	//速度ベクトルを自機の向きに合わせて回転させる
+	bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
 
-		bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
+	//bulletVelocity =
+	//	Vector3{
+	//	worldTransform3dReticle_.matWorld_.m[3][0],
+	//	worldTransform3dReticle_.matWorld_.m[3][1],
+	//	worldTransform3dReticle_.matWorld_.m[3][2]
+	//} - Vector3{
+	//		worldTransform_.matWorld_.m[3][0],
+	//		worldTransform_.matWorld_.m[3][1],
+	//		worldTransform_.matWorld_.m[3][2]
+	//};
 
-		//弾の生成、初期化
-		std::unique_ptr<EnemyBullet> newBullet =
-			std::make_unique<EnemyBullet>();
+	bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
 
-		newBullet->Initialize();
+	//弾の生成、初期化
+	std::unique_ptr<EnemyBullet> newBullet =
+		std::make_unique<EnemyBullet>();
 
-		newBullet->SetModel(bulletModel_);
+	newBullet->Initialize();
 
-		newBullet->SetScale(worldTransform_.scale_);
-		newBullet->SetRotation(worldTransform_.rotation_);
-		newBullet->SetPosition(Vector3{
-			worldTransform_.matWorld_.m[3][0],
-			worldTransform_.matWorld_.m[3][1],
-			worldTransform_.matWorld_.m[3][2]
-			});
+	newBullet->SetModel(bulletModel_);
 
-		newBullet->SetVelocity(bulletVelocity);
-		newBullet->SetCamera(camera_);
+	newBullet->SetScale(worldTransform_.scale_);
+	newBullet->SetRotation(worldTransform_.rotation_);
+	newBullet->SetPosition(Vector3{
+		worldTransform_.matWorld_.m[3][0],
+		worldTransform_.matWorld_.m[3][1],
+		worldTransform_.matWorld_.m[3][2]
+		});
 
-		newBullet->Update();
+	newBullet->SetVelocity(bulletVelocity);
+	newBullet->SetCamera(camera_);
 
-		gameScene_->AddEnemyBullet(std::move(newBullet));
-	}
+	newBullet->Update();
+
+	gameScene_->AddEnemyBullet(std::move(newBullet));
 }

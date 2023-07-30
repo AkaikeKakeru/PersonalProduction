@@ -32,6 +32,10 @@ public://メンバ関数
 	//発射
 	void Fire();
 
+public://定数
+	//発射間隔
+	static const int kFireInterval = 60;
+
 public: //アクセッサ
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_;
@@ -85,6 +89,9 @@ private: //メンバ変数
 
 	//デスフラグ
 	bool isDead_ = false;
+
+	//発射タイマー
+	int32_t fireTimer_ = 0;
 
 private: //ImGui用
 	//Vector3の要素数
