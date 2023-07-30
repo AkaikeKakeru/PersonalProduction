@@ -60,6 +60,14 @@ public: //public固有関数
 	/// <returns>今押した瞬間か否か</returns>
 	bool TriggerMouse(int32_t buttonNum);
 
+	/// <summary>
+	/// マウスを今離した瞬間か
+	/// </summary>
+	/// <param name="buttonNum">マウス番号</param>
+	/// <param name="buttonNum">0:左,1:右,2:中央</param>
+	/// <returns>今離した瞬間か否か</returns>
+	bool ReleaseMouse(int32_t buttonNum);
+
 	const Vector2& GetMousePosition() const { return mousePos_; }
 
 public://固有関数
