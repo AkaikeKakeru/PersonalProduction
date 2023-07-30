@@ -16,7 +16,6 @@ void TitleScene::Initialize(){
 	imGuiManager_ = ImGuiManager::GetInstance();
 
 	//オブジェクト基盤
-	Object3d::StaticInitialize(dxBas_->GetDevice().Get());
 
 	//オブジェクトモデル
 
@@ -64,6 +63,13 @@ void TitleScene::Update(){
 		//シーンの切り替えを依頼
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}
+
+#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_SPACE)) {
+		//シーンの切り替えを依頼
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+	}
+#endif // _DEBUG
 }
 
 void TitleScene::Draw(){
