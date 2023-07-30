@@ -65,6 +65,8 @@ void Framework::Initialize(){
 	spriteBas->LoadTexture(0, "texture.png");
 	spriteBas->LoadTexture(1, "texture.png");
 
+	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");
+
 	//ライト静的初期化
 	LightGroup::StaticInitialize(dxBas_->GetDevice().Get());
 }
