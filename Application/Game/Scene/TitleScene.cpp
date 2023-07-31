@@ -23,7 +23,7 @@ void TitleScene::Initialize(){
 	camera_ = new Camera();
 
 	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("plane", false);
+	planeModel_ = Model::LoadFromOBJ("plane", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome",false);
@@ -77,7 +77,7 @@ void TitleScene::Update(){
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_SPACE)) {
 		//シーンの切り替えを依頼
-		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
 	}
 #endif // _DEBUG
 
@@ -90,7 +90,14 @@ void TitleScene::Update(){
 
 	sprite_->Update();
 
-	float textSize = 2.5f;
+	float textSize = 5.0f;
+
+	text_->Print("Personal Production",
+		buttonStart_->GetPosition().x - (text_->fontWidth_ * 2.0f * 21.0f),
+		WinApp::Win_Height / 4,
+		textSize);
+
+	textSize = 2.5f;
 
 	text_->Print("Press here to Start",
 		buttonStart_->GetPosition().x - (text_->fontWidth_ * 19.0f),
@@ -108,7 +115,7 @@ void TitleScene::Draw(){
 	//モデル本命処理
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
 
-	skydomeObj_->Draw();
+	//skydomeObj_->Draw();
 	planeObj_->Draw();
 
 	Object3d::PostDraw();
@@ -116,7 +123,7 @@ void TitleScene::Draw(){
 	//スプライト本命処理
 	SpriteBasis::GetInstance()->PreDraw();
 
-	sprite_->Draw();
+	//sprite_->Draw();
 
 	buttonStart_->Draw();
 

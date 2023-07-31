@@ -4,6 +4,7 @@
 #include "Framework.h"
 #include "SceneManager.h"
 #include <imgui.h>
+#include <Quaternion.h>
 
 DirectXBasis* GameClearScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GameClearScene::input_ = Input::GetInstance();
@@ -23,7 +24,7 @@ void GameClearScene::Initialize(){
 	camera_ = new Camera();
 
 	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("plane", false);
+	planeModel_ = Model::LoadFromOBJ("plane", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome",false);
@@ -31,6 +32,8 @@ void GameClearScene::Initialize(){
 	planeObj_ = new Object3d();
 	planeObj_ = Object3d::Create();
 	planeObj_->SetModel(planeModel_);
+	planeObj_->SetRotation(CreateRotationVector(
+		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
 	planeObj_->SetCamera(camera_);
 
 	skydomeObj_ = new Object3d();
@@ -127,7 +130,7 @@ void GameClearScene::Draw(){
 	//モデル本命処理
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
 
-	skydomeObj_->Draw();
+	//skydomeObj_->Draw();
 	planeObj_->Draw();
 
 	Object3d::PostDraw();
@@ -135,7 +138,7 @@ void GameClearScene::Draw(){
 	//スプライト本命処理
 	SpriteBasis::GetInstance()->PreDraw();
 
-	sprite_->Draw();
+	//sprite_->Draw();
 
 	buttonRetry_->Draw();
 	buttonTitle_->Draw();
