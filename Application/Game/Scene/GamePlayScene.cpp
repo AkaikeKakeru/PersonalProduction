@@ -241,7 +241,11 @@ void GamePlayScene::AddEnemy(
 	newEnemy->SetModel(planeEnemyModel_);
 	newEnemy->SetBulletModel(bulletModel_);
 
-	newEnemy->SetFireTimer(static_cast<int32_t>(RandomOutput(6.0f, 12.0f)));
+	newEnemy->SetFireTimer(
+		static_cast<int32_t>(
+			RandomOutput(3.0f, 7.0f)
+			)
+	);
 
 	newEnemy->SetCamera(camera_);
 	newEnemy->Update();
