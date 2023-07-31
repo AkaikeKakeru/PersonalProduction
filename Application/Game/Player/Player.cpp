@@ -138,7 +138,7 @@ void Player::Update() {
 	Object3d::Update();
 
 	if (isDamage_) {
-		life_ -= 5.0f;
+		life_ -= kDamage_;
 		isDamage_ = false;
 	}
 
