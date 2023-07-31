@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include "CollisionManager.h"
 #include "SceneManager.h"
+#include "Random.h"
 
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GamePlayScene::input_ = Input::GetInstance();
@@ -22,7 +23,7 @@ void GamePlayScene::Update() {
 
 	Update3d();
 	Update2d();
-	
+
 	collisionManager_->CheckAllCollisions();
 }
 
@@ -85,32 +86,32 @@ void GamePlayScene::Initialize3d() {
 
 #pragma region Enemy
 	{
-	//std::unique_ptr<Enemy> newEnemy =
-	//	std::make_unique<Enemy>();
-	//newEnemy->Initialize();
+		//std::unique_ptr<Enemy> newEnemy =
+		//	std::make_unique<Enemy>();
+		//newEnemy->Initialize();
 
-	//newEnemy->SetScale({ 1.0f, 1.0f, 1.0f });
-	//newEnemy->SetRotation(CreateRotationVector(
-	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
-	//newEnemy->SetPosition({ -70.0f,0.0f,30.0f });
+		//newEnemy->SetScale({ 1.0f, 1.0f, 1.0f });
+		//newEnemy->SetRotation(CreateRotationVector(
+		//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
+		//newEnemy->SetPosition({ -70.0f,0.0f,30.0f });
 
-	//newEnemy->SetModel(planeEnemyModel_);
-	//newEnemy->SetCamera(camera_);
-	//newEnemy->Update();
-	////リストに登録
-	//enemys_.push_back(std::move(newEnemy));
+		//newEnemy->SetModel(planeEnemyModel_);
+		//newEnemy->SetCamera(camera_);
+		//newEnemy->Update();
+		////リストに登録
+		//enemys_.push_back(std::move(newEnemy));
 	}
 	{
-	//enemy_ = Enemy::Create(planeEnemyModel_);
-	//enemy_->SetGameScene(this);
-	//enemy_->SetBulletModel(bulletModel_);
-	//enemy_->SetScale({ 1.0f, 1.0f, 1.0f });
-	//enemy_->SetRotation(CreateRotationVector(
-	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
-	//enemy_->SetPosition({ 0.0f,0.0f,100.0f });
+		//enemy_ = Enemy::Create(planeEnemyModel_);
+		//enemy_->SetGameScene(this);
+		//enemy_->SetBulletModel(bulletModel_);
+		//enemy_->SetScale({ 1.0f, 1.0f, 1.0f });
+		//enemy_->SetRotation(CreateRotationVector(
+		//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
+		//enemy_->SetPosition({ 0.0f,0.0f,100.0f });
 
-	//enemy_->SetCamera(camera_);
-	//enemy_->Update();
+		//enemy_->SetCamera(camera_);
+		//enemy_->Update();
 	}
 #pragma endregion
 
@@ -239,6 +240,8 @@ void GamePlayScene::AddEnemy(
 
 	newEnemy->SetModel(planeEnemyModel_);
 	newEnemy->SetBulletModel(bulletModel_);
+
+	newEnemy->SetFireTimer(static_cast<int32_t>(RandomOutput(6.0f, 12.0f)));
 
 	newEnemy->SetCamera(camera_);
 	newEnemy->Update();

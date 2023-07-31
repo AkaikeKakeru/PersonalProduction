@@ -35,7 +35,7 @@ public://メンバ関数
 
 public://定数
 	//発射間隔
-	static const int kFireInterval = 60;
+	static const int kFireInterval = 60 * 5;
 
 public: //アクセッサ
 	const Vector3& GetPosition() const {
@@ -67,6 +67,11 @@ public: //アクセッサ
 	//プレイヤーのセット
 	void SetPlayer(Player* player) {
 		player_ = player;
+	}
+
+	//発射タイマーのセット(フレーム単位)
+	void SetFireTimer(int32_t timerFrame) {
+		fireTimer_ = timerFrame * 60;
 	}
 
 private: //静的メンバ変数
