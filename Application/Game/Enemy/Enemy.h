@@ -9,6 +9,7 @@
 #include <memory>
 
 class GamePlayScene;
+class Player;
 class CollisionManager;
 
 //エネミー
@@ -31,6 +32,10 @@ public://メンバ関数
 
 	//発射
 	void Fire();
+
+public://定数
+	//発射間隔
+	static const int kFireInterval = 60 * 5;
 
 public: //アクセッサ
 	const Vector3& GetPosition() const {
@@ -59,6 +64,16 @@ public: //アクセッサ
 		gameScene_ = gameScene;
 	}
 
+	//プレイヤーのセット
+	void SetPlayer(Player* player) {
+		player_ = player;
+	}
+
+	//発射タイマーのセット(フレーム単位)
+	void SetFireTimer(int32_t timerFrame) {
+		fireTimer_ = timerFrame * 60;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -70,6 +85,9 @@ private: //静的メンバ変数
 private: //メンバ変数
 	//ゲームシーン
 	GamePlayScene* gameScene_ = nullptr;
+
+	//プレイヤー
+	Player* player_ = nullptr;
 
 	//半径
 	float radius_ = 1.0f;
@@ -85,6 +103,9 @@ private: //メンバ変数
 
 	//デスフラグ
 	bool isDead_ = false;
+
+	//発射タイマー
+	int32_t fireTimer_ = 0;
 
 private: //ImGui用
 	//Vector3の要素数

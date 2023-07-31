@@ -23,7 +23,7 @@ void TitleScene::Initialize(){
 	camera_ = new Camera();
 
 	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("plane", false);
+	planeModel_ = Model::LoadFromOBJ("plane", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome",false);
@@ -47,19 +47,29 @@ void TitleScene::Initialize(){
 
 	//描画スプライト
 	sprite_->Initialize(0);
+
+	//テキスト
+	text_ = new Text();
+	text_->Initialize(Framework::kTextTextureIndex_);
+
+	//ボタン
+
+	buttonStart_ = new Button();
+	buttonStart_->Initialize(0);
+	buttonStart_->SetPosition({ WinApp::Win_Width / 2 ,500.0f });
+	buttonStart_->SetSize({ 600.0f,96.0f });
 }
 
 void TitleScene::Update(){
 	input_->Update();
 
-	light_->Update();
+	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
 
-	skydomeObj_->Update();
-	planeObj_->Update();
+	if (buttonStart_->ChackClick(input_->PressMouse(0))) {
+		buttonStart_->SetColor({ 0.4f,0.4f,0.4f,1.0f });
+	}
 
-	sprite_->Update();
-
-	if (input_->TriggerKey(DIK_RETURN)) {
+	if (buttonStart_->ChackClick(input_->ReleaseMouse(0))) {
 		//シーンの切り替えを依頼
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}
@@ -70,6 +80,29 @@ void TitleScene::Update(){
 		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
 	}
 #endif // _DEBUG
+
+	light_->Update();
+
+	skydomeObj_->Update();
+	planeObj_->Update();
+
+	buttonStart_->Update();
+
+	sprite_->Update();
+
+	float textSize = 5.0f;
+
+	text_->Print("Personal Production",
+		buttonStart_->GetPosition().x - (text_->fontWidth_ * 2.0f * 21.0f),
+		WinApp::Win_Height / 4,
+		textSize);
+
+	textSize = 2.5f;
+
+	text_->Print("Press here to Start",
+		buttonStart_->GetPosition().x - (text_->fontWidth_ * 19.0f),
+		buttonStart_->GetPosition().y,
+		textSize);
 }
 
 void TitleScene::Draw(){
@@ -82,7 +115,7 @@ void TitleScene::Draw(){
 	//モデル本命処理
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
 
-	skydomeObj_->Draw();
+	//skydomeObj_->Draw();
 	planeObj_->Draw();
 
 	Object3d::PostDraw();
@@ -90,7 +123,11 @@ void TitleScene::Draw(){
 	//スプライト本命処理
 	SpriteBasis::GetInstance()->PreDraw();
 
-	sprite_->Draw();
+	//sprite_->Draw();
+
+	buttonStart_->Draw();
+
+	text_->DrawAll();
 
 	SpriteBasis::GetInstance()->PostDraw();
 }
@@ -104,4 +141,9 @@ void TitleScene::Finalize(){
 
 	SafeDelete(light_);
 	SafeDelete(camera_);
+
+	buttonStart_->Finalize();
+	SafeDelete(buttonStart_);
+
+	SafeDelete(text_);
 }

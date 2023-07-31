@@ -37,7 +37,10 @@ public://メンバ関数
 	void Attack();
 
 public: //定数
+	//自機のデフォルト体力
 	const float kDefaultPlayerLife_ = 10.0f;
+	//ダメージ量
+	const float kDamage_ = 3.0f;
 
 public: //アクセッサ
 	const Vector3& GetPosition() const {

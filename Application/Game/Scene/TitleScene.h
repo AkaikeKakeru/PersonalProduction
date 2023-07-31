@@ -7,6 +7,9 @@
 #include "Sprite.h"
 #include "Object3d.h"
 
+#include "Text.h"
+#include "Button.h"
+
 #include "Camera.h"
 #include "LightGroup.h"
 
@@ -44,4 +47,10 @@ private:
 	/// スプライト
 	/// </summary>
 	Sprite* sprite_ = new Sprite();
+
+	//テキスト
+	Text* text_ = nullptr;
+
+	//ボタン
+	Button* buttonStart_ = nullptr;
 };
