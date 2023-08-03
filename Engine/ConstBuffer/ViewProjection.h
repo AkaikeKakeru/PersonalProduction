@@ -4,7 +4,7 @@
 #include "Matrix4.h"
 #include <d3d12.h>
 #include <wrl.h>
-#include "Degree.h"
+#include "MyMath.h"
 
 //定数バッファデータ構造体(ビュープロジェクション)
 struct ConstBufferDataViewProjection {
