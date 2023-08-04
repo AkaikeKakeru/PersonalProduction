@@ -45,6 +45,12 @@ public://メンバ定数
 	//寿命<フレーム単位>
 	static const int32_t kLifeTime_ = 60 * 5;
 
+	//斧高さのデフォルト
+	const float kDefaultHeightAxe_ = 3.0f;
+
+	//重力
+	const float kGravity_ = 9.8f;
+
 private: //メンバ変数
 	//半径
 	float radius_ = 1.0f;
@@ -57,6 +63,9 @@ private: //メンバ変数
 
 	//自壊フラグ
 	bool isDead_ = false;
+
+	//斧高さ
+	float heightAxe_ = 0.0f;
 
 public:
 	EnemyBullet() = default;
