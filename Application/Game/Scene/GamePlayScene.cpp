@@ -62,6 +62,9 @@ void GamePlayScene::Initialize3d() {
 	railCamera_->SetUp(camera_->GetUp());
 	railCamera_->Update();
 
+	debugCamera_ = new DebugCamera();
+	debugCamera_->Initialize({ 0,20,-50 }, { ConvertToRadian(10),0,0 });
+
 	planeModel_ = new Model();
 	planeModel_ = Model::LoadFromOBJ("plane", true);
 	planeEnemyModel_ = Model::LoadFromOBJ("planeEnemy", true);
@@ -161,6 +164,20 @@ void GamePlayScene::Update3d() {
 		});
 
 	railCamera_->Update();
+
+#ifdef _DEBUG
+	if (input_->ReleaseKey(DIK_Q)) {
+		isDebugCamera_ = !isDebugCamera_;
+	}
+#endif // _DEBUG
+
+	if (isDebugCamera_) {
+		debugCamera_->Update();
+	
+		railCamera_->SetEye(debugCamera_->GetEye());
+		railCamera_->SetTarget(debugCamera_->GetTarget());
+		railCamera_->SetUp(debugCamera_->GetUp());
+	}
 
 	camera_->SetEye(railCamera_->GetEye());
 	camera_->SetTarget(railCamera_->GetTarget());
@@ -306,6 +323,7 @@ void GamePlayScene::Finalize() {
 	SafeDelete(player_);
 
 	SafeDelete(light_);
+	SafeDelete(debugCamera_);
 	railCamera_->Finalize();
 	SafeDelete(railCamera_);
 	SafeDelete(camera_);

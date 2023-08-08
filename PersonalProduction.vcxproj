@@ -166,7 +166,6 @@
     <ClCompile Include="Application\Function\Collider\CollisionManager.cpp" />
     <ClCompile Include="Application\Function\Collider\CollisionPrimitive.cpp" />
     <ClCompile Include="Application\Function\Collider\SphereCollider.cpp" />
-    <ClCompile Include="Application\Function\Fluid.cpp" />
     <ClCompile Include="Application\Game\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\Game\Enemy\EnemyBullet.cpp" />
     <ClCompile Include="Application\Game\Player\Player.cpp" />
@@ -177,6 +176,7 @@
     <ClCompile Include="Application\Game\Scene\Manager\BaseScene.cpp" />
     <ClCompile Include="Application\Math\MyMath.cpp" />
     <ClCompile Include="Application\Math\Quaternion.cpp" />
+    <ClCompile Include="Engine\3d\Camera\DebugCamera.cpp" />
     <ClCompile Include="Engine\3d\Camera\RailCamera.cpp" />
     <ClCompile Include="Engine\3d\Light\LightGroup.cpp" />
     <ClCompile Include="Engine\Audio\Audio.cpp" />
@@ -219,7 +219,6 @@
     <ClInclude Include="Application\Function\Collider\CollisionTypes.h" />
     <ClInclude Include="Application\Function\Collider\RaycastHit.h" />
     <ClInclude Include="Application\Function\Collider\SphereCollider.h" />
-    <ClInclude Include="Application\Function\Fluid.h" />
     <ClInclude Include="Application\Game\Enemy\Enemy.h" />
     <ClInclude Include="Application\Game\Enemy\EnemyBullet.h" />
     <ClInclude Include="Application\Game\GameMain.h" />
@@ -231,6 +230,7 @@
     <ClInclude Include="Application\Game\Scene\GameOverScene.h" />
     <ClInclude Include="Application\Math\MyMath.h" />
     <ClInclude Include="Application\Math\Quaternion.h" />
+    <ClInclude Include="Engine\3d\Camera\DebugCamera.h" />
     <ClInclude Include="Engine\3d\Camera\RailCamera.h" />
     <ClInclude Include="Engine\3d\Light\DirectionalLight.h" />
     <ClInclude Include="Engine\3d\Light\LightGroup.h" />
