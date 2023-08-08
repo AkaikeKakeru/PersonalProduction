@@ -9,6 +9,8 @@
 
 #include "Camera.h"
 #include "RailCamera.h"
+#include "DebugCamera.h"
+
 #include "LightGroup.h"
 #include "ImGuiManager.h"
 
@@ -74,6 +76,8 @@ public: //メンバ変数
 
 	RailCamera* railCamera_;
 
+	DebugCamera* debugCamera_;
+
 	LightGroup* light_ = nullptr;
 
 	/// <summary>
@@ -106,4 +110,7 @@ public: //メンバ変数
 
 	//フェーズ番号
 	size_t phaseIndex_ = 0;
+
+	//デバッグカメラのオンオフ
+	bool isDebugCamera_ = false;
 };
