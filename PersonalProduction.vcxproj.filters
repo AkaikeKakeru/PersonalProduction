@@ -252,10 +252,10 @@
     <ClCompile Include="Application\Function\Button.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Function\Fluid.cpp">
+    <ClCompile Include="Application\Math\Quaternion.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Math\Quaternion.cpp">
+    <ClCompile Include="Engine\3d\Camera\DebugCamera.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -413,10 +413,10 @@
     <ClInclude Include="Application\Function\Button.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\Fluid.h">
+    <ClInclude Include="Application\Math\Quaternion.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Math\Quaternion.h">
+    <ClInclude Include="Engine\3d\Camera\DebugCamera.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
