@@ -125,7 +125,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -148,7 +148,7 @@
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -166,7 +166,6 @@
     <ClCompile Include="Application\Function\Collider\CollisionManager.cpp" />
     <ClCompile Include="Application\Function\Collider\CollisionPrimitive.cpp" />
     <ClCompile Include="Application\Function\Collider\SphereCollider.cpp" />
-    <ClCompile Include="Application\Function\Fluid.cpp" />
     <ClCompile Include="Application\Game\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\Game\Enemy\EnemyBullet.cpp" />
     <ClCompile Include="Application\Game\Player\Player.cpp" />
@@ -192,7 +191,7 @@
     <ClCompile Include="Engine\Debugger\ImGuiManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\3d\Object\Material.cpp" />
-    <ClCompile Include="Application\Math\Matrix\Matrix4.cpp" />
+    <ClCompile Include="Application\Math\Matrix4.cpp" />
     <ClCompile Include="Engine\3d\Object\Mesh.cpp" />
     <ClCompile Include="Engine\3d\Object\Model.cpp" />
     <ClCompile Include="Engine\3d\Object\Object3d.cpp" />
@@ -201,9 +200,9 @@
     <ClCompile Include="Application\Game\Scene\Manager\SceneManager.cpp" />
     <ClCompile Include="Engine\2d\Sprite.cpp" />
     <ClCompile Include="Application\Game\Scene\TitleScene.cpp" />
-    <ClCompile Include="Application\Math\Vector\Vector2.cpp" />
-    <ClCompile Include="Application\Math\Vector\Vector3.cpp" />
-    <ClCompile Include="Application\Math\Vector\Vector4.cpp" />
+    <ClCompile Include="Application\Math\Vector2.cpp" />
+    <ClCompile Include="Application\Math\Vector3.cpp" />
+    <ClCompile Include="Application\Math\Vector4.cpp" />
     <ClCompile Include="Engine\ConstBuffer\ViewProjection.cpp" />
     <ClCompile Include="Application\Base\WinApp.cpp" />
     <ClCompile Include="Engine\ConstBuffer\WorldTransform.cpp" />
@@ -219,7 +218,6 @@
     <ClInclude Include="Application\Function\Collider\CollisionTypes.h" />
     <ClInclude Include="Application\Function\Collider\RaycastHit.h" />
     <ClInclude Include="Application\Function\Collider\SphereCollider.h" />
-    <ClInclude Include="Application\Function\Fluid.h" />
     <ClInclude Include="Application\Game\Enemy\Enemy.h" />
     <ClInclude Include="Application\Game\Enemy\EnemyBullet.h" />
     <ClInclude Include="Application\Game\GameMain.h" />
@@ -245,7 +243,7 @@
     <ClInclude Include="Application\Game\Scene\GamePlayScene.h" />
     <ClInclude Include="Application\Base\Input.h" />
     <ClInclude Include="Engine\3d\Object\Material.h" />
-    <ClInclude Include="Application\Math\Matrix\Matrix4.h" />
+    <ClInclude Include="Application\Math\Matrix4.h" />
     <ClInclude Include="Engine\3d\Object\Mesh.h" />
     <ClInclude Include="Engine\3d\Object\Model.h" />
     <ClInclude Include="Engine\3d\Object\Object3d.h" />
@@ -255,9 +253,9 @@
     <ClInclude Include="Application\Game\Scene\Manager\SceneManager.h" />
     <ClInclude Include="Engine\2d\Sprite.h" />
     <ClInclude Include="Application\Game\Scene\TitleScene.h" />
-    <ClInclude Include="Application\Math\Vector\Vector2.h" />
-    <ClInclude Include="Application\Math\Vector\Vector3.h" />
-    <ClInclude Include="Application\Math\Vector\Vector4.h" />
+    <ClInclude Include="Application\Math\Vector2.h" />
+    <ClInclude Include="Application\Math\Vector3.h" />
+    <ClInclude Include="Application\Math\Vector4.h" />
     <ClInclude Include="Engine\ConstBuffer\ViewProjection.h" />
     <ClInclude Include="Application\Base\WinApp.h" />
     <ClInclude Include="Engine\ConstBuffer\WorldTransform.h" />
