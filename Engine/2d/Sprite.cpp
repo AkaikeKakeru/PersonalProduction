@@ -1,6 +1,6 @@
 ﻿#include "Sprite.h"
 #include "SafeDelete.h"
-#include "Degree.h"
+#include "MyMath.h"
 #include "WinApp.h"
 #include <cassert>
 
