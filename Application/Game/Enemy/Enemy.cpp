@@ -256,6 +256,8 @@ void Enemy::Fire() {
 	newBullet->SetVelocity(bulletVelocity);
 	newBullet->SetCamera(camera_);
 
+	newBullet->SetBulletType(bulletType_);
+
 	newBullet->Update();
 
 	gameScene_->AddEnemyBullet(std::move(newBullet));
