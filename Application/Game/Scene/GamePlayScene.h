@@ -50,7 +50,10 @@ public:
 	//敵弾を追加
 	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
 	//敵を追加
-	void AddEnemy(const Vector3 pos,const Vector3 rota,const Vector3 scale);
+	void AddEnemy(const Vector3 pos,
+		const Vector3 rota,
+		const Vector3 scale,
+		const int bulletType);
 
 	//次の敵の湧き情報を調べる
 	void SightNextEnemy();
