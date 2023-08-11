@@ -50,23 +50,26 @@ bool EnemyBullet::Initialize() {
 }
 
 void EnemyBullet::Update() {
-	heightAxe_ -= 0.167f;
-
-	//斧のベクトル調整
-	Vector3 velocityAxe = {
-		velocity_.x,
-		/*velocity_.y + */(Sin(30)),// + heightAxe_),
-		velocity_.z
-	};
-
 	// 現在の座標を取得
 	Vector3 position = Object3d::GetPosition();
 	// 現在の回転を取得
 	Vector3 rot = Object3d::GetRotation();
 
-	//毎フレーム、ベロシティ分前進
-	//position += velocity_;
-	position += velocityAxe;
+	if (bulletType_ == Gun_BulletType) {
+		//毎フレーム、ベロシティ分前進
+		position += velocity_;
+	}
+	else {
+		heightAxe_ -= 0.167f;
+
+		//斧のベクトル調整
+		Vector3 velocityAxe = {
+			velocity_.x,
+			velocity_.y + (Sin(30)+ heightAxe_),
+			velocity_.z
+		};
+		position += velocityAxe;
+	}
 
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);

@@ -8,6 +8,12 @@ class CollisionManager;
 
 class EnemyBullet :
 	public Object3d{
+public: //サブ構造体
+	enum BulletType{
+		Gun_BulletType,
+		Axe_BulletType,
+	};
+
 public: //静的メンバ関数
 	//オブジェクト生成
 	static EnemyBullet* Create(Model* model = nullptr);
@@ -37,6 +43,11 @@ public: //アクセッサ
 		return isDead_;
 	}
 
+	//弾種のセット
+	void SetBulletType(int bulletType) {
+		bulletType_ = bulletType;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -63,6 +74,9 @@ private: //メンバ変数
 
 	//自壊フラグ
 	bool isDead_ = false;
+
+	//弾種
+	int bulletType_ = Gun_BulletType;
 
 	//斧高さ
 	float heightAxe_ = 0.0f;
