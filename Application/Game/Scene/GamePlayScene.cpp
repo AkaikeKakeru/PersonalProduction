@@ -201,9 +201,11 @@ void GamePlayScene::Update3d() {
 	}
 
 	if (player_->IsDamage()) {
-		float life = player_->GetLife();
-		life -= nowDamagePlayer_;
-		player_->SetLife(life);
+		if (!player_->IsHide()) {
+			float life = player_->GetLife();
+			life -= nowDamagePlayer_;
+			player_->SetLife(life);
+		}
 
 		player_->SetIsDamage(false);
 	}
