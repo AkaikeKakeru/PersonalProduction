@@ -39,8 +39,6 @@ public://メンバ関数
 public: //定数
 	//自機のデフォルト体力
 	const float kDefaultPlayerLife_ = 10.0f;
-	//ダメージ量
-	const float kDamage_ = 3.0f;
 
 public: //アクセッサ
 	const Vector3& GetPosition() const {
@@ -112,7 +110,7 @@ private: //メンバ変数
 
 	//弾モデル
 	Model* bulletModel_ = nullptr;
-
+	
 	//体力
 	float life_ = kDefaultPlayerLife_;
 

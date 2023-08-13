@@ -137,10 +137,6 @@ void Player::Update() {
 
 	Object3d::Update();
 
-	if (isDamage_) {
-		life_ -= kDamage_;
-		isDamage_ = false;
-	}
 
 	if (life_ <= 0.0f) {
 		isDead_ = true;
@@ -183,6 +179,7 @@ void Player::DrawImgui() {
 		"PlayerPos", debugPos_, -PosRange_, PosRange_);
 	ImGui::SliderFloat3(
 		"PlayerDir", debugDir_, 0, DirRange_);
+	ImGui::InputFloat("PlayerLife", &life_);
 	ImGui::End();
 }
 
