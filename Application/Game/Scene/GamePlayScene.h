@@ -63,6 +63,16 @@ public:
 		return phaseIndex_;
 	}
 
+	//今プレイヤーが受けるダメージ量の取得
+	float GetNowGamagePlayer() {
+		return nowDamagePlayer_;
+	}
+
+	//今プレイヤーが受けるダメージ量のセット
+	void SetNowGamagePlayer(float damage) {
+		nowDamagePlayer_ = damage;
+	}
+
 private: //静的メンバ変数
 	//基盤
 	static DirectXBasis* dxBas_;
@@ -106,10 +116,11 @@ public: //メンバ変数
 	//エネミー
 	std::list<std::unique_ptr<Enemy>> enemys_;
 
-	//Enemy* enemy_ = nullptr;
-
 	//エネミー弾
 	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
+
+	//今プレイヤーが受けるダメージ量
+	float nowDamagePlayer_ = 0.0f;
 
 	//フェーズ番号
 	size_t phaseIndex_ = 0;

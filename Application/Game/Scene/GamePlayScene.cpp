@@ -200,6 +200,14 @@ void GamePlayScene::Update3d() {
 		enemy->Update();
 	}
 
+	if (player_->IsDamage()) {
+		float life = player_->GetLife();
+		life -= nowDamagePlayer_;
+		player_->SetLife(life);
+
+		player_->SetIsDamage(false);
+	}
+
 	if (player_->IsDead()) {
 		//シーンの切り替えを依頼
 		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
