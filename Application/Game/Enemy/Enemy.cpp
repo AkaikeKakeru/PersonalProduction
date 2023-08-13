@@ -258,6 +258,8 @@ void Enemy::Fire() {
 
 	newBullet->SetBulletType(bulletType_);
 
+	newBullet->SetGameScene(gameScene_);
+
 	newBullet->Update();
 
 	gameScene_->AddEnemyBullet(std::move(newBullet));
