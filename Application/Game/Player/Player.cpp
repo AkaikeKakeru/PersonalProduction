@@ -127,8 +127,20 @@ void Player::Update() {
 	// 座標の変更を反映
 	Object3d::SetPosition(position);
 
+	//入力で隠れフラグ操作
+	if (input_->PressMouse(1)) {
+		isHide_ = true;
+	}
+	else {
+		isHide_ = false;
+	}
+
 	Reticle();
-	Attack();
+
+	//隠れフラグが立ってない時
+	if (!isHide_) {
+		Attack();
+	}
 
 	//弾更新
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
@@ -136,7 +148,6 @@ void Player::Update() {
 	}
 
 	Object3d::Update();
-
 
 	if (life_ <= 0.0f) {
 		isDead_ = true;

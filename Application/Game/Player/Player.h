@@ -87,6 +87,16 @@ public: //アクセッサ
 		isDamage_ = isDamage;
 	}
 
+	//隠れフラグの取得
+	bool IsHide() {
+		return isHide_;
+	}
+
+	//隠れフラグのセット
+	void SetIsHide(bool isHide) {
+		isHide_ = isHide;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -119,6 +129,9 @@ private: //メンバ変数
 
 	//ダメージフラグ
 	bool isDamage_ = false; 
+
+	//隠れフラグ
+	bool isHide_ = false;
 
 private: //ImGui用
 	//Vector3の要素数
