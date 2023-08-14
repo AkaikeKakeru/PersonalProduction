@@ -64,12 +64,12 @@ public:
 	}
 
 	//今プレイヤーが受けるダメージ量の取得
-	float GetNowGamagePlayer() {
+	float GetNowDamagePlayer() {
 		return nowDamagePlayer_;
 	}
 
 	//今プレイヤーが受けるダメージ量のセット
-	void SetNowGamagePlayer(float damage) {
+	void SetNowDamagePlayer(float damage) {
 		nowDamagePlayer_ = damage;
 	}
 
