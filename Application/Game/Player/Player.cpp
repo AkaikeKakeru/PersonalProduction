@@ -183,6 +183,8 @@ void Player::DrawImgui() {
 	debugDir_[1] = { GetRotation().y };
 	debugDir_[2] = { GetRotation().z };
 
+	float hide = isHide_;
+
 	ImGui::Begin("Player");
 	ImGui::SetWindowPos(ImVec2(0, 0));
 	ImGui::SetWindowSize(ImVec2(500, 100));
@@ -191,6 +193,7 @@ void Player::DrawImgui() {
 	ImGui::SliderFloat3(
 		"PlayerDir", debugDir_, 0, DirRange_);
 	ImGui::InputFloat("PlayerLife", &life_);
+	ImGui::InputFloat("IsHide", &hide);
 	ImGui::End();
 }
 
