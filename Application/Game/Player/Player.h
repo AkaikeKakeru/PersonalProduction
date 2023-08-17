@@ -40,6 +40,9 @@ public: //定数
 	//自機のデフォルト体力
 	const float kDefaultPlayerLife_ = 10.0f;
 
+	//弾数の上限
+	const int kBulletRimit_ = 30;
+
 public: //アクセッサ
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_;
@@ -132,6 +135,9 @@ private: //メンバ変数
 
 	//隠れフラグ
 	bool isHide_ = false;
+
+	//発射した弾数
+	int firedCount_ = 0;
 
 private: //ImGui用
 	//Vector3の要素数

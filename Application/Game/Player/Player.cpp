@@ -220,48 +220,56 @@ void Player::Reticle() {
 }
 
 void Player::Attack() {
-	if (input_->TriggerMouse(0)) {
-		//弾スピード
-		const float kBulletSpeed = 2.0f;
-		//毎フレーム弾が前進する速度
-		Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
+	//発射上限を超えていなければ発射可能
+	if (firedCount_ < kBulletRimit_) {
+		//発射操作を確認
+		if (input_->PressMouse(0)) {
+			//弾スピード
+			const float kBulletSpeed = 10.0f;
+			//毎フレーム弾が前進する速度
+			Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
 
-		//速度ベクトルを自機の向きに合わせて回転させる
-		//bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
-		bulletVelocity =
-			Vector3{
-				worldTransform3dReticle_.matWorld_.m[3][0],
-				worldTransform3dReticle_.matWorld_.m[3][1],
-				worldTransform3dReticle_.matWorld_.m[3][2]
-		} - Vector3{
+			//速度ベクトルを自機の向きに合わせて回転させる
+			//bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
+			bulletVelocity =
+				Vector3{
+					worldTransform3dReticle_.matWorld_.m[3][0],
+					worldTransform3dReticle_.matWorld_.m[3][1],
+					worldTransform3dReticle_.matWorld_.m[3][2]
+			} - Vector3{
+					worldTransform_.matWorld_.m[3][0],
+					worldTransform_.matWorld_.m[3][1],
+					worldTransform_.matWorld_.m[3][2]
+			};
+
+			bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
+
+			//弾の生成、初期化
+			std::unique_ptr<PlayerBullet> newBullet =
+				std::make_unique<PlayerBullet>();
+
+			newBullet->Initialize();
+
+			newBullet->SetModel(bulletModel_);
+
+			newBullet->SetScale(worldTransform_.scale_);
+			newBullet->SetRotation(worldTransform_.rotation_);
+			newBullet->SetPosition(Vector3{
 				worldTransform_.matWorld_.m[3][0],
 				worldTransform_.matWorld_.m[3][1],
 				worldTransform_.matWorld_.m[3][2]
-		};
+				});
 
-		bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
+			newBullet->SetVelocity(bulletVelocity);
+			newBullet->SetCamera(camera_);
 
-		//弾の生成、初期化
-		std::unique_ptr<PlayerBullet> newBullet =
-			std::make_unique<PlayerBullet>();
+			newBullet->Update();
 
-		newBullet->Initialize();
+			//弾コンテナに追加
+			bullets_.push_back(std::move(newBullet));
 
-		newBullet->SetModel(bulletModel_);
-
-		newBullet->SetScale(worldTransform_.scale_);
-		newBullet->SetRotation(worldTransform_.rotation_);
-		newBullet->SetPosition(Vector3{
-			worldTransform_.matWorld_.m[3][0],
-			worldTransform_.matWorld_.m[3][1],
-			worldTransform_.matWorld_.m[3][2]
-			});
-
-		newBullet->SetVelocity(bulletVelocity);
-		newBullet->SetCamera(camera_);
-
-		newBullet->Update();
-
-		bullets_.push_back(std::move(newBullet));
+			//発射済みの弾数を一つカウント
+			firedCount_++;
+		}
 	}
 }
