@@ -127,8 +127,20 @@ void Player::Update() {
 	// 座標の変更を反映
 	Object3d::SetPosition(position);
 
+	//入力で隠れフラグ操作
+	if (input_->PressMouse(1)) {
+		isHide_ = true;
+	}
+	else {
+		isHide_ = false;
+	}
+
 	Reticle();
-	Attack();
+
+	//隠れフラグが立ってない時
+	if (!isHide_) {
+		Attack();
+	}
 
 	//弾更新
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
@@ -136,11 +148,6 @@ void Player::Update() {
 	}
 
 	Object3d::Update();
-
-	if (isDamage_) {
-		life_ -= kDamage_;
-		isDamage_ = false;
-	}
 
 	if (life_ <= 0.0f) {
 		isDead_ = true;
@@ -176,6 +183,8 @@ void Player::DrawImgui() {
 	debugDir_[1] = { GetRotation().y };
 	debugDir_[2] = { GetRotation().z };
 
+	float hide = isHide_;
+
 	ImGui::Begin("Player");
 	ImGui::SetWindowPos(ImVec2(0, 0));
 	ImGui::SetWindowSize(ImVec2(500, 100));
@@ -183,6 +192,8 @@ void Player::DrawImgui() {
 		"PlayerPos", debugPos_, -PosRange_, PosRange_);
 	ImGui::SliderFloat3(
 		"PlayerDir", debugDir_, 0, DirRange_);
+	ImGui::InputFloat("PlayerLife", &life_);
+	ImGui::InputFloat("IsHide", &hide);
 	ImGui::End();
 }
 

@@ -15,6 +15,12 @@ class CollisionManager;
 //エネミー
 class Enemy
 	: public Object3d {
+public: //サブ構造体
+	enum BulletType{
+		Gun_BulletType,
+		Axe_BulletType,
+	};
+
 public: //静的メンバ関数
 	//オブジェクト生成
 	static Enemy* Create(Model* model = nullptr);
@@ -74,6 +80,11 @@ public: //アクセッサ
 		fireTimer_ = timerFrame * 60;
 	}
 
+	//弾種のセット
+	void SetBulletType(int bulletType) {
+		bulletType_ = bulletType;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -106,6 +117,9 @@ private: //メンバ変数
 
 	//発射タイマー
 	int32_t fireTimer_ = 0;
+
+	//弾種
+	int bulletType_ = Gun_BulletType;
 
 private: //ImGui用
 	//Vector3の要素数

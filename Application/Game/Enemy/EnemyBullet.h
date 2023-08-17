@@ -5,9 +5,22 @@
 #include "SpriteBasis.h"
 
 class CollisionManager;
+class GamePlayScene;
 
 class EnemyBullet :
 	public Object3d{
+public: //サブ構造体
+	enum BulletType{
+		Gun_BulletType,
+		Axe_BulletType,
+	};
+
+public://定数
+	const float kFallAxe_ = 0.167f;
+
+	const float kGunDamage_ = 3.0f;
+	const float kAxeDamage_ = 1.0f;
+
 public: //静的メンバ関数
 	//オブジェクト生成
 	static EnemyBullet* Create(Model* model = nullptr);
@@ -22,6 +35,11 @@ public://メンバ関数
 	void OnCollision(const CollisionInfo & info) override;
 
 public: //アクセッサ
+	//ゲームシーンのセット
+	void SetGameScene(GamePlayScene* gameScene) {
+		gameScene_ = gameScene;
+	}
+
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_; }
 	float GetRadius() const {
@@ -35,6 +53,16 @@ public: //アクセッサ
 	//自壊したかを取得
 	bool IsDead() const {
 		return isDead_;
+	}
+
+	//ダメージ量の取得
+	float GetDamage() const {
+		return damage_;
+	}
+
+	//弾種のセット
+	void SetBulletType(int bulletType) {
+		bulletType_ = bulletType;
 	}
 
 private: //静的メンバ変数
@@ -52,6 +80,9 @@ public://メンバ定数
 	const float kGravity_ = 9.8f;
 
 private: //メンバ変数
+	//ゲームシーン
+	GamePlayScene* gameScene_ = nullptr;
+
 	//半径
 	float radius_ = 1.0f;
 
@@ -64,8 +95,14 @@ private: //メンバ変数
 	//自壊フラグ
 	bool isDead_ = false;
 
+	//弾種
+	int bulletType_ = Gun_BulletType;
+
 	//斧高さ
 	float heightAxe_ = 0.0f;
+
+	//ダメージ量
+	float damage_ = 0.0f;
 
 public:
 	EnemyBullet() = default;

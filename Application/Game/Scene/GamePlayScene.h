@@ -50,7 +50,10 @@ public:
 	//敵弾を追加
 	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
 	//敵を追加
-	void AddEnemy(const Vector3 pos,const Vector3 rota,const Vector3 scale);
+	void AddEnemy(const Vector3 pos,
+		const Vector3 rota,
+		const Vector3 scale,
+		const int bulletType);
 
 	//次の敵の湧き情報を調べる
 	void SightNextEnemy();
@@ -58,6 +61,16 @@ public:
 	//フェーズ番号取得
 	size_t GetPhaseIndex() {
 		return phaseIndex_;
+	}
+
+	//今プレイヤーが受けるダメージ量の取得
+	float GetNowDamagePlayer() {
+		return nowDamagePlayer_;
+	}
+
+	//今プレイヤーが受けるダメージ量のセット
+	void SetNowDamagePlayer(float damage) {
+		nowDamagePlayer_ = damage;
 	}
 
 private: //静的メンバ変数
@@ -103,10 +116,11 @@ public: //メンバ変数
 	//エネミー
 	std::list<std::unique_ptr<Enemy>> enemys_;
 
-	//Enemy* enemy_ = nullptr;
-
 	//エネミー弾
 	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
+
+	//今プレイヤーが受けるダメージ量
+	float nowDamagePlayer_ = 0.0f;
 
 	//フェーズ番号
 	size_t phaseIndex_ = 0;

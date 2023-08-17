@@ -200,6 +200,16 @@ void GamePlayScene::Update3d() {
 		enemy->Update();
 	}
 
+	if (player_->IsDamage()) {
+		if (!player_->IsHide()) {
+			float life = player_->GetLife();
+			life -= nowDamagePlayer_;
+			player_->SetLife(life);
+		}
+
+		player_->SetIsDamage(false);
+	}
+
 	if (player_->IsDead()) {
 		//シーンの切り替えを依頼
 		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
@@ -244,7 +254,8 @@ void GamePlayScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet) {
 void GamePlayScene::AddEnemy(
 	const Vector3 pos,
 	const Vector3 rota,
-	const Vector3 scale) {
+	const Vector3 scale,
+	const int bulletType) {
 	std::unique_ptr<Enemy> newEnemy =
 		std::make_unique<Enemy>();
 	newEnemy->Initialize();
@@ -257,6 +268,8 @@ void GamePlayScene::AddEnemy(
 
 	newEnemy->SetModel(planeEnemyModel_);
 	newEnemy->SetBulletModel(bulletModel_);
+
+	newEnemy->SetBulletType(bulletType);
 
 	newEnemy->SetFireTimer(
 		static_cast<int32_t>(
@@ -276,36 +289,42 @@ void GamePlayScene::SightNextEnemy() {
 		AddEnemy({ -70.0f,0.0f,30.0f },
 			CreateRotationVector(
 				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-			{ 1.0f, 1.0f, 1.0f });
+			{ 1.0f, 1.0f, 1.0f },
+			Enemy::Gun_BulletType);
 
 		AddEnemy({ -70.0f,0.0f,60.0f },
 			CreateRotationVector(
 				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-			{ 1.0f,1.0f,1.0f });
+			{ 1.0f,1.0f,1.0f },
+			Enemy::Axe_BulletType);
 
 		AddEnemy({ -70.0f,10.0f,45.0f },
 			CreateRotationVector(
 				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-			{ 1.0f,1.0f,1.0f });
+			{ 1.0f,1.0f,1.0f },
+			Enemy::Gun_BulletType);
 		break;
 
 	case 1:
 		AddEnemy({ 70.0f,0.0f,80.0f },
 			CreateRotationVector(
 				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
-			{ 1.0f,1.0f,1.0f });
+			{ 1.0f,1.0f,1.0f },
+		Enemy::Gun_BulletType);
 
 		AddEnemy({ 70.0f,-10.0f,60.0f },
 			CreateRotationVector(
 				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
-			{ 1.0f,1.0f,1.0f });
+			{ 1.0f,1.0f,1.0f },
+			Enemy::Axe_BulletType);
 		break;
 
 	case 2:
 		AddEnemy({ 0.0f,10.0f,270.0f },
 			CreateRotationVector(
 				{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)),
-			{ 1.0f,1.0f,1.0f });
+			{ 1.0f,1.0f,1.0f },
+			Enemy::Gun_BulletType);
 		break;
 
 	default:

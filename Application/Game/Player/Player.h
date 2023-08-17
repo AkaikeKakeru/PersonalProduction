@@ -39,8 +39,6 @@ public://メンバ関数
 public: //定数
 	//自機のデフォルト体力
 	const float kDefaultPlayerLife_ = 10.0f;
-	//ダメージ量
-	const float kDamage_ = 3.0f;
 
 public: //アクセッサ
 	const Vector3& GetPosition() const {
@@ -89,6 +87,16 @@ public: //アクセッサ
 		isDamage_ = isDamage;
 	}
 
+	//隠れフラグの取得
+	bool IsHide() {
+		return isHide_;
+	}
+
+	//隠れフラグのセット
+	void SetIsHide(bool isHide) {
+		isHide_ = isHide;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -112,7 +120,7 @@ private: //メンバ変数
 
 	//弾モデル
 	Model* bulletModel_ = nullptr;
-
+	
 	//体力
 	float life_ = kDefaultPlayerLife_;
 
@@ -121,6 +129,9 @@ private: //メンバ変数
 
 	//ダメージフラグ
 	bool isDamage_ = false; 
+
+	//隠れフラグ
+	bool isHide_ = false;
 
 private: //ImGui用
 	//Vector3の要素数
