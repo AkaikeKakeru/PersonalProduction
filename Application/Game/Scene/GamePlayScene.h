@@ -18,6 +18,7 @@
 #include <List>
 
 #include "Player.h"
+#include "PlayerBullet.h"
 #include "Enemy.h"
 #include "EnemyBullet.h"
 
@@ -47,6 +48,9 @@ public://定数
 public:
 	Vector3 CreateRotationVector(Vector3 axisAngle, float angleRadian);
 
+	//自機弾を追加
+	void AddPlayerBullet(std::unique_ptr<PlayerBullet> playerBullet);
+
 	//敵弾を追加
 	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
 	//敵を追加
@@ -63,14 +67,24 @@ public:
 		return phaseIndex_;
 	}
 
-	//今プレイヤーが受けるダメージ量の取得
+	//今プレイヤーの与えるダメージ量の取得
 	float GetNowDamagePlayer() {
 		return nowDamagePlayer_;
 	}
 
-	//今プレイヤーが受けるダメージ量のセット
+	//今プレイヤーの与えるダメージ量のセット
 	void SetNowDamagePlayer(float damage) {
 		nowDamagePlayer_ = damage;
+	}
+
+	//今エネミーの与えるダメージ量の取得
+	float GetNowDamageEnemy() {
+		return nowDamageEnemy_;
+	}
+
+	//今エネミーの与えるダメージ量のセット
+	void SetNowDamageEnemy(float damage) {
+		nowDamageEnemy_ = damage;
 	}
 
 private: //静的メンバ変数
@@ -113,14 +127,20 @@ public: //メンバ変数
 	//プレイヤー
 	Player* player_ = nullptr;
 
+	//弾
+	std::list<std::unique_ptr<PlayerBullet>> playerBullets_;
+
 	//エネミー
 	std::list<std::unique_ptr<Enemy>> enemys_;
 
 	//エネミー弾
 	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
 
-	//今プレイヤーが受けるダメージ量
+	//今プレイヤーの与えるダメージ量
 	float nowDamagePlayer_ = 0.0f;
+
+	//今エネミーの与えるダメージ量
+	float nowDamageEnemy_ = 0.0f;
 
 	//フェーズ番号
 	size_t phaseIndex_ = 0;

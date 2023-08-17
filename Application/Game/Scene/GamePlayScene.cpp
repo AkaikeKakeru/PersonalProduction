@@ -77,6 +77,8 @@ void GamePlayScene::Initialize3d() {
 
 #pragma region Player
 	player_ = Player::Create(planeModel_);
+	player_->SetGameScene(this);
+
 	player_->SetBulletModel(bulletModel_);
 	//player_->SetScale({ 1.0f, 1.0f, 1.0f });
 	//player_->SetRotation(CreateRotationVector(
@@ -142,15 +144,25 @@ void GamePlayScene::Update3d() {
 		light_->SetDirLightDir(0, lightDir);
 	}
 
-	//自壊フラグの立った弾を削除
+	//自機弾自壊フラグの立った弾を削除
+	playerBullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+		return bullet->IsDead();
+		});
+
+	//敵機弾自壊フラグの立った弾を削除
 	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
 		return bullet->IsDead();
 		});
 
+	//敵機が全滅したら(コンテナが空になったら)
 	if (enemys_.size() == 0) {
+		//ファイナルフェイズに届いてなければ
 		if (phaseIndex_ < kFinalPhaseIndex_) {
+			//次の敵の湧き位置検索
 			SightNextEnemy();
+			//フェーズ番号を進める
 			phaseIndex_++;
+			//レールカメラを前進させる
 			railCamera_->SetPhaseAdvance(true);
 		}
 		else {
@@ -159,6 +171,7 @@ void GamePlayScene::Update3d() {
 		}
 	}
 
+	//敵機をデスフラグで削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
 		return enemy->IsDead();
 		});
@@ -171,9 +184,10 @@ void GamePlayScene::Update3d() {
 	}
 #endif // _DEBUG
 
+	//デバッグカメラが起動中なら
 	if (isDebugCamera_) {
 		debugCamera_->Update();
-	
+
 		railCamera_->SetEye(debugCamera_->GetEye());
 		railCamera_->SetTarget(debugCamera_->GetTarget());
 		railCamera_->SetUp(debugCamera_->GetUp());
@@ -191,19 +205,37 @@ void GamePlayScene::Update3d() {
 
 	skydomeObj_->Update();
 	player_->Update();
-	//弾更新
+
+	//自機弾更新
+	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets_) {
+		bullet->Update();
+	}
+
+	//敵機弾更新
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
 		bullet->Update();
 	}
 
+	//敵機の更新
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Update();
+
+		//被ダメージ処理
+		if (enemy->IsDamage()) {
+			float life = enemy->GetLife();
+
+			life -= nowDamagePlayer_;
+			enemy->SetLife(life);
+
+			enemy->SetIsDamage(false);
+		}
 	}
 
+	//自機の被ダメージ処理
 	if (player_->IsDamage()) {
 		if (!player_->IsHide()) {
 			float life = player_->GetLife();
-			life -= nowDamagePlayer_;
+			life -= nowDamageEnemy_;
 			player_->SetLife(life);
 		}
 
@@ -220,15 +252,25 @@ void GamePlayScene::Update2d() {
 }
 
 void GamePlayScene::Draw3d() {
+	//天球描画
 	skydomeObj_->Draw();
 
+	//敵機描画
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Draw();
 	}
+
+	//自機弾描画
+	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets_) {
+		bullet->Draw();
+	}
+
+	//敵機弾描画
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
 		bullet->Draw();
 	}
 
+	//自機描画
 	player_->Draw();
 }
 
@@ -244,6 +286,11 @@ Vector3 GamePlayScene::CreateRotationVector(Vector3 axisAngle, float angleRadian
 	Vector3 point = axisAngle * angleRadian;
 
 	return RotateVector(point, rotation);
+}
+
+void GamePlayScene::AddPlayerBullet(std::unique_ptr<PlayerBullet> playerBullet) {
+	//リストに登録
+	playerBullets_.push_back(std::move(playerBullet));
 }
 
 void GamePlayScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet) {
@@ -310,7 +357,7 @@ void GamePlayScene::SightNextEnemy() {
 			CreateRotationVector(
 				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
 			{ 1.0f,1.0f,1.0f },
-		Enemy::Gun_BulletType);
+			Enemy::Gun_BulletType);
 
 		AddEnemy({ 70.0f,-10.0f,60.0f },
 			CreateRotationVector(
