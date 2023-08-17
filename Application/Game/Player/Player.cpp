@@ -149,6 +149,7 @@ void Player::Update() {
 
 	Object3d::Update();
 
+	//ライフ0でデスフラグ
 	if (life_ <= 0.0f) {
 		isDead_ = true;
 	}
@@ -261,6 +262,9 @@ void Player::Attack() {
 				});
 
 			newBullet->SetVelocity(bulletVelocity);
+
+			newBullet->SetDamage(kGunDamage_);
+
 			newBullet->SetCamera(camera_);
 
 			newBullet->Update();

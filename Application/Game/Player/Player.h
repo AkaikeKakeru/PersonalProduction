@@ -40,6 +40,9 @@ public: //定数
 	//自機のデフォルト体力
 	const float kDefaultPlayerLife_ = 10.0f;
 
+	//銃ダメージ量
+	const float kGunDamage_ = 3.0f;
+
 	//弾数の上限
 	const int kBulletRimit_ = 30;
 
