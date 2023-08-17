@@ -43,6 +43,9 @@ public://定数
 	//発射間隔
 	static const int kFireInterval = 60 * 5;
 
+	//敵機のデフォルト体力
+	const float kDefaultEnemyLife_ = 10.0f;
+
 public: //アクセッサ
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_;
@@ -54,6 +57,26 @@ public: //アクセッサ
 	//弾モデルのセット
 	void SetBulletModel(Model* bulletModel) {
 		bulletModel_ = bulletModel;
+	}
+
+	//体力取得
+	float GetLife() {
+		return life_;
+	}
+
+	//体力のセット
+	void SetLife(float life) {
+		life_ = life;
+	}
+
+	//ダメージフラグの取得
+	bool IsDamage() {
+		return isDamage_;
+	}
+
+	//ダメージフラグのセット
+	void SetIsDamage(bool isDamage) {
+		isDamage_ = isDamage;
 	}
 
 	//デスフラグの取得
@@ -112,6 +135,11 @@ private: //メンバ変数
 	//弾モデル
 	Model* bulletModel_ = nullptr;
 
+	//体力
+	float life_ = kDefaultEnemyLife_;
+
+	//ダメージフラグ
+	bool isDamage_ = false; 
 	//デスフラグ
 	bool isDead_ = false;
 
