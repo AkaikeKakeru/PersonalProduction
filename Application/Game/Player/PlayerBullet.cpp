@@ -3,6 +3,7 @@
 #include "CollisionManager.h"
 #include "CollisionAttribute.h"
 #include "SphereCollider.h"
+#include "GamePlayScene.h"
 #include <cassert>
 
 CollisionManager* PlayerBullet::collisionManager_ = CollisionManager::GetInstance();
@@ -77,5 +78,9 @@ void PlayerBullet::Finalize() {
 
 void PlayerBullet::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
+
+	//ダメージ量の設定
+	gameScene_->SetNowDamagePlayer(damage_);
+
 	isDead_ = true;
 }
