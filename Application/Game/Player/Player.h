@@ -9,6 +9,7 @@
 #include <list>
 #include <memory>
 
+class GamePlayScene;
 class PlayerBullet;
 class CollisionManager;
 
@@ -47,6 +48,11 @@ public: //定数
 	const int kBulletRimit_ = 30;
 
 public: //アクセッサ
+	//ゲームシーンのセット
+	void SetGameScene(GamePlayScene* gameScene) {
+		gameScene_ = gameScene;
+	}
+
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_;
 	}
@@ -112,6 +118,9 @@ private: //静的メンバ変数
 	static SpriteBasis* spriteBas_;
 
 private: //メンバ変数
+	//ゲームシーン
+	GamePlayScene* gameScene_ = nullptr;
+
 	//半径
 	float radius_ = 1.0f;
 
@@ -120,9 +129,6 @@ private: //メンバ変数
 
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
-
-	//弾
-	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
 	//弾モデル
 	Model* bulletModel_ = nullptr;

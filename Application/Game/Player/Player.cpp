@@ -12,6 +12,7 @@
 #include <SafeDelete.h>
 #include <imgui.h>
 
+#include "GamePlayScene.h"
 #include "PlayerBullet.h"
 
 Input* Player::input_ = Input::GetInstance();
@@ -116,11 +117,6 @@ void Player::Update() {
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
-	//自壊フラグの立った弾を削除
-	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
-		return bullet->IsDead();
-		});
-
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);
 
@@ -142,11 +138,6 @@ void Player::Update() {
 		Attack();
 	}
 
-	//弾更新
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-		bullet->Update();
-	}
-
 	Object3d::Update();
 
 	//ライフ0でデスフラグ
@@ -164,10 +155,6 @@ void Player::Update() {
 }
 
 void Player::Draw() {
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-		bullet->Draw();
-	}
-
 	Object3d::Draw(worldTransform_);
 }
 
@@ -269,8 +256,11 @@ void Player::Attack() {
 
 			newBullet->Update();
 
-			//弾コンテナに追加
-			bullets_.push_back(std::move(newBullet));
+			newBullet->SetGameScene(gameScene_);
+
+			newBullet->Update();
+
+			gameScene_->AddPlayerBullet(std::move(newBullet));
 
 			//発射済みの弾数を一つカウント
 			firedCount_++;
