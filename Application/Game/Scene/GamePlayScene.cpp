@@ -218,9 +218,7 @@ void GamePlayScene::Update3d() {
 
 	//敵機の更新
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		enemy->Update();
-
-		//被ダメージ処理
+	//被ダメージ処理
 		if (enemy->IsDamage()) {
 			float life = enemy->GetLife();
 
@@ -229,11 +227,27 @@ void GamePlayScene::Update3d() {
 
 			enemy->SetIsDamage(false);
 		}
+		enemy->Update();
+
 	}
 
 	//自機の被ダメージ処理
 	if (player_->IsDamage()) {
-		if (!player_->IsHide()) {
+		bool hit = false;
+
+		if (nowBulletTypeEnemy_ != EnemyBullet::Axe_BulletType) {
+			if (player_->IsHide()) {
+				hit = false;
+			}
+			else {
+				hit = true;
+			}
+		}
+		else {
+			hit = true;
+		}
+
+		if (hit) {
 			float life = player_->GetLife();
 			life -= nowDamageEnemy_;
 			player_->SetLife(life);

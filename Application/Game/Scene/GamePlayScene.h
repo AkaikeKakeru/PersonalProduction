@@ -87,6 +87,16 @@ public:
 		nowDamageEnemy_ = damage;
 	}
 
+	//今エネミーの弾種の取得
+	int GetNowBulletTypeEnemy() {
+		return nowBulletTypeEnemy_;
+	}
+
+	//今エネミーの弾種のセット
+	void SetNowBulletTypeEnemy(int bulletType) {
+		nowBulletTypeEnemy_ = bulletType;
+	}
+
 private: //静的メンバ変数
 	//基盤
 	static DirectXBasis* dxBas_;
@@ -141,6 +151,9 @@ public: //メンバ変数
 
 	//今エネミーの与えるダメージ量
 	float nowDamageEnemy_ = 0.0f;
+
+	//今のエネミーの弾種
+	int nowBulletTypeEnemy_ = EnemyBullet::Gun_BulletType;
 
 	//フェーズ番号
 	size_t phaseIndex_ = 0;
