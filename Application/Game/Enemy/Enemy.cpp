@@ -200,7 +200,7 @@ void Enemy::Fire() {
 	assert(player_);
 
 	//弾スピード
-	const float kBulletSpeed = 2.0f;
+	const float kBulletSpeed = 6.0f;
 
 	{
 
