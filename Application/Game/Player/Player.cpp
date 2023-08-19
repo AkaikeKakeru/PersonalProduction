@@ -134,7 +134,12 @@ void Player::Update() {
 	Reticle();
 
 	//隠れフラグが立ってない時
-	if (!isHide_) {
+	if (isHide_) {
+		if (firedCount_ > 0) {
+			firedCount_--;
+		}
+	}
+	else {
 		Attack();
 	}
 
@@ -182,6 +187,7 @@ void Player::DrawImgui() {
 		"PlayerDir", debugDir_, 0, DirRange_);
 	ImGui::InputFloat("PlayerLife", &life_);
 	ImGui::InputFloat("IsHide", &hide);
+	ImGui::InputInt("PlayerFiredCount", &firedCount_);
 	ImGui::End();
 }
 
