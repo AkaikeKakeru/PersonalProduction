@@ -78,54 +78,33 @@ void GamePlayScene::Initialize3d() {
 #pragma region Player
 	player_ = Player::Create(planeModel_);
 	player_->SetGameScene(this);
-
 	player_->SetBulletModel(bulletModel_);
-	//player_->SetScale({ 1.0f, 1.0f, 1.0f });
-	//player_->SetRotation(CreateRotationVector(
-	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	//player_->SetPosition({ 0.0f,-5.0f,30.0f });
-
 	player_->SetCamera(camera_);
 	player_->Update();
 #pragma endregion
 
 #pragma region Enemy
-	{
-		//std::unique_ptr<Enemy> newEnemy =
-		//	std::make_unique<Enemy>();
-		//newEnemy->Initialize();
-
-		//newEnemy->SetScale({ 1.0f, 1.0f, 1.0f });
-		//newEnemy->SetRotation(CreateRotationVector(
-		//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
-		//newEnemy->SetPosition({ -70.0f,0.0f,30.0f });
-
-		//newEnemy->SetModel(planeEnemyModel_);
-		//newEnemy->SetCamera(camera_);
-		//newEnemy->Update();
-		////リストに登録
-		//enemys_.push_back(std::move(newEnemy));
-	}
-	{
-		//enemy_ = Enemy::Create(planeEnemyModel_);
-		//enemy_->SetGameScene(this);
-		//enemy_->SetBulletModel(bulletModel_);
-		//enemy_->SetScale({ 1.0f, 1.0f, 1.0f });
-		//enemy_->SetRotation(CreateRotationVector(
-		//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
-		//enemy_->SetPosition({ 0.0f,0.0f,100.0f });
-
-		//enemy_->SetCamera(camera_);
-		//enemy_->Update();
-	}
+	AddEnemy({ 0.0f,0.0f,-1024.0f },
+		CreateRotationVector(
+			{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
+		{ 1.0f,1.0f,1.0f },
+		Enemy::Axe_BulletType);
 #pragma endregion
 
 #pragma region Skydome
-	skydomeObj_ = new Object3d();
-	skydomeObj_ = Object3d::Create();
-	skydomeObj_->SetModel(skydomeModel_);
-	skydomeObj_->SetScale({ 600, 600, 600 });
-	skydomeObj_->SetCamera(camera_);
+	skydome_ = Skydome::Create();
+	skydome_->SetModel(skydomeModel_);
+	skydome_->SetScale({ 512.0f, 126.0f, 512.0f });
+	skydome_->SetPosition({ 0,0,0 });
+	skydome_->SetCamera(camera_);
+	skydome_->Update();
+
+	skydome2_ = Skydome::Create();
+	skydome2_->SetModel(skydomeModel_);
+	skydome2_->SetScale({ 512.0f, 126.0f, 512.0f });
+	skydome2_->SetPosition({ 0,0,skydome2_->GetScale().z});
+	skydome2_->SetCamera(camera_);
+	skydome2_->Update();
 #pragma endregion
 
 	//ライト生成
@@ -155,7 +134,7 @@ void GamePlayScene::Update3d() {
 		});
 
 	//敵機が全滅したら(コンテナが空になったら)
-	if (enemys_.size() == 0) {
+	if (enemys_.size() <= 1) {
 		//ファイナルフェイズに届いてなければ
 		if (phaseIndex_ < kFinalPhaseIndex_) {
 			//次の敵の湧き位置検索
@@ -203,7 +182,9 @@ void GamePlayScene::Update3d() {
 
 	light_->Update();
 
-	skydomeObj_->Update();
+	skydome_->Update();
+	skydome2_->Update();
+
 	player_->Update();
 
 	//自機弾更新
@@ -267,7 +248,8 @@ void GamePlayScene::Update2d() {
 
 void GamePlayScene::Draw3d() {
 	//天球描画
-	skydomeObj_->Draw();
+	skydome_->Draw();
+	skydome2_->Draw();
 
 	//敵機描画
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
@@ -347,11 +329,11 @@ void GamePlayScene::AddEnemy(
 void GamePlayScene::SightNextEnemy() {
 	switch (phaseIndex_) {
 	case 0:
-		AddEnemy({ -70.0f,0.0f,30.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-			{ 1.0f, 1.0f, 1.0f },
-			Enemy::Gun_BulletType);
+		//AddEnemy({ -70.0f,0.0f,30.0f },
+		//	CreateRotationVector(
+		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+		//	{ 1.0f, 1.0f, 1.0f },
+		//	Enemy::Gun_BulletType);
 
 		AddEnemy({ -70.0f,0.0f,60.0f },
 			CreateRotationVector(
@@ -367,13 +349,13 @@ void GamePlayScene::SightNextEnemy() {
 		break;
 
 	case 1:
-		AddEnemy({ 70.0f,0.0f,80.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
-			{ 1.0f,1.0f,1.0f },
-			Enemy::Gun_BulletType);
+		//AddEnemy({ 70.0f,10.0f,90.0f },
+		//	CreateRotationVector(
+		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
+		//	{ 1.0f,1.0f,1.0f },
+		//	Enemy::Gun_BulletType);
 
-		AddEnemy({ 70.0f,-10.0f,60.0f },
+		AddEnemy({ 70.0f,-10.0f,110.0f },
 			CreateRotationVector(
 				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
 			{ 1.0f,1.0f,1.0f },
@@ -394,7 +376,8 @@ void GamePlayScene::SightNextEnemy() {
 }
 
 void GamePlayScene::Finalize() {
-	SafeDelete(skydomeObj_);
+	SafeDelete(skydome_);
+	SafeDelete(skydome2_);
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Finalize();
 	}
