@@ -21,6 +21,7 @@
 #include "PlayerBullet.h"
 #include "Enemy.h"
 #include "EnemyBullet.h"
+#include "Skydome.h"
 
 class CollisionManager;
 
@@ -124,7 +125,8 @@ public: //メンバ変数
 	Model* planeModel_ = nullptr;
 	Model* planeEnemyModel_ = nullptr;
 
-	Object3d* skydomeObj_ = nullptr;
+	//Object3d* skydomeObj_ = nullptr;
+	Skydome* skydome_ = nullptr;
 	Model* skydomeModel_ = nullptr;
 
 	Model* bulletModel_ = nullptr;
