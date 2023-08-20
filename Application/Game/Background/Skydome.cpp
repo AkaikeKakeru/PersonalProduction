@@ -86,7 +86,7 @@ void Skydome::Update() {
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
-	position += moveVector;
+	//position += moveVector;
 
 	if (position.z <= -worldTransform_.scale_.z) {
 		position.z = worldTransform_.scale_.z;

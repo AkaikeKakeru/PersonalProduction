@@ -329,11 +329,11 @@ void GamePlayScene::AddEnemy(
 void GamePlayScene::SightNextEnemy() {
 	switch (phaseIndex_) {
 	case 0:
-		AddEnemy({ -70.0f,0.0f,30.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-			{ 1.0f, 1.0f, 1.0f },
-			Enemy::Gun_BulletType);
+		//AddEnemy({ -70.0f,0.0f,30.0f },
+		//	CreateRotationVector(
+		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+		//	{ 1.0f, 1.0f, 1.0f },
+		//	Enemy::Gun_BulletType);
 
 		AddEnemy({ -70.0f,0.0f,60.0f },
 			CreateRotationVector(
@@ -349,11 +349,11 @@ void GamePlayScene::SightNextEnemy() {
 		break;
 
 	case 1:
-		AddEnemy({ 70.0f,10.0f,90.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
-			{ 1.0f,1.0f,1.0f },
-			Enemy::Gun_BulletType);
+		//AddEnemy({ 70.0f,10.0f,90.0f },
+		//	CreateRotationVector(
+		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
+		//	{ 1.0f,1.0f,1.0f },
+		//	Enemy::Gun_BulletType);
 
 		AddEnemy({ 70.0f,-10.0f,110.0f },
 			CreateRotationVector(
