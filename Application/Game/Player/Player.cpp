@@ -12,6 +12,7 @@
 #include <SafeDelete.h>
 #include <imgui.h>
 
+#include "GamePlayScene.h"
 #include "PlayerBullet.h"
 
 Input* Player::input_ = Input::GetInstance();
@@ -116,11 +117,6 @@ void Player::Update() {
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
-	//自壊フラグの立った弾を削除
-	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
-		return bullet->IsDead();
-		});
-
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);
 
@@ -138,17 +134,18 @@ void Player::Update() {
 	Reticle();
 
 	//隠れフラグが立ってない時
-	if (!isHide_) {
-		Attack();
+	if (isHide_) {
+		if (firedCount_ > 0) {
+			firedCount_--;
+		}
 	}
-
-	//弾更新
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-		bullet->Update();
+	else {
+		Attack();
 	}
 
 	Object3d::Update();
 
+	//ライフ0でデスフラグ
 	if (life_ <= 0.0f) {
 		isDead_ = true;
 	}
@@ -163,10 +160,6 @@ void Player::Update() {
 }
 
 void Player::Draw() {
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-		bullet->Draw();
-	}
-
 	Object3d::Draw(worldTransform_);
 }
 
@@ -194,6 +187,7 @@ void Player::DrawImgui() {
 		"PlayerDir", debugDir_, 0, DirRange_);
 	ImGui::InputFloat("PlayerLife", &life_);
 	ImGui::InputFloat("IsHide", &hide);
+	ImGui::InputInt("PlayerFiredCount", &firedCount_);
 	ImGui::End();
 }
 
@@ -220,48 +214,62 @@ void Player::Reticle() {
 }
 
 void Player::Attack() {
-	if (input_->TriggerMouse(0)) {
-		//弾スピード
-		const float kBulletSpeed = 2.0f;
-		//毎フレーム弾が前進する速度
-		Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
+	//発射上限を超えていなければ発射可能
+	if (firedCount_ < kBulletRimit_) {
+		//発射操作を確認
+		if (input_->PressMouse(0)) {
+			//弾スピード
+			const float kBulletSpeed = 10.0f;
+			//毎フレーム弾が前進する速度
+			Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
 
-		//速度ベクトルを自機の向きに合わせて回転させる
-		//bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
-		bulletVelocity =
-			Vector3{
-				worldTransform3dReticle_.matWorld_.m[3][0],
-				worldTransform3dReticle_.matWorld_.m[3][1],
-				worldTransform3dReticle_.matWorld_.m[3][2]
-		} - Vector3{
+			//速度ベクトルを自機の向きに合わせて回転させる
+			//bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
+			bulletVelocity =
+				Vector3{
+					worldTransform3dReticle_.matWorld_.m[3][0],
+					worldTransform3dReticle_.matWorld_.m[3][1],
+					worldTransform3dReticle_.matWorld_.m[3][2]
+			} - Vector3{
+					worldTransform_.matWorld_.m[3][0],
+					worldTransform_.matWorld_.m[3][1],
+					worldTransform_.matWorld_.m[3][2]
+			};
+
+			bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
+
+			//弾の生成、初期化
+			std::unique_ptr<PlayerBullet> newBullet =
+				std::make_unique<PlayerBullet>();
+
+			newBullet->Initialize();
+
+			newBullet->SetModel(bulletModel_);
+
+			newBullet->SetScale(worldTransform_.scale_);
+			newBullet->SetRotation(worldTransform_.rotation_);
+			newBullet->SetPosition(Vector3{
 				worldTransform_.matWorld_.m[3][0],
 				worldTransform_.matWorld_.m[3][1],
 				worldTransform_.matWorld_.m[3][2]
-		};
+				});
 
-		bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
+			newBullet->SetVelocity(bulletVelocity);
 
-		//弾の生成、初期化
-		std::unique_ptr<PlayerBullet> newBullet =
-			std::make_unique<PlayerBullet>();
+			newBullet->SetDamage(kGunDamage_);
 
-		newBullet->Initialize();
+			newBullet->SetCamera(camera_);
 
-		newBullet->SetModel(bulletModel_);
+			newBullet->Update();
 
-		newBullet->SetScale(worldTransform_.scale_);
-		newBullet->SetRotation(worldTransform_.rotation_);
-		newBullet->SetPosition(Vector3{
-			worldTransform_.matWorld_.m[3][0],
-			worldTransform_.matWorld_.m[3][1],
-			worldTransform_.matWorld_.m[3][2]
-			});
+			newBullet->SetGameScene(gameScene_);
 
-		newBullet->SetVelocity(bulletVelocity);
-		newBullet->SetCamera(camera_);
+			newBullet->Update();
 
-		newBullet->Update();
+			gameScene_->AddPlayerBullet(std::move(newBullet));
 
-		bullets_.push_back(std::move(newBullet));
+			//発射済みの弾数を一つカウント
+			firedCount_++;
+		}
 	}
 }

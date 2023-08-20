@@ -134,8 +134,8 @@ void Enemy::Update() {
 
 	//Reticle();
 
+	//発射タイマーを減らしていき、0で発射処理
 	fireTimer_--;
-
 	if (fireTimer_ <= 0) {
 		//発射
 		Fire();
@@ -144,6 +144,11 @@ void Enemy::Update() {
 	}
 
 	Object3d::Update();
+
+	//ライフ0でデスフラグ
+	if (life_ <= 0.0f) {
+		isDead_ = true;
+	}
 
 	//spriteReticle_->SetPosition(
 	//	{ worldTransform3dReticle_.position_.x ,
@@ -188,14 +193,14 @@ void Enemy::Finalize() {
 void Enemy::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
 
-	isDead_ = true;
+	isDamage_ = true;
 }
 
 void Enemy::Fire() {
 	assert(player_);
 
 	//弾スピード
-	const float kBulletSpeed = 2.0f;
+	const float kBulletSpeed = 6.0f;
 
 	{
 

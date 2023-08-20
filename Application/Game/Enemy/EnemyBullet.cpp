@@ -45,8 +45,6 @@ bool EnemyBullet::Initialize() {
 
 	collider_->SetAttribute(COLLISION_ATTR_ENEMYS);
 
-	heightAxe_ = kDefaultHeightAxe_;
-
 	return true;
 }
 
@@ -61,14 +59,23 @@ void EnemyBullet::Update() {
 
 	//もし斧なら、軌道設定
 	if (bulletType_ == Axe_BulletType) {
-		//斧の高さを毎フレーム落とす
-		heightAxe_ -= kFallAxe_;
+		//タイマーが0になるまで減少
+		if (--heightTimer_ <= 0) {
+			//斧の高さを落とす
+			heightAxe_ -= kFallAxe_;
+
+			//タイマー復活
+			heightTimer_ = kHeightTime_;
+		}
+
+		float deceleration = 6.0f;
 
 		//斧のベクトル調整
 		move = {
-			velocity_.x,
-			velocity_.y + (Sin(30)+ heightAxe_),
-			velocity_.z
+			velocity_.x / deceleration,
+			velocity_.y / deceleration +
+				kDefaultHeightAxe_ + heightAxe_,
+			velocity_.z / deceleration
 		};
 	}
 
@@ -106,7 +113,8 @@ void EnemyBullet::OnCollision(const CollisionInfo& info) {
 		damage_ = kAxeDamage_;
 	}
 
-	gameScene_->SetNowGamagePlayer(damage_);
+	gameScene_->SetNowDamageEnemy(damage_);
+	gameScene_->SetNowBulletTypeEnemy(bulletType_);
 
 	isDead_ = true;
 }

@@ -9,6 +9,7 @@
 #include <list>
 #include <memory>
 
+class GamePlayScene;
 class PlayerBullet;
 class CollisionManager;
 
@@ -40,7 +41,18 @@ public: //定数
 	//自機のデフォルト体力
 	const float kDefaultPlayerLife_ = 10.0f;
 
+	//銃ダメージ量
+	const float kGunDamage_ = 3.0f;
+
+	//弾数の上限
+	const int kBulletRimit_ = 30;
+
 public: //アクセッサ
+	//ゲームシーンのセット
+	void SetGameScene(GamePlayScene* gameScene) {
+		gameScene_ = gameScene;
+	}
+
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_;
 	}
@@ -106,6 +118,9 @@ private: //静的メンバ変数
 	static SpriteBasis* spriteBas_;
 
 private: //メンバ変数
+	//ゲームシーン
+	GamePlayScene* gameScene_ = nullptr;
+
 	//半径
 	float radius_ = 1.0f;
 
@@ -114,9 +129,6 @@ private: //メンバ変数
 
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
-
-	//弾
-	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
 	//弾モデル
 	Model* bulletModel_ = nullptr;
@@ -132,6 +144,9 @@ private: //メンバ変数
 
 	//隠れフラグ
 	bool isHide_ = false;
+
+	//発射した弾数
+	int firedCount_ = 0;
 
 private: //ImGui用
 	//Vector3の要素数
