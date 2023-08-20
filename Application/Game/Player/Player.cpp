@@ -117,12 +117,6 @@ void Player::Update() {
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
-	// 座標の回転を反映
-	Object3d::SetRotation(rot);
-
-	// 座標の変更を反映
-	Object3d::SetPosition(position);
-
 	//入力で隠れフラグ操作
 	if (input_->PressMouse(1)) {
 		isHide_ = true;
@@ -138,10 +132,27 @@ void Player::Update() {
 		if (firedCount_ > 0) {
 			firedCount_--;
 		}
+
+		if (position.y >= -7.5f) {
+			moveVector += { 0,-0.5f,0 };
+		}
 	}
 	else {
 		Attack();
+
+		if (position.y < -5.0f) {
+			moveVector += { 0,0.5f,0 };
+		}
 	}
+
+	position += moveVector;
+	rot += rotVector;
+
+	// 座標の回転を反映
+	Object3d::SetRotation(rot);
+
+	// 座標の変更を反映
+	Object3d::SetPosition(position);
 
 	Object3d::Update();
 
@@ -227,9 +238,9 @@ void Player::Attack() {
 			//bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
 			bulletVelocity =
 				Vector3{
-					worldTransform3dReticle_.matWorld_.m[3][0],
-					worldTransform3dReticle_.matWorld_.m[3][1],
-					worldTransform3dReticle_.matWorld_.m[3][2]
+				worldTransform3dReticle_.matWorld_.m[3][0],
+				worldTransform3dReticle_.matWorld_.m[3][1],
+				worldTransform3dReticle_.matWorld_.m[3][2]
 			} - Vector3{
 					worldTransform_.matWorld_.m[3][0],
 					worldTransform_.matWorld_.m[3][1],
