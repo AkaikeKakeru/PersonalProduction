@@ -14,6 +14,7 @@
 
 #include "GamePlayScene.h"
 #include "PlayerBullet.h"
+#include <Framework.h>
 
 Input* Player::input_ = Input::GetInstance();
 CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
@@ -68,6 +69,10 @@ bool Player::Initialize() {
 	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
 	spriteReticle_->SetSize({ 64,64 });
 
+	//テキスト
+	text_ = new Text();
+	text_->Initialize(Framework::kTextTextureIndex_);
+
 #ifdef _DEBUG
 	{
 		debugPos_[0] = { GetPosition().x };
@@ -96,12 +101,12 @@ void Player::Update() {
 
 #ifdef _DEBUG
 	{
-		position = Vector3 {
+		position = Vector3{
 			debugPos_[0],
 			debugPos_[1],
 			debugPos_[2], };
 
-		rot = Vector3 {
+		rot = Vector3{
 			debugDir_[0],
 			debugDir_[1],
 			debugDir_[2], };
@@ -134,14 +139,14 @@ void Player::Update() {
 		}
 
 		if (position.y >= -7.5f) {
-			moveVector += { 0,-0.5f,0 };
+			moveVector += { 0, -0.5f, 0 };
 		}
 	}
 	else {
 		Attack();
 
 		if (position.y < -5.0f) {
-			moveVector += { 0,0.5f,0 };
+			moveVector += { 0, 0.5f, 0 };
 		}
 	}
 
@@ -168,6 +173,15 @@ void Player::Update() {
 	spriteReticle_->SetPosition(input_->GetMousePosition());
 
 	spriteReticle_->Update();
+
+	float textSize = 2.5f;
+
+	if (firedCount_ >= kBulletRimit_) {
+		text_->Print("AmmoIsEmpty",
+			spriteReticle_->GetPosition().x - (text_->fontWidth_ * 12.0f),
+			spriteReticle_->GetPosition().y,
+			textSize);
+	}
 }
 
 void Player::Draw() {
@@ -176,6 +190,7 @@ void Player::Draw() {
 
 void Player::DrawUI() {
 	spriteReticle_->Draw();
+	text_->DrawAll();
 }
 
 void Player::DrawImgui() {
@@ -204,6 +219,8 @@ void Player::DrawImgui() {
 
 void Player::Finalize() {
 	SafeDelete(spriteReticle_);
+
+	SafeDelete(text_);
 }
 
 void Player::OnCollision(const CollisionInfo& info) {

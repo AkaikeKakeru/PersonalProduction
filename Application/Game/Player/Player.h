@@ -6,6 +6,8 @@
 #include "SpriteBasis.h"
 #include <Input.h>
 
+#include "Text.h"
+
 #include <list>
 #include <memory>
 
@@ -118,6 +120,9 @@ private: //静的メンバ変数
 	static SpriteBasis* spriteBas_;
 
 private: //メンバ変数
+	//テキスト
+	Text* text_ = nullptr;
+
 	//ゲームシーン
 	GamePlayScene* gameScene_ = nullptr;
 
