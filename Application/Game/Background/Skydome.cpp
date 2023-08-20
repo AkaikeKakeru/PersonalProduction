@@ -61,27 +61,36 @@ void Skydome::Update() {
 	Vector3 rot = Object3d::GetRotation();
 
 #ifdef _DEBUG
-	{
-		position = Vector3 {
-			debugPos_[0],
-			debugPos_[1],
-			debugPos_[2], };
+	//{
+	//	position = Vector3 {
+	//		debugPos_[0],
+	//		debugPos_[1],
+	//		debugPos_[2], };
 
-		rot = Vector3 {
-			debugDir_[0],
-			debugDir_[1],
-			debugDir_[2], };
-	}
+	//	rot = Vector3 {
+	//		debugDir_[0],
+	//		debugDir_[1],
+	//		debugDir_[2], };
+	//}
 #endif // _DEBUG
 
 	Vector3 angleX = { 1.0f,0.0f,0.0f };
 	Vector3 angleY = { 0.0f,1.0f,0.0f };
 	Vector3 angleZ = { 0.0f,0.0f,1.0f };
 
+	//速さ
+	float speed = 10.0f;
+
 	//移動ベクトル
-	Vector3 moveVector = { 0.0f,0.0f,0.0f };
+	Vector3 moveVector = { 0.0f,0.0f,-speed };
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
+
+	position += moveVector;
+
+	if (position.z <= -worldTransform_.scale_.z) {
+		position.z = worldTransform_.scale_.z;
+	}
 
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);
