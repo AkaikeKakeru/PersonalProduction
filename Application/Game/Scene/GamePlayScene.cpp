@@ -200,6 +200,7 @@ void GamePlayScene::Update3d() {
 	camera_->Update();
 
 	player_->SetWorldTransformRailCamera(railCamera_->GetWorldTransform());
+	player_->SetDistanceFromCamera(30.0f);
 
 	light_->Update();
 

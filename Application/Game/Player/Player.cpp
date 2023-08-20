@@ -204,7 +204,7 @@ void Player::OnCollision(const CollisionInfo& info) {
 void Player::Reticle() {
 	Corsor cursor{};
 
-	cursor.SetDistance(70.0f + 30.0f);
+	cursor.SetDistance(70.0f + distanceFromCamera_);
 
 	//マウスカーソルから、3D照準座標を取得する
 	worldTransform3dReticle_.position_ =

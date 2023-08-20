@@ -64,6 +64,10 @@ public: //アクセッサ
 		worldTransform_.parent_ = worldTransformRailCamera;
 	}
 
+	void SetDistanceFromCamera(float distance) {
+		distanceFromCamera_ = distance;
+	}
+
 	//弾モデルのセット
 	void SetBulletModel(Model* bulletModel) {
 		bulletModel_ = bulletModel;
@@ -126,6 +130,9 @@ private: //メンバ変数
 
 	//3dレティクルのワールド変換
 	WorldTransform worldTransform3dReticle_;
+
+	//カメラからの距離数値
+	float distanceFromCamera_ = 0.0f;
 
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
