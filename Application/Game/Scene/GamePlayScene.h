@@ -126,7 +126,10 @@ public: //メンバ変数
 	Model* planeEnemyModel_ = nullptr;
 
 	//Object3d* skydomeObj_ = nullptr;
+	//std::list<std::unique_ptr<Skydome>> skydomes_;
 	Skydome* skydome_ = nullptr;
+	Skydome* skydome2_ = nullptr;
+
 	Model* skydomeModel_ = nullptr;
 
 	Model* bulletModel_ = nullptr;

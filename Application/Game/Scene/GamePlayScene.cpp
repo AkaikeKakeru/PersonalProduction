@@ -123,9 +123,17 @@ void GamePlayScene::Initialize3d() {
 #pragma region Skydome
 	skydome_ = Skydome::Create();
 	skydome_->SetModel(skydomeModel_);
-	skydome_->SetScale({ 600, 600, 600 });
+	skydome_->SetScale({ 512.0f, 126.0f, 512.0f });
+	skydome_->SetPosition({ 0,0,0 });
 	skydome_->SetCamera(camera_);
 	skydome_->Update();
+
+	skydome2_ = Skydome::Create();
+	skydome2_->SetModel(skydomeModel_);
+	skydome2_->SetScale({ 512.0f, 126.0f, 512.0f });
+	skydome2_->SetPosition({ 0,0,skydome2_->GetScale().z});
+	skydome2_->SetCamera(camera_);
+	skydome2_->Update();
 #pragma endregion
 
 	//ライト生成
@@ -204,6 +212,8 @@ void GamePlayScene::Update3d() {
 	light_->Update();
 
 	skydome_->Update();
+	skydome2_->Update();
+
 	player_->Update();
 
 	//自機弾更新
@@ -268,6 +278,7 @@ void GamePlayScene::Update2d() {
 void GamePlayScene::Draw3d() {
 	//天球描画
 	skydome_->Draw();
+	skydome2_->Draw();
 
 	//敵機描画
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
@@ -395,6 +406,7 @@ void GamePlayScene::SightNextEnemy() {
 
 void GamePlayScene::Finalize() {
 	SafeDelete(skydome_);
+	SafeDelete(skydome2_);
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Finalize();
 	}
