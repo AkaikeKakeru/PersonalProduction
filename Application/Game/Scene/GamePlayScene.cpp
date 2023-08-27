@@ -41,6 +41,10 @@ void GamePlayScene::Draw() {
 	Draw3d();
 	Object3d::PostDraw();
 
+	ParticleManager::PreDraw(dxBas_->GetCommandList().Get());
+	DrawParticle();
+	ParticleManager::PostDraw();
+
 	SpriteBasis::GetInstance()->PreDraw();
 	Draw2d();
 	SpriteBasis::GetInstance()->PostDraw();
@@ -112,6 +116,12 @@ void GamePlayScene::Initialize3d() {
 	light_ = LightGroup::Create();
 	light_->SetAmbientColor({ 1,1,1 });
 	Object3d::SetLight(light_);
+
+	//パーティクル
+	particle_ = Particle::LoadFromObjModel("particle2.png");
+	pm_ = ParticleManager::Create();
+	pm_->SetParticleModel(particle_);
+	pm_->SetCamera(camera_);
 }
 
 void GamePlayScene::Initialize2d() {
@@ -235,12 +245,28 @@ void GamePlayScene::Update3d() {
 		}
 
 		player_->SetIsDamage(false);
+
+		pm_->Active(
+			particle_, 
+			{	player_->GetMatWorld().m[3][0],
+				player_->GetMatWorld().m[3][1],
+				player_->GetMatWorld().m[3][2]},
+			{ 2.0f ,2.0f,2.0f },
+			{ 5.0f,5.0f,5.0f },
+			{ 0.0f,0.001f,0.0f },
+			20,
+			3.0f,
+			0.0f,
+			10
+		);
 	}
 
 	if (player_->IsDead()) {
 		//シーンの切り替えを依頼
 		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 	}
+
+	pm_->Update();
 }
 
 void GamePlayScene::Update2d() {
@@ -268,6 +294,10 @@ void GamePlayScene::Draw3d() {
 
 	//自機描画
 	player_->Draw();
+}
+
+void GamePlayScene::DrawParticle() {
+	pm_->Draw();
 }
 
 void GamePlayScene::Draw2d() {
@@ -395,4 +425,7 @@ void GamePlayScene::Finalize() {
 	SafeDelete(planeEnemyModel_);
 	SafeDelete(planeModel_);
 	SafeDelete(skydomeModel_);
+
+	pm_->Finalize();
+	SafeDelete(particle_);
 }
