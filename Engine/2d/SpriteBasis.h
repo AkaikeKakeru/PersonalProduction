@@ -63,7 +63,7 @@ private://定数
 	//SRVの最大個数
 	static const size_t kMaxSRVCount = 2056;
 	//デフォルトテクスチャ格納ディレクトリ
-	static std::string kDefaultTextureDhirectoryPath;
+	static std::string kDefaultTextureDirectoryPath;
 
 private://メンバ変数
 	//Draw基盤
