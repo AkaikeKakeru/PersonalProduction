@@ -1,6 +1,7 @@
 ﻿#include "Framework.h"
 #include "Object3d.h"
 #include "SpriteBasis.h"
+#include "ParticleManager.h"
 #include "TitleScene.h"
 #include <imgui.h>
 
@@ -66,6 +67,10 @@ void Framework::Initialize(){
 	spriteBas->LoadTexture(1, "cursor.png");
 
 	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");
+
+	//パーティクルマネージャー
+	ParticleManager* particleManager = ParticleManager::GetInstance();
+	particleManager->StaticInitialize(dxBas_->GetDevice().Get());
 
 	//ライト静的初期化
 	LightGroup::StaticInitialize(dxBas_->GetDevice().Get());
