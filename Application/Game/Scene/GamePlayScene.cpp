@@ -166,7 +166,7 @@ void GamePlayScene::Update3d() {
 		});
 
 	railCamera_->Update();
-
+	
 #ifdef _DEBUG
 	if (input_->ReleaseKey(DIK_Q)) {
 		isDebugCamera_ = !isDebugCamera_;
@@ -243,6 +243,10 @@ void GamePlayScene::Update3d() {
 			life -= nowDamageEnemy_;
 			player_->SetLife(life);
 		}
+
+		//ダメージ受けたらHPの変動を実行
+		player_->DecisionHPFluctuation();
+		player_->SetIsHPFluct(true);
 
 		player_->SetIsDamage(false);
 
@@ -426,6 +430,6 @@ void GamePlayScene::Finalize() {
 	SafeDelete(planeModel_);
 	SafeDelete(skydomeModel_);
 
-	pm_->Finalize();
 	SafeDelete(particle_);
+	//pm_->Finalize();
 }
