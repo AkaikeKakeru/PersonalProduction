@@ -39,6 +39,11 @@ public://メンバ関数
 	//発射攻撃
 	void Attack();
 
+	//HPゲージ変動
+	void HpFluctuation();
+
+	void DecisionHPFluctuation();
+
 public: //定数
 	//自機のデフォルト体力
 	const float kDefaultPlayerLife_ = 10.0f;
@@ -111,6 +116,16 @@ public: //アクセッサ
 		isHide_ = isHide;
 	}
 
+	//HP変動フラグの取得
+	bool IsHPFluct() {
+		return isHPFluct_;
+	};
+
+	//HP変動フラグのセット
+	void SetIsHPFluct(bool isHPFluct) {
+		isHPFluct_ = isHPFluct;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -132,12 +147,9 @@ private: //メンバ変数
 	//3dレティクルのワールド変換
 	WorldTransform worldTransform3dReticle_;
 
-	//レティクル用スプライト
-	Sprite* spriteReticle_ = nullptr;
-
 	//弾モデル
 	Model* bulletModel_ = nullptr;
-	
+
 	//体力
 	float life_ = kDefaultPlayerLife_;
 
@@ -145,13 +157,57 @@ private: //メンバ変数
 	bool isDead_ = false;
 
 	//ダメージフラグ
-	bool isDamage_ = false; 
+	bool isDamage_ = false;
 
 	//隠れフラグ
 	bool isHide_ = false;
 
 	//発射した弾数
 	int firedCount_ = 0;
+
+	/// <summary>
+	/// HP
+	/// </summary>
+
+	//HPゲージ1メモリ当たりの長さ
+	float lengthHPGauge_ = 16.0f;
+	//HPゲージの位置(左上角)
+	Vector2 positionHPGauge_ = {
+		lengthHPGauge_ * 2,
+		lengthHPGauge_ * 2};
+
+	//HPゲージ位置のオフセット
+	Vector2 positionHPGaugeOffset_ =// { (64.0f * 4),(64.0f * 4) };
+	{ lengthHPGauge_ / 2,lengthHPGauge_ / 2 };
+
+	//レティクル用スプライト
+	Sprite* spriteReticle_ = nullptr;
+	//HPゲージ左端用スプライト
+	Sprite* spriteHPLeft_ = nullptr;
+	//HPゲージ右端用スプライト
+	Sprite* spriteHPRight_ = nullptr;
+	//HPゲージ用スプライト
+	Sprite* spriteHPGauge_ = nullptr;
+	//HP残量用スプライト
+	Sprite* spriteHP_ = nullptr;
+
+	//HP用位置イージング始発点
+	Vector3 startEaseHPPosition_{};
+	//HP用位置イージング終着点
+	Vector3 endEaseHPPosition_{};
+
+	//HP用サイズイージング始発点
+	Vector3 startEaseHPSize_{};
+	//HP用サイズイージング終着点
+	Vector3 endEaseHPSize_{};
+
+	//HP用イージング最大時間
+	float maxTimeHP_ = 30.0f;
+	//HP用イージング経過時間
+	float nowTimeHP_ = 0;
+
+	//HP用イージング実行フラグ
+	bool isHPFluct_ = false;
 
 private: //ImGui用
 	//Vector3の要素数
