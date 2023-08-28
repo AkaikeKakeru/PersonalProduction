@@ -65,6 +65,7 @@ void Framework::Initialize(){
 	spriteBas->Initialize();
 	spriteBas->LoadTexture(0, "texture.png");
 	spriteBas->LoadTexture(1, "cursor.png");
+	spriteBas->LoadTexture(2, "HPgauge.png");
 
 	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");
 
