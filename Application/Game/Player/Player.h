@@ -42,6 +42,7 @@ public://メンバ関数
 	//HPゲージ変動
 	void HpFluctuation();
 
+	//HPの変動量決め
 	void DecisionHPFluctuation();
 
 public: //定数
