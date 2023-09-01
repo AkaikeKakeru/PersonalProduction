@@ -166,7 +166,7 @@ void GamePlayScene::Update3d() {
 		});
 
 	railCamera_->Update();
-	
+
 #ifdef _DEBUG
 	if (input_->ReleaseKey(DIK_Q)) {
 		isDebugCamera_ = !isDebugCamera_;
@@ -194,7 +194,7 @@ void GamePlayScene::Update3d() {
 
 	skydome_->Update();
 	skydome2_->Update();
-
+	
 	player_->Update();
 
 	//自機弾更新
@@ -245,8 +245,13 @@ void GamePlayScene::Update3d() {
 		}
 
 		//ダメージ受けたらHPの変動を実行
-		player_->DecisionHPFluctuation();
-		player_->SetIsHPFluct(true);
+		player_->GetHPGauge()->
+			SetRest(player_->GetLife());
+
+		player_->GetHPGauge()->
+			DecisionFluctuation();
+		player_->GetHPGauge()->
+			SetIsFluct(true);
 
 		player_->SetIsDamage(false);
 
