@@ -70,62 +70,80 @@ bool Player::Initialize() {
 	spriteReticle_->SetSize({ 64,64 });
 
 #pragma region HPスプライト
-	spriteHP_ = new Sprite();
-	spriteHP_->Initialize(2);
-	spriteHP_->SetAnchorPoint({ 0.5f, 0.5f });
-	spriteHP_->SetSize({ 64 * 5,64 });
-	spriteHP_->SetTextureLeftTop({ 64,64 });
-	spriteHP_->SetTextureSize({ 64, 64 });
-	spriteHP_->SetColor({ 0.2f,0.7f,0.2f,1.0f });
+	hpGauge_ = new Gauge();
+	hpGauge_->Initialize();
 
-	spriteHPGauge_ = new Sprite();
-	spriteHPGauge_->Initialize(2);
-	spriteHPGauge_->SetAnchorPoint({ 0.5f, 0.5f });
-	spriteHPGauge_->SetSize({ 64 * 4,64 });
-	spriteHPGauge_->SetTextureLeftTop({ 16,64 });
-	spriteHPGauge_->SetTextureSize({ 32, 64 });
+	hpGauge_->SetRest(life_);
+	hpGauge_->SetLength(lengthHPGauge_);
+	hpGauge_->SetMaxTime(maxTimeHP_);
 
-	spriteHPLeft_ = new Sprite();
-	spriteHPLeft_->Initialize(2);
-	spriteHPLeft_->SetAnchorPoint({ 0.5f, 0.5f });
-	spriteHPLeft_->SetSize({ 64,64 });
-	spriteHPLeft_->SetTextureLeftTop({ 0,0 });
-	spriteHPLeft_->SetTextureSize({ 64, 64 });
+	hpGauge_->GetRestSprite()->
+		SetAnchorPoint({ 0.5f, 0.5f });
+	hpGauge_->GetRestSprite()->
+		SetSize({ 64 * 5,64 });
+	hpGauge_->GetRestSprite()->
+		SetTextureLeftTop({ 64,64 });
+	hpGauge_->GetRestSprite()->
+		SetTextureSize({ 64, 64 });
+	hpGauge_->GetRestSprite()->
+		SetColor({ 0.2f,0.7f,0.2f,1.0f });
 
-	spriteHPRight_ = new Sprite();
-	spriteHPRight_->Initialize(2);
-	spriteHPRight_->SetAnchorPoint({ 0.5f, 0.5f });
-	spriteHPRight_->SetSize({ 64,64 });
-	spriteHPRight_->SetTextureLeftTop({ 64,0 });
-	spriteHPRight_->SetTextureSize({ 64, 64 });
+	hpGauge_->GetGaugeSprite()->
+		SetAnchorPoint({ 0.5f, 0.5f });
+	hpGauge_->GetGaugeSprite()->
+		SetSize({ 64 * 4,64 });
+	hpGauge_->GetGaugeSprite()->
+		SetTextureLeftTop({ 16,64 });
+	hpGauge_->GetGaugeSprite()->
+		SetTextureSize({ 32, 64 });
 
-	spriteHP_->SetPosition(
-		{ positionHPGauge_.x + (lengthHPGauge_ * 8)
-		+ positionHPGaugeOffset_.x,
+	hpGauge_->GetLeftSprite()->
+		SetAnchorPoint({ 0.5f, 0.5f });
+	hpGauge_->GetLeftSprite()->
+		SetSize({ 64,64 });
+	hpGauge_->GetLeftSprite()->
+		SetTextureLeftTop({ 0,0 });
+	hpGauge_->GetLeftSprite()->
+		SetTextureSize({ 64, 64 });
+
+	hpGauge_->GetRightSprite()->
+		SetAnchorPoint({ 0.5f, 0.5f });
+	hpGauge_->GetRightSprite()->
+		SetSize({ 64,64 });
+	hpGauge_->GetRightSprite()->
+		SetTextureLeftTop({ 64,0 });
+	hpGauge_->GetRightSprite()->
+		SetTextureSize({ 64, 64 });
+
+	hpGauge_->GetRestSprite()->SetPosition( {
+		positionHPGauge_.x + (lengthHPGauge_ * 8) + 
+		positionHPGaugeOffset_.x,
 		positionHPGauge_.y +
 		positionHPGaugeOffset_.y });
 
-	spriteHPGauge_->SetPosition(
-		{ positionHPGauge_.x + (lengthHPGauge_ * 8)
-		+ positionHPGaugeOffset_.x,
+	hpGauge_->GetGaugeSprite()->SetPosition( {
+		positionHPGauge_.x + (lengthHPGauge_ * 8) +
+		positionHPGaugeOffset_.x,
+		positionHPGauge_.y +
+		positionHPGaugeOffset_.y });
+	
+	hpGauge_->GetLeftSprite()->
+		SetPosition( {
+		positionHPGauge_.x + 
+		positionHPGaugeOffset_.x,
 		positionHPGauge_.y +
 		positionHPGaugeOffset_.y });
 
-	spriteHPLeft_->SetPosition(
-		{ positionHPGauge_.x
-		+ positionHPGaugeOffset_.x,
-		positionHPGauge_.y +
-		positionHPGaugeOffset_.y });
-
-	spriteHPRight_->SetPosition(
-		{ positionHPGauge_.x + (lengthHPGauge_ * 4 * 4)
-		+ positionHPGaugeOffset_.x,
+	hpGauge_->GetRightSprite()->
+		SetPosition( {
+		positionHPGauge_.x + (lengthHPGauge_ * 4 * 4) +
+		positionHPGaugeOffset_.x,
 		positionHPGauge_.y +
 		positionHPGaugeOffset_.y });
 
 	startEaseHPSize_ = {
-		spriteHP_->GetSize().x,
-		spriteHP_->GetSize().y,
+		hpGauge_->GetRestSprite()->GetSize().x,
+		hpGauge_->GetRestSprite()->GetSize().y,
 		0
 	};
 	endEaseHPSize_ = {
@@ -135,8 +153,8 @@ bool Player::Initialize() {
 	};
 
 	startEaseHPPosition_ = {
-		spriteHP_->GetPosition().x,
-		spriteHP_->GetPosition().y,
+		hpGauge_->GetRestSprite()->GetPosition().x,
+		hpGauge_->GetRestSprite()->GetPosition().y,
 		0
 	};
 	endEaseHPPosition_ = {
@@ -254,24 +272,17 @@ void Player::Update() {
 
 	spriteReticle_->Update();
 
-	//フラグ立ってるならHPゲージを変動させる
-	if (isHPFluct_) {
-		HpFluctuation();
-
-		//終了時間に到達したら、タイマーリセット
-		if (nowTimeHP_ >= maxTimeHP_) {
-			nowTimeHP_ = 0;
-			isHPFluct_ = false;
-		}
-		else {
-			nowTimeHP_++;
-		}
+	//通常は緑、ピンチで赤
+	if (life_ <= 5.0f) {
+		hpGauge_->GetRestSprite()->
+		SetColor({ 0.7f,0.2f,0.2f,1.0f });
+	}
+	else {
+		hpGauge_->GetRestSprite()->
+		SetColor({ 0.2f,0.7f,0.2f,1.0f });
 	}
 
-	spriteHPGauge_->Update();
-	spriteHPLeft_->Update();
-	spriteHPRight_->Update();
-	spriteHP_->Update();
+	hpGauge_->Update();
 
 	float textSize = 2.5f;
 
@@ -288,10 +299,7 @@ void Player::Draw() {
 }
 
 void Player::DrawUI() {
-	spriteHP_->Draw();
-	spriteHPGauge_->Draw();
-	spriteHPLeft_->Draw();
-	spriteHPRight_->Draw();
+	hpGauge_->Draw();
 
 	spriteReticle_->Draw();
 	text_->DrawAll();
@@ -323,10 +331,7 @@ void Player::DrawImgui() {
 
 void Player::Finalize() {
 	SafeDelete(spriteReticle_);
-	SafeDelete(spriteHPLeft_);
-	SafeDelete(spriteHPRight_);
-	SafeDelete(spriteHPGauge_);
-	SafeDelete(spriteHP_);
+	hpGauge_->Finalize();
 	SafeDelete(text_);
 }
 
@@ -405,90 +410,4 @@ void Player::Attack() {
 			firedCount_++;
 		}
 	}
-}
-
-void Player::HpFluctuation() {
-	//サイズの変動
-	Vector3 reSize = {};
-	//座標の変動
-	Vector3 move = {};
-
-	reSize = EaseInOut(
-		startEaseHPSize_,
-		endEaseHPSize_,
-		nowTimeHP_ / maxTimeHP_);
-
-	move = EaseInOut(
-		startEaseHPPosition_,
-		endEaseHPPosition_,
-		nowTimeHP_ / maxTimeHP_);
-
-	spriteHP_->SetSize({ reSize.x,reSize.y });
-	spriteHP_->SetPosition({ move.x,move.y });
-
-	//通常は緑、ピンチで赤
-	if (life_ <= 5.0f) {
-		spriteHP_->SetColor({ 0.7f,0.2f,0.2f,1.0f });
-	}
-	else {
-		spriteHP_->SetColor({ 0.2f,0.7f,0.2f,1.0f });
-	}
-}
-
-void Player::DecisionHPFluctuation() {
-	//ライフが0以下なら
-	if (life_ <= 0) {
-		startEaseHPSize_ = {
-			spriteHP_->GetSize().x,
-			spriteHP_->GetSize().y,
-			0
-		};
-		endEaseHPSize_ = {
-			0,
-			lengthHPGauge_ * 4 ,
-			0
-		};
-
-		startEaseHPPosition_ = {
-			spriteHP_->GetPosition().x,
-			spriteHP_->GetPosition().y,
-			0
-		};
-		endEaseHPPosition_ = {
-			positionHPGauge_.x +
-			0 +
-			positionHPGaugeOffset_.x,
-			positionHPGauge_.y +
-			positionHPGaugeOffset_.y,
-			0
-		};
-	}
-	else {
-		startEaseHPSize_ = {
-			spriteHP_->GetSize().x,
-			spriteHP_->GetSize().y,
-			0
-		};
-		endEaseHPSize_ = {
-			(lengthHPGauge_ * 4 / 2) * life_,
-			lengthHPGauge_ * 4 ,
-			0
-		};
-
-		startEaseHPPosition_ = {
-			spriteHP_->GetPosition().x,
-			spriteHP_->GetPosition().y,
-			0
-		};
-		endEaseHPPosition_ = {
-			positionHPGauge_.x +
-			(lengthHPGauge_ * (life_ - 2.0f)) +
-			positionHPGaugeOffset_.x,
-			positionHPGauge_.y +
-			positionHPGaugeOffset_.y,
-			0
-		};
-	}
-
-	isHPFluct_ = true;
 }

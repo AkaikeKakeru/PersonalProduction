@@ -6,6 +6,7 @@
 #include "SpriteBasis.h"
 #include <Input.h>
 
+#include "Gauge.h"
 #include "Text.h"
 
 #include <list>
@@ -38,12 +39,6 @@ public://メンバ関数
 
 	//発射攻撃
 	void Attack();
-
-	//HPゲージ変動
-	void HpFluctuation();
-
-	//HPの変動量決め
-	void DecisionHPFluctuation();
 
 public: //定数
 	//自機のデフォルト体力
@@ -117,14 +112,9 @@ public: //アクセッサ
 		isHide_ = isHide;
 	}
 
-	//HP変動フラグの取得
-	bool IsHPFluct() {
-		return isHPFluct_;
-	};
-
-	//HP変動フラグのセット
-	void SetIsHPFluct(bool isHPFluct) {
-		isHPFluct_ = isHPFluct;
+	//HPゲージの取得
+	Gauge* GetHPGauge() const {
+		return hpGauge_;
 	}
 
 private: //静的メンバ変数
@@ -169,6 +159,7 @@ private: //メンバ変数
 	/// <summary>
 	/// HP
 	/// </summary>
+	Gauge* hpGauge_ = {};
 
 	//HPゲージ1メモリ当たりの長さ
 	float lengthHPGauge_ = 16.0f;
@@ -183,14 +174,6 @@ private: //メンバ変数
 
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
-	//HPゲージ左端用スプライト
-	Sprite* spriteHPLeft_ = nullptr;
-	//HPゲージ右端用スプライト
-	Sprite* spriteHPRight_ = nullptr;
-	//HPゲージ用スプライト
-	Sprite* spriteHPGauge_ = nullptr;
-	//HP残量用スプライト
-	Sprite* spriteHP_ = nullptr;
 
 	//HP用位置イージング始発点
 	Vector3 startEaseHPPosition_{};
@@ -204,11 +187,6 @@ private: //メンバ変数
 
 	//HP用イージング最大時間
 	float maxTimeHP_ = 30.0f;
-	//HP用イージング経過時間
-	float nowTimeHP_ = 0;
-
-	//HP用イージング実行フラグ
-	bool isHPFluct_ = false;
 
 private: //ImGui用
 	//Vector3の要素数
