@@ -88,7 +88,7 @@ void GamePlayScene::Initialize3d() {
 #pragma endregion
 
 #pragma region Enemy
-	AddEnemy({ 0.0f,0.0f,-1024.0f },
+	AddEnemy({ 0.0f,-1024.0f,-1024.0f },
 		CreateRotationVector(
 			{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
 		{ 1.0f,1.0f,1.0f },
@@ -209,6 +209,8 @@ void GamePlayScene::Update3d() {
 
 	//敵機の更新
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		
+
 	//被ダメージ処理
 		if (enemy->IsDamage()) {
 			float life = enemy->GetLife();
