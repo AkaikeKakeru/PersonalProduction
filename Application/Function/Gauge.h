@@ -15,7 +15,24 @@ public: //メンバ関数
 	//変動量決め
 	void DecisionFluctuation();
 
+	//サイズの再設定
+	void ResetSize();
+
+	//位置の再設定
+	void ResetPosition();
+
 public: //アクセッサ
+	//サイズの取得
+	const Vector2& GetSize() const {
+		return size_;
+	};
+	//サイズのセット
+	void SetSize(Vector2 const size) {
+		size_ = size;
+
+		ResetSize();
+	};
+
 	//位置(左上角)の取得
 	const Vector2& GetPosition() const {
 		return positionGauge_;
@@ -23,6 +40,13 @@ public: //アクセッサ
 	//位置(左上角)のセット
 	void SetPosition(Vector2 const position) {
 		positionGauge_ = position;
+
+		ResetPosition();
+	};
+
+	//位置オフセットのセット
+	void SetPositionOffset(Vector2 const offset) {
+		positionGaugeOffset_ = offset;
 	};
 
 	//残量スプライトの取得
@@ -88,6 +112,12 @@ private: //メンバ変数
 
 	//ゲージ1メモリ当たりの長さ
 	float lengthGauge_ = 16.0f;
+
+	//サイズ
+	Vector2 size_ = {
+		64.0f,
+		64.0f
+	};
 
 	//ゲージの位置(左上角)
 	Vector2 positionGauge_ = {
