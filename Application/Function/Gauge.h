@@ -16,6 +16,15 @@ public: //メンバ関数
 	void DecisionFluctuation();
 
 public: //アクセッサ
+	//位置(左上角)の取得
+	const Vector2& GetPosition() const {
+		return positionGauge_;
+	};
+	//位置(左上角)のセット
+	void SetPosition(Vector2 const position) {
+		positionGauge_ = position;
+	};
+
 	//残量スプライトの取得
 	Sprite* GetRestSprite() {
 		return spriteRest_;

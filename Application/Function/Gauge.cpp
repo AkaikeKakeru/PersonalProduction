@@ -5,19 +5,27 @@ void Gauge::Initialize() {
 	spriteRest_ = new Sprite();
 	spriteRest_->Initialize(2);
 	spriteRest_->SetTextureSize({ 64, 64 });
+	spriteRest_->SetAnchorPoint({ 0.5f,0.5f });
+	spriteRest_->SetTextureLeftTop({ 64,64 });
 	spriteRest_->SetColor({ 0.2f,0.7f,0.2f,1.0f });
 
 	spriteGauge_ = new Sprite();
 	spriteGauge_->Initialize(2);
 	spriteGauge_->SetTextureSize({ 32, 64 });
+	spriteGauge_->SetTextureLeftTop({ 16,64 });
+	spriteGauge_->SetAnchorPoint({ 0.5f,0.5f });
 
 	spriteLeft_ = new Sprite();
 	spriteLeft_->Initialize(2);
 	spriteLeft_->SetTextureSize({ 64, 64 });
+	spriteLeft_->SetTextureLeftTop({ 0,0 });
+	spriteLeft_->SetAnchorPoint({ 0.5f,0.5f });
 
 	spriteRight_ = new Sprite();
 	spriteRight_->Initialize(2);
 	spriteRight_->SetTextureSize({ 64, 64 });
+	spriteRight_->SetTextureLeftTop({ 64,0 });
+	spriteRight_->SetAnchorPoint({ 0.5f,0.5f });
 }
 
 void Gauge::Update() {
