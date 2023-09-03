@@ -140,8 +140,8 @@ public: //メンバ変数
 	/// <summary>
 	/// パーティクル
 	/// </summary>
-	Particle* particle_ = nullptr;
-	ParticleManager* pm_ = nullptr;
+	//Particle* particle_ = nullptr;
+	//ParticleManager* pm_ = nullptr;
 
 	/// <summary>
 	/// スプライト
