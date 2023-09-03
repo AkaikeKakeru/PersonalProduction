@@ -169,14 +169,14 @@ private: //メンバ変数
 
 	//HPゲージの位置(左上角)
 	Vector2 positionHPGauge_ = {
-		lengthHPGauge_ * 2,
-		lengthHPGauge_ * 2
+		32,
+		32
 	};
 
 	//HPゲージ位置のオフセット
 	Vector2 positionHPGaugeOffset_ = {
-		lengthHPGauge_ / 2,
-		lengthHPGauge_ / 2 
+		8,
+		8 
 	};
 
 	//HP用イージング最大時間
@@ -192,14 +192,14 @@ private: //メンバ変数
 
 	//残弾ゲージの位置(左上角)
 	Vector2 positionBulletGauge_ = {
-		lengthBulletGauge_ * 2,
-		lengthBulletGauge_ * 2
+		32,
+		256
 	};
 
 	//残弾ゲージ位置のオフセット
 	Vector2 positionBulletGaugeOffset_ = {
-		lengthBulletGauge_ / 2,
-		lengthBulletGauge_ / 2 
+		8,
+		8 
 	};
 
 	//残弾用イージング最大時間

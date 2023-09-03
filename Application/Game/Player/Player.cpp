@@ -77,43 +77,9 @@ bool Player::Initialize() {
 	hpGauge_->SetLength(lengthHPGauge_);
 	hpGauge_->SetMaxTime(maxTimeHP_);
 
-	hpGauge_->GetRestSprite()->
-		SetSize({ 64 * 5,64 });
-	hpGauge_->GetRestSprite()->
-		SetColor({ 0.2f,0.7f,0.2f,1.0f });
-	hpGauge_->GetGaugeSprite()->
-		SetSize({ 64 * 4,64 });
-	hpGauge_->GetLeftSprite()->
-		SetSize({ 64,64 });
-	hpGauge_->GetRightSprite()->
-		SetSize({ 64,64 });
-
-	hpGauge_->GetRestSprite()->SetPosition({
-		positionHPGauge_.x + (lengthHPGauge_ * 8) +
-		positionHPGaugeOffset_.x,
-		positionHPGauge_.y +
-		positionHPGaugeOffset_.y });
-
-	hpGauge_->GetGaugeSprite()->SetPosition({
-		positionHPGauge_.x + (lengthHPGauge_ * 8) +
-		positionHPGaugeOffset_.x,
-		positionHPGauge_.y +
-		positionHPGaugeOffset_.y });
-
-	hpGauge_->GetLeftSprite()->
-		SetPosition({
-		positionHPGauge_.x +
-		positionHPGaugeOffset_.x,
-		positionHPGauge_.y +
-		positionHPGaugeOffset_.y });
-
-	hpGauge_->GetRightSprite()->
-		SetPosition({
-		positionHPGauge_.x + (lengthHPGauge_ * 4 * 4) +
-		positionHPGaugeOffset_.x,
-		positionHPGauge_.y +
-		positionHPGaugeOffset_.y });
-
+	hpGauge_->SetSize({ 64,64 });
+	hpGauge_->SetLength(16);
+	hpGauge_->SetPosition({ 32,32 });
 #pragma endregion
 
 #pragma region 残弾数スプライト
@@ -125,44 +91,10 @@ bool Player::Initialize() {
 	bulletGauge_->SetLength(lengthBulletGauge_);
 	bulletGauge_->SetMaxTime(maxTimeBullet_);
 
-	bulletGauge_->GetRestSprite()->
-		SetSize({ 32 * 5,16 });
-	bulletGauge_->GetRestSprite()->
-		SetColor({ 0.2f,0.7f,0.2f,1.0f });
-	bulletGauge_->GetGaugeSprite()->
-		SetSize({ 32 * 4,16 });
-	bulletGauge_->GetLeftSprite()->
-		SetSize({ 32,16 });
-	bulletGauge_->GetRightSprite()->
-		SetSize({ 32,16 });
-
-	bulletGauge_->GetRestSprite()->SetPosition({
-		positionBulletGauge_.x + (lengthBulletGauge_ * 8) +
-		positionBulletGaugeOffset_.x,
-		positionBulletGauge_.y +
-		positionBulletGaugeOffset_.y });
-
-	bulletGauge_->GetGaugeSprite()->SetPosition({
-		positionBulletGauge_.x + (lengthBulletGauge_ * 8) +
-		positionBulletGaugeOffset_.x,
-		positionBulletGauge_.y +
-		positionBulletGaugeOffset_.y });
-
-	bulletGauge_->GetLeftSprite()->
-		SetPosition({
-		positionBulletGauge_.x +
-		positionBulletGaugeOffset_.x,
-			positionBulletGauge_.y +
-			positionBulletGaugeOffset_.y });
-
-	bulletGauge_->GetRightSprite()->
-		SetPosition({
-		positionBulletGauge_.x + (lengthBulletGauge_ * 4 * 4) +
-		positionBulletGaugeOffset_.x,
-			positionBulletGauge_.y +
-			positionBulletGaugeOffset_.y });
-
-	bulletGauge_->Update();
+	bulletGauge_->SetSize({ 64,64 });
+	bulletGauge_->SetLength(16);
+	bulletGauge_->SetPosition({ 16,128 });
+	bulletGauge_->GetRestSprite()->SetColor({ 0.5f,0.5f,0.1f,0.5f });
 #pragma endregion
 
 	//テキスト
@@ -269,17 +201,9 @@ void Player::Update() {
 	spriteReticle_->SetPosition(input_->GetMousePosition());
 
 	//残弾数ゲージの変動
-	bulletGauge_->GetRestSprite()->
-		SetColor({ 0.2f,0.7f,0.2f,5.0f });
-	bulletGauge_->SetPosition({
-		input_->GetMousePosition().x - 128.0f + 16.0f,
-		input_->GetMousePosition().y + 16.0f
-		});
-
 	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
-
+	//bulletGauge_->SetSize({ 64,16 });
 	bulletGauge_->DecisionFluctuation();
-	bulletGauge_->SetIsFluct(true);
 
 	spriteReticle_->Update();
 
@@ -311,7 +235,7 @@ void Player::Draw() {
 }
 
 void Player::DrawUI() {
-	bulletGauge_->Draw();
+//	bulletGauge_->Draw();
 	hpGauge_->Draw();
 
 	spriteReticle_->Draw();
