@@ -118,10 +118,10 @@ void GamePlayScene::Initialize3d() {
 	Object3d::SetLight(light_);
 
 	//パーティクル
-	particle_ = Particle::LoadFromObjModel("particle2.png");
-	pm_ = ParticleManager::Create();
-	pm_->SetParticleModel(particle_);
-	pm_->SetCamera(camera_);
+	//particle_ = Particle::LoadFromObjModel("particle2.png");
+	//pm_ = ParticleManager::Create();
+	//pm_->SetParticleModel(particle_);
+	//pm_->SetCamera(camera_);
 }
 
 void GamePlayScene::Initialize2d() {
@@ -257,19 +257,19 @@ void GamePlayScene::Update3d() {
 
 		player_->SetIsDamage(false);
 
-		pm_->Active(
-			particle_, 
-			{	player_->GetMatWorld().m[3][0],
-				player_->GetMatWorld().m[3][1],
-				player_->GetMatWorld().m[3][2]},
-			{ 2.0f ,2.0f,2.0f },
-			{ 5.0f,5.0f,5.0f },
-			{ 0.0f,0.001f,0.0f },
-			20,
-			3.0f,
-			0.0f,
-			10
-		);
+		//pm_->Active(
+		//	particle_, 
+		//	{	player_->GetMatWorld().m[3][0],
+		//		player_->GetMatWorld().m[3][1],
+		//		player_->GetMatWorld().m[3][2]},
+		//	{ 2.0f ,2.0f,2.0f },
+		//	{ 5.0f,5.0f,5.0f },
+		//	{ 0.0f,0.001f,0.0f },
+		//	20,
+		//	3.0f,
+		//	0.0f,
+		//	10
+		//);
 	}
 
 	if (player_->IsDead()) {
@@ -277,7 +277,7 @@ void GamePlayScene::Update3d() {
 		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 	}
 
-	pm_->Update();
+	//pm_->Update();
 }
 
 void GamePlayScene::Update2d() {
@@ -308,7 +308,7 @@ void GamePlayScene::Draw3d() {
 }
 
 void GamePlayScene::DrawParticle() {
-	pm_->Draw();
+	//pm_->Draw();
 }
 
 void GamePlayScene::Draw2d() {
@@ -437,6 +437,6 @@ void GamePlayScene::Finalize() {
 	SafeDelete(planeModel_);
 	SafeDelete(skydomeModel_);
 
-	SafeDelete(particle_);
+	//SafeDelete(particle_);
 	//pm_->Finalize();
 }
