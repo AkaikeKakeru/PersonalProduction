@@ -41,6 +41,10 @@ void GamePlayScene::Draw() {
 	Draw3d();
 	Object3d::PostDraw();
 
+	ParticleManager::PreDraw(dxBas_->GetCommandList().Get());
+	DrawParticle();
+	ParticleManager::PostDraw();
+
 	SpriteBasis::GetInstance()->PreDraw();
 	Draw2d();
 	SpriteBasis::GetInstance()->PostDraw();
@@ -84,7 +88,7 @@ void GamePlayScene::Initialize3d() {
 #pragma endregion
 
 #pragma region Enemy
-	AddEnemy({ 0.0f,0.0f,-1024.0f },
+	AddEnemy({ 0.0f,-1024.0f,-1024.0f },
 		CreateRotationVector(
 			{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
 		{ 1.0f,1.0f,1.0f },
@@ -112,6 +116,12 @@ void GamePlayScene::Initialize3d() {
 	light_ = LightGroup::Create();
 	light_->SetAmbientColor({ 1,1,1 });
 	Object3d::SetLight(light_);
+
+	//パーティクル
+	particle_ = Particle::LoadFromObjModel("particle2.png");
+	pm_ = ParticleManager::Create();
+	pm_->SetParticleModel(particle_);
+	pm_->SetCamera(camera_);
 }
 
 void GamePlayScene::Initialize2d() {
@@ -184,7 +194,7 @@ void GamePlayScene::Update3d() {
 
 	skydome_->Update();
 	skydome2_->Update();
-
+	
 	player_->Update();
 
 	//自機弾更新
@@ -199,6 +209,8 @@ void GamePlayScene::Update3d() {
 
 	//敵機の更新
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		
+
 	//被ダメージ処理
 		if (enemy->IsDamage()) {
 			float life = enemy->GetLife();
@@ -234,13 +246,38 @@ void GamePlayScene::Update3d() {
 			player_->SetLife(life);
 		}
 
+		//ダメージ受けたらHPの変動を実行
+		player_->GetHPGauge()->
+			SetRest(player_->GetLife());
+
+		player_->GetHPGauge()->
+			DecisionFluctuation();
+		player_->GetHPGauge()->
+			SetIsFluct(true);
+
 		player_->SetIsDamage(false);
+
+		pm_->Active(
+			particle_, 
+			{	player_->GetMatWorld().m[3][0],
+				player_->GetMatWorld().m[3][1],
+				player_->GetMatWorld().m[3][2]},
+			{ 2.0f ,2.0f,2.0f },
+			{ 5.0f,5.0f,5.0f },
+			{ 0.0f,0.001f,0.0f },
+			20,
+			3.0f,
+			0.0f,
+			10
+		);
 	}
 
 	if (player_->IsDead()) {
 		//シーンの切り替えを依頼
 		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 	}
+
+	pm_->Update();
 }
 
 void GamePlayScene::Update2d() {
@@ -268,6 +305,10 @@ void GamePlayScene::Draw3d() {
 
 	//自機描画
 	player_->Draw();
+}
+
+void GamePlayScene::DrawParticle() {
+	pm_->Draw();
 }
 
 void GamePlayScene::Draw2d() {
@@ -395,4 +436,7 @@ void GamePlayScene::Finalize() {
 	SafeDelete(planeEnemyModel_);
 	SafeDelete(planeModel_);
 	SafeDelete(skydomeModel_);
+
+	SafeDelete(particle_);
+	//pm_->Finalize();
 }

@@ -5,6 +5,8 @@
 #include "SpriteBasis.h"
 #include <Input.h>
 
+#include "Gauge.h"
+
 #include <list>
 #include <memory>
 
@@ -108,6 +110,11 @@ public: //アクセッサ
 		bulletType_ = bulletType;
 	}
 
+	//HPゲージの取得
+	Gauge* GetHPGauge() const {
+		return hpGauge_;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -148,6 +155,29 @@ private: //メンバ変数
 
 	//弾種
 	int bulletType_ = Gun_BulletType;
+
+	/// <summary>
+	/// HP
+	/// </summary>
+	Gauge* hpGauge_ = {};
+
+	//HPゲージの長さ
+	float lengthHPGauge_ = 4.0f;
+
+	//HPゲージの位置(左上角)
+	Vector2 positionHPGauge_ = {
+		lengthHPGauge_ * 2,
+		lengthHPGauge_ * 2
+	};
+
+	//HPゲージ位置のオフセット
+	Vector2 positionHPGaugeOffset_ = {
+		lengthHPGauge_ / 2,
+		lengthHPGauge_ / 2 
+	};
+
+	//HP用イージング最大時間
+	float maxTimeHP_ = 30.0f;
 
 private: //ImGui用
 	//Vector3の要素数

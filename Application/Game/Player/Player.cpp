@@ -69,6 +69,102 @@ bool Player::Initialize() {
 	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
 	spriteReticle_->SetSize({ 64,64 });
 
+#pragma region HPスプライト
+	hpGauge_ = new Gauge();
+	hpGauge_->Initialize();
+
+	hpGauge_->SetRest(life_);
+	hpGauge_->SetLength(lengthHPGauge_);
+	hpGauge_->SetMaxTime(maxTimeHP_);
+
+	hpGauge_->GetRestSprite()->
+		SetSize({ 64 * 5,64 });
+	hpGauge_->GetRestSprite()->
+		SetColor({ 0.2f,0.7f,0.2f,1.0f });
+	hpGauge_->GetGaugeSprite()->
+		SetSize({ 64 * 4,64 });
+	hpGauge_->GetLeftSprite()->
+		SetSize({ 64,64 });
+	hpGauge_->GetRightSprite()->
+		SetSize({ 64,64 });
+
+	hpGauge_->GetRestSprite()->SetPosition({
+		positionHPGauge_.x + (lengthHPGauge_ * 8) +
+		positionHPGaugeOffset_.x,
+		positionHPGauge_.y +
+		positionHPGaugeOffset_.y });
+
+	hpGauge_->GetGaugeSprite()->SetPosition({
+		positionHPGauge_.x + (lengthHPGauge_ * 8) +
+		positionHPGaugeOffset_.x,
+		positionHPGauge_.y +
+		positionHPGaugeOffset_.y });
+
+	hpGauge_->GetLeftSprite()->
+		SetPosition({
+		positionHPGauge_.x +
+		positionHPGaugeOffset_.x,
+		positionHPGauge_.y +
+		positionHPGaugeOffset_.y });
+
+	hpGauge_->GetRightSprite()->
+		SetPosition({
+		positionHPGauge_.x + (lengthHPGauge_ * 4 * 4) +
+		positionHPGaugeOffset_.x,
+		positionHPGauge_.y +
+		positionHPGaugeOffset_.y });
+
+#pragma endregion
+
+#pragma region 残弾数スプライト
+	bulletGauge_ = new Gauge();
+	bulletGauge_->Initialize();
+
+	bulletGauge_->GetRestSprite()->SetColor({ 0.2f,0.7f,0.2f,0.5f });
+	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
+	bulletGauge_->SetLength(lengthBulletGauge_);
+	bulletGauge_->SetMaxTime(maxTimeBullet_);
+
+	bulletGauge_->GetRestSprite()->
+		SetSize({ 32 * 5,16 });
+	bulletGauge_->GetRestSprite()->
+		SetColor({ 0.2f,0.7f,0.2f,1.0f });
+	bulletGauge_->GetGaugeSprite()->
+		SetSize({ 32 * 4,16 });
+	bulletGauge_->GetLeftSprite()->
+		SetSize({ 32,16 });
+	bulletGauge_->GetRightSprite()->
+		SetSize({ 32,16 });
+
+	bulletGauge_->GetRestSprite()->SetPosition({
+		positionBulletGauge_.x + (lengthBulletGauge_ * 8) +
+		positionBulletGaugeOffset_.x,
+		positionBulletGauge_.y +
+		positionBulletGaugeOffset_.y });
+
+	bulletGauge_->GetGaugeSprite()->SetPosition({
+		positionBulletGauge_.x + (lengthBulletGauge_ * 8) +
+		positionBulletGaugeOffset_.x,
+		positionBulletGauge_.y +
+		positionBulletGaugeOffset_.y });
+
+	bulletGauge_->GetLeftSprite()->
+		SetPosition({
+		positionBulletGauge_.x +
+		positionBulletGaugeOffset_.x,
+			positionBulletGauge_.y +
+			positionBulletGaugeOffset_.y });
+
+	bulletGauge_->GetRightSprite()->
+		SetPosition({
+		positionBulletGauge_.x + (lengthBulletGauge_ * 4 * 4) +
+		positionBulletGaugeOffset_.x,
+			positionBulletGauge_.y +
+			positionBulletGaugeOffset_.y });
+
+	bulletGauge_->Update();
+#pragma endregion
+
 	//テキスト
 	text_ = new Text();
 	text_->Initialize(Framework::kTextTextureIndex_);
@@ -132,10 +228,10 @@ void Player::Update() {
 
 	Reticle();
 
-	//隠れフラグが立ってない時
+	//隠れフラグが立っている時
 	if (isHide_) {
-		if (firedCount_ > 0) {
-			firedCount_--;
+		if (remainBulletCount_ < kBulletRimit_) {
+			remainBulletCount_++;
 		}
 
 		if (position.y >= -7.5f) {
@@ -172,11 +268,37 @@ void Player::Update() {
 
 	spriteReticle_->SetPosition(input_->GetMousePosition());
 
+	//残弾数ゲージの変動
+	bulletGauge_->GetRestSprite()->
+		SetColor({ 0.2f,0.7f,0.2f,5.0f });
+	bulletGauge_->SetPosition({
+		input_->GetMousePosition().x - 128.0f + 16.0f,
+		input_->GetMousePosition().y + 16.0f
+		});
+
+	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
+
+	bulletGauge_->DecisionFluctuation();
+	bulletGauge_->SetIsFluct(true);
+
 	spriteReticle_->Update();
+
+	//通常は緑、ピンチで赤
+	if (life_ <= 5.0f) {
+		hpGauge_->GetRestSprite()->
+			SetColor({ 0.7f,0.2f,0.2f,1.0f });
+	}
+	else {
+		hpGauge_->GetRestSprite()->
+			SetColor({ 0.2f,0.7f,0.2f,1.0f });
+	}
+
+	bulletGauge_->Update();
+	hpGauge_->Update();
 
 	float textSize = 2.5f;
 
-	if (firedCount_ >= kBulletRimit_) {
+	if (remainBulletCount_ <= 0) {
 		text_->Print("AmmoIsEmpty",
 			spriteReticle_->GetPosition().x - (text_->fontWidth_ * 12.0f),
 			spriteReticle_->GetPosition().y,
@@ -189,6 +311,9 @@ void Player::Draw() {
 }
 
 void Player::DrawUI() {
+	bulletGauge_->Draw();
+	hpGauge_->Draw();
+
 	spriteReticle_->Draw();
 	text_->DrawAll();
 }
@@ -213,13 +338,14 @@ void Player::DrawImgui() {
 		"PlayerDir", debugDir_, 0, DirRange_);
 	ImGui::InputFloat("PlayerLife", &life_);
 	ImGui::InputFloat("IsHide", &hide);
-	ImGui::InputInt("PlayerFiredCount", &firedCount_);
+	ImGui::InputInt("PlayerRemainBullet", &remainBulletCount_);
 	ImGui::End();
 }
 
 void Player::Finalize() {
 	SafeDelete(spriteReticle_);
-
+	bulletGauge_->Finalize();
+	hpGauge_->Finalize();
 	SafeDelete(text_);
 }
 
@@ -242,8 +368,8 @@ void Player::Reticle() {
 }
 
 void Player::Attack() {
-	//発射上限を超えていなければ発射可能
-	if (firedCount_ < kBulletRimit_) {
+	//残弾数が切れていなければ発射可能
+	if (remainBulletCount_ > 0) {
 		//発射操作を確認
 		if (input_->PressMouse(0)) {
 			//弾スピード
@@ -288,8 +414,6 @@ void Player::Attack() {
 
 			newBullet->SetCamera(camera_);
 
-			newBullet->Update();
-
 			newBullet->SetGameScene(gameScene_);
 
 			newBullet->Update();
@@ -297,7 +421,7 @@ void Player::Attack() {
 			gameScene_->AddPlayerBullet(std::move(newBullet));
 
 			//発射済みの弾数を一つカウント
-			firedCount_++;
+			remainBulletCount_--;
 		}
 	}
 }

@@ -13,7 +13,7 @@ template <class T>
 using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 //デフォルトテクスチャ格納ディレクトリ
-std::string SpriteBasis::kDefaultTextureDhirectoryPath = "Resource/";
+std::string SpriteBasis::kDefaultTextureDirectoryPath = "Resource/";
 
 //DirectX基盤
 DirectXBasis* SpriteBasis::dxBas_ = nullptr;
@@ -62,7 +62,7 @@ void SpriteBasis::Initialize() {
 	incrementSize_ = device_->GetDescriptorHandleIncrementSize(
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	textureDhirectoryPath_ = kDefaultTextureDhirectoryPath;
+	textureDhirectoryPath_ = kDefaultTextureDirectoryPath;
 
 	/// <summary>
 	/// パイプライン

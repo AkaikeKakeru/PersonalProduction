@@ -55,19 +55,52 @@ bool Enemy::Initialize() {
 
 	worldTransform3dReticle_.Initialize();
 
-	//SetScale({ 1.0f, 1.0f, 1.0f });
-	//SetRotation(CreateRotationVector(
-	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
-	//SetPosition({ -70.0f,0.0f,30.0f });
+#pragma region HPスプライト
+	hpGauge_ = new Gauge();
+	hpGauge_->Initialize();
 
+	hpGauge_->SetRest(life_);
+	hpGauge_->SetLength(lengthHPGauge_);
+	hpGauge_->SetMaxTime(maxTimeHP_);
 
-	//drawBas_->LoadTexture(1, "texture.png");
+	hpGauge_->GetRestSprite()->
+		SetSize({ 64 * 5,64 });
+	hpGauge_->GetRestSprite()->
+		SetColor({ 0.2f,0.7f,0.2f,1.0f });
+	hpGauge_->GetGaugeSprite()->
+		SetSize({ 64 * 4,64 });
+	hpGauge_->GetLeftSprite()->
+		SetSize({ 64,64 });
+	hpGauge_->GetRightSprite()->
+		SetSize({ 64,64 });
 
-	//spriteReticle_ = new Sprite();
-	//spriteReticle_->Initialize(drawBas_, 1);
+	hpGauge_->GetRestSprite()->SetPosition({
+		positionHPGauge_.x + (lengthHPGauge_ * 8) +
+		positionHPGaugeOffset_.x,
+		positionHPGauge_.y +
+		positionHPGaugeOffset_.y });
 
-	//spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
-	//spriteReticle_->SetSize({ 64,64 });
+	hpGauge_->GetGaugeSprite()->SetPosition({
+		positionHPGauge_.x + (lengthHPGauge_ * 8) +
+		positionHPGaugeOffset_.x,
+		positionHPGauge_.y +
+		positionHPGaugeOffset_.y });
+
+	hpGauge_->GetLeftSprite()->
+		SetPosition({
+		positionHPGauge_.x +
+		positionHPGaugeOffset_.x,
+			positionHPGauge_.y +
+			positionHPGaugeOffset_.y });
+
+	hpGauge_->GetRightSprite()->
+		SetPosition({
+		positionHPGauge_.x + (lengthHPGauge_ * 4 * 4) +
+		positionHPGaugeOffset_.x,
+			positionHPGauge_.y +
+			positionHPGaugeOffset_.y });
+
+#pragma endregion
 
 #ifdef _DEBUG
 	{
@@ -124,15 +157,11 @@ void Enemy::Update() {
 	moveVector = { 0.0f,0.0f,kSpeed };
 	moveVector = Vector3CrossMatrix4(moveVector, worldTransform_.matWorld_);
 
-	//position += moveVector;
-
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);
 
 	// 座標の変更を反映
 	Object3d::SetPosition(position);
-
-	//Reticle();
 
 	//発射タイマーを減らしていき、0で発射処理
 	fireTimer_--;
@@ -150,13 +179,50 @@ void Enemy::Update() {
 		isDead_ = true;
 	}
 
-	//spriteReticle_->SetPosition(
-	//	{ worldTransform3dReticle_.position_.x ,
-	//	worldTransform3dReticle_.position_.y });
+	//HPゲージの変動
+	Vector3 posHpGauge3d = {
+		worldTransform_.matWorld_.m[3][0],
+		worldTransform_.matWorld_.m[3][1],
+		worldTransform_.matWorld_.m[3][2]
+	};
 
-	//spriteReticle_->SetPosition(input_->GetMousePosition());
+	Matrix4 matViewPort = Matrix4Identity();
+	matViewPort.m[0][0] = static_cast<float>(WinApp::Win_Width) / 2;
+	matViewPort.m[1][1] = static_cast<float>(-(WinApp::Win_Height)) / 2;
+	matViewPort.m[3][0] = static_cast<float>(WinApp::Win_Width) / 2;
+	matViewPort.m[3][1] = static_cast<float>(WinApp::Win_Height) / 2;
 
-	//spriteReticle_->Update();
+	Matrix4 matVPV = camera_->GetViewMatrix()
+		* camera_->GetProjectionMatrix()
+		* matViewPort;
+
+	posHpGauge3d = Vector3TransformCoord(posHpGauge3d, matVPV);
+
+	hpGauge_->GetRestSprite()->
+		SetColor({ 0.2f,0.7f,0.2f,5.0f });
+	hpGauge_->SetPosition({
+		posHpGauge3d.x - 32.0f,
+		posHpGauge3d.y - 32.0f
+		});
+
+	hpGauge_->SetRest(
+		static_cast<float>(life_)
+	);
+
+	hpGauge_->DecisionFluctuation();
+	hpGauge_->SetIsFluct(true);
+
+	//通常は緑、ピンチで赤
+	if (life_ <= 5.0f) {
+		hpGauge_->GetRestSprite()->
+			SetColor({ 0.7f,0.2f,0.2f,1.0f });
+	}
+	else {
+		hpGauge_->GetRestSprite()->
+			SetColor({ 0.2f,0.7f,0.2f,1.0f });
+	}
+
+	hpGauge_->Update();
 }
 
 void Enemy::Draw() {
@@ -164,7 +230,7 @@ void Enemy::Draw() {
 }
 
 void Enemy::DrawUI() {
-	//spriteReticle_->Draw();
+	hpGauge_->Draw();
 }
 
 void Enemy::DrawImgui() {
@@ -187,7 +253,7 @@ void Enemy::DrawImgui() {
 }
 
 void Enemy::Finalize() {
-	//SafeDelete(spriteReticle_);
+	hpGauge_->Finalize();
 }
 
 void Enemy::OnCollision(const CollisionInfo& info) {
@@ -201,27 +267,6 @@ void Enemy::Fire() {
 
 	//弾スピード
 	const float kBulletSpeed = 6.0f;
-
-	{
-
-	////速度ベクトルを自機の向きに合わせて回転させる
-	//bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
-
-	////bulletVelocity =
-	////	Vector3{
-	////	worldTransform3dReticle_.matWorld_.m[3][0],
-	////	worldTransform3dReticle_.matWorld_.m[3][1],
-	////	worldTransform3dReticle_.matWorld_.m[3][2]
-	////} - Vector3{
-	////		worldTransform_.matWorld_.m[3][0],
-	////		worldTransform_.matWorld_.m[3][1],
-	////		worldTransform_.matWorld_.m[3][2]
-	////};
-
-	//bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
-	}
-
-//	bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
 
 	Vector3 worldPos = {
 		worldTransform_.matWorld_.m[3][0],

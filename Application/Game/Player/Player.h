@@ -6,6 +6,7 @@
 #include "SpriteBasis.h"
 #include <Input.h>
 
+#include "Gauge.h"
 #include "Text.h"
 
 #include <list>
@@ -111,6 +112,11 @@ public: //アクセッサ
 		isHide_ = isHide;
 	}
 
+	//HPゲージの取得
+	Gauge* GetHPGauge() const {
+		return hpGauge_;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -132,12 +138,9 @@ private: //メンバ変数
 	//3dレティクルのワールド変換
 	WorldTransform worldTransform3dReticle_;
 
-	//レティクル用スプライト
-	Sprite* spriteReticle_ = nullptr;
-
 	//弾モデル
 	Model* bulletModel_ = nullptr;
-	
+
 	//体力
 	float life_ = kDefaultPlayerLife_;
 
@@ -145,13 +148,62 @@ private: //メンバ変数
 	bool isDead_ = false;
 
 	//ダメージフラグ
-	bool isDamage_ = false; 
+	bool isDamage_ = false;
 
 	//隠れフラグ
 	bool isHide_ = false;
 
-	//発射した弾数
-	int firedCount_ = 0;
+	//残弾数
+	int remainBulletCount_ = kBulletRimit_;
+
+	//レティクル用スプライト
+	Sprite* spriteReticle_ = nullptr;
+
+	/// <summary>
+	/// HP
+	/// </summary>
+	Gauge* hpGauge_ = {};
+
+	//HPゲージの長さ
+	float lengthHPGauge_ = 16.0f;
+
+	//HPゲージの位置(左上角)
+	Vector2 positionHPGauge_ = {
+		lengthHPGauge_ * 2,
+		lengthHPGauge_ * 2
+	};
+
+	//HPゲージ位置のオフセット
+	Vector2 positionHPGaugeOffset_ = {
+		lengthHPGauge_ / 2,
+		lengthHPGauge_ / 2 
+	};
+
+	//HP用イージング最大時間
+	float maxTimeHP_ = 30.0f;
+
+	/// <summary>
+	/// 残弾
+	/// </summary>
+	Gauge* bulletGauge_ = {};
+
+	//残弾ゲージの長さ
+	float lengthBulletGauge_ = 4.0f;
+
+	//残弾ゲージの位置(左上角)
+	Vector2 positionBulletGauge_ = {
+		lengthBulletGauge_ * 2,
+		lengthBulletGauge_ * 2
+	};
+
+	//残弾ゲージ位置のオフセット
+	Vector2 positionBulletGaugeOffset_ = {
+		lengthBulletGauge_ / 2,
+		lengthBulletGauge_ / 2 
+	};
+
+	//残弾用イージング最大時間
+	float maxTimeBullet_ = 30.0f;
 
 private: //ImGui用
 	//Vector3の要素数

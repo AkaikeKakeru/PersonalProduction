@@ -6,6 +6,8 @@
 #include "Model.h"
 #include "Sprite.h"
 #include "Object3d.h"
+#include "Particle.h"
+#include "ParticleManager.h"
 
 #include "Camera.h"
 #include "RailCamera.h"
@@ -41,6 +43,7 @@ private:
 	void Update2d();
 
 	void Draw3d();
+	void DrawParticle();
 	void Draw2d();
 
 public://定数
@@ -133,6 +136,12 @@ public: //メンバ変数
 	Model* skydomeModel_ = nullptr;
 
 	Model* bulletModel_ = nullptr;
+
+	/// <summary>
+	/// パーティクル
+	/// </summary>
+	Particle* particle_ = nullptr;
+	ParticleManager* pm_ = nullptr;
 
 	/// <summary>
 	/// スプライト

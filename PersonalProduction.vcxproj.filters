@@ -261,6 +261,15 @@
     <ClCompile Include="Application\Game\Background\Skydome.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Particle\ParticleManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Particle\Particle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Function\Gauge.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Base\DirectXBasis.h">
@@ -425,6 +434,15 @@
     <ClInclude Include="Application\Game\Background\Skydome.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Particle\ParticleManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Particle\Particle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\Gauge.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\shader\ObjPS.hlsl">
@@ -439,6 +457,9 @@
     <FxCompile Include="Resource\shader\SpriteVS.hlsl">
       <Filter>シェーダ ファイル\Sprite</Filter>
     </FxCompile>
+    <FxCompile Include="Resource\shader\ParticleVS.hlsl" />
+    <FxCompile Include="Resource\shader\ParticlePS.hlsl" />
+    <FxCompile Include="Resource\shader\ParticleGS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\shader\Obj.hlsli">
@@ -447,5 +468,6 @@
     <None Include="Resource\shader\Sprite.hlsli">
       <Filter>シェーダ ファイル\Sprite</Filter>
     </None>
+    <None Include="Resource\shader\Particle.hlsli" />
   </ItemGroup>
 </Project>
