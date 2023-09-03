@@ -153,40 +153,57 @@ private: //メンバ変数
 	//隠れフラグ
 	bool isHide_ = false;
 
-	//発射した弾数
-	int firedCount_ = 0;
+	//残弾数
+	int remainBulletCount_ = kBulletRimit_;
+
+	//レティクル用スプライト
+	Sprite* spriteReticle_ = nullptr;
 
 	/// <summary>
 	/// HP
 	/// </summary>
 	Gauge* hpGauge_ = {};
 
-	//HPゲージ1メモリ当たりの長さ
+	//HPゲージの長さ
 	float lengthHPGauge_ = 16.0f;
+
 	//HPゲージの位置(左上角)
 	Vector2 positionHPGauge_ = {
 		lengthHPGauge_ * 2,
-		lengthHPGauge_ * 2};
+		lengthHPGauge_ * 2
+	};
 
 	//HPゲージ位置のオフセット
-	Vector2 positionHPGaugeOffset_ =// { (64.0f * 4),(64.0f * 4) };
-	{ lengthHPGauge_ / 2,lengthHPGauge_ / 2 };
-
-	//レティクル用スプライト
-	Sprite* spriteReticle_ = nullptr;
-
-	//HP用位置イージング始発点
-	Vector3 startEaseHPPosition_{};
-	//HP用位置イージング終着点
-	Vector3 endEaseHPPosition_{};
-
-	//HP用サイズイージング始発点
-	Vector3 startEaseHPSize_{};
-	//HP用サイズイージング終着点
-	Vector3 endEaseHPSize_{};
+	Vector2 positionHPGaugeOffset_ = {
+		lengthHPGauge_ / 2,
+		lengthHPGauge_ / 2 
+	};
 
 	//HP用イージング最大時間
 	float maxTimeHP_ = 30.0f;
+
+	/// <summary>
+	/// 残弾
+	/// </summary>
+	Gauge* bulletGauge_ = {};
+
+	//残弾ゲージの長さ
+	float lengthBulletGauge_ = 4.0f;
+
+	//残弾ゲージの位置(左上角)
+	Vector2 positionBulletGauge_ = {
+		lengthBulletGauge_ * 2,
+		lengthBulletGauge_ * 2
+	};
+
+	//残弾ゲージ位置のオフセット
+	Vector2 positionBulletGaugeOffset_ = {
+		lengthBulletGauge_ / 2,
+		lengthBulletGauge_ / 2 
+	};
+
+	//残弾用イージング最大時間
+	float maxTimeBullet_ = 30.0f;
 
 private: //ImGui用
 	//Vector3の要素数
