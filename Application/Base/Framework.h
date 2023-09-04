@@ -6,6 +6,7 @@
 #include "ImGuiManager.h"
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
+#include "PostEffect.h"
 
 class Framework {
 public:
@@ -18,11 +19,21 @@ public:
 
 	virtual bool IsEndRequest() { return isEndRequest_; }
 
-	WinApp* GetWinApp()const { return winApp_; }
-	DirectXBasis* GetDirectXBasis()const { return dxBas_; }
-	Input* GetInput()const { return input_; }
-
-	static SceneManager* GetSceneManager(){ return sceneManager_; }
+	WinApp* GetWinApp() const {
+		return winApp_;
+	}
+	DirectXBasis* GetDirectXBasis() const {
+		return dxBas_;
+	}
+	Input* GetInput() const {
+		return input_;
+	}
+	PostEffect* GetPostEffect() const {
+		return postEffect_;
+	}
+	static SceneManager* GetSceneManager() {
+		return sceneManager_;
+	}
 
 public: //定数
 	static const int kTextTextureIndex_ = 100;
@@ -41,16 +52,20 @@ private:
 	//サウンドデータ
 	Audio::SoundData soundData1 = {};
 
-	bool isEndRequest_ = false;
-
 	//シーンマネージャー
 	static SceneManager* sceneManager_;
 
 	//ImGuiマネージャー
 	ImGuiManager* imGuiManager_ = nullptr;
+
+	//ポストエフェクト
+	PostEffect* postEffect_ = nullptr;
+
+	bool isEndRequest_ = false;
+
 public:
 	//シーンファクトリ―
 	AbstractSceneFactory* sceneFactory_ = nullptr;
-public: 
+public:
 	virtual ~Framework() = default;
 };
