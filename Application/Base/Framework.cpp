@@ -75,6 +75,10 @@ void Framework::Initialize(){
 
 	//ライト静的初期化
 	LightGroup::StaticInitialize(dxBas_->GetDevice().Get());
+
+	//ポストエフェクトの初期化
+	postEffect_ = new PostEffect();
+	postEffect_->Initialize();
 }
 
 void Framework::Update(){
@@ -94,5 +98,7 @@ void Framework::Finalize(){
 	imGuiManager_->Finalize();
 #endif // DEBUG
 	sceneManager_->Finalize();
+
+	delete postEffect_;
 	delete sceneFactory_;
 }
