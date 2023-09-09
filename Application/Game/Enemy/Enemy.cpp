@@ -59,47 +59,12 @@ bool Enemy::Initialize() {
 	hpGauge_ = new Gauge();
 	hpGauge_->Initialize();
 
+	hpGauge_->SetRestMax(life_);
 	hpGauge_->SetRest(life_);
-	hpGauge_->SetLength(lengthHPGauge_);
 	hpGauge_->SetMaxTime(maxTimeHP_);
 
-	hpGauge_->GetRestSprite()->
-		SetSize({ 64 * 5,64 });
-	hpGauge_->GetRestSprite()->
-		SetColor({ 0.2f,0.7f,0.2f,1.0f });
-	hpGauge_->GetGaugeSprite()->
-		SetSize({ 64 * 4,64 });
-	hpGauge_->GetLeftSprite()->
-		SetSize({ 64,64 });
-	hpGauge_->GetRightSprite()->
-		SetSize({ 64,64 });
-
-	hpGauge_->GetRestSprite()->SetPosition({
-		positionHPGauge_.x + (lengthHPGauge_ * 8) +
-		positionHPGaugeOffset_.x,
-		positionHPGauge_.y +
-		positionHPGaugeOffset_.y });
-
-	hpGauge_->GetGaugeSprite()->SetPosition({
-		positionHPGauge_.x + (lengthHPGauge_ * 8) +
-		positionHPGaugeOffset_.x,
-		positionHPGauge_.y +
-		positionHPGaugeOffset_.y });
-
-	hpGauge_->GetLeftSprite()->
-		SetPosition({
-		positionHPGauge_.x +
-		positionHPGaugeOffset_.x,
-			positionHPGauge_.y +
-			positionHPGaugeOffset_.y });
-
-	hpGauge_->GetRightSprite()->
-		SetPosition({
-		positionHPGauge_.x + (lengthHPGauge_ * 4 * 4) +
-		positionHPGaugeOffset_.x,
-			positionHPGauge_.y +
-			positionHPGaugeOffset_.y });
-
+	hpGauge_->SetPosition({ 64,64 });
+	hpGauge_->SetSize({ 1,0.25f });
 #pragma endregion
 
 #ifdef _DEBUG
@@ -201,7 +166,7 @@ void Enemy::Update() {
 	hpGauge_->GetRestSprite()->
 		SetColor({ 0.2f,0.7f,0.2f,5.0f });
 	hpGauge_->SetPosition({
-		posHpGauge3d.x - 32.0f,
+		posHpGauge3d.x - 64.0f+ 16.0f,
 		posHpGauge3d.y - 32.0f
 		});
 
