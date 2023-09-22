@@ -78,14 +78,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)External\DirectXTex;$(ProjectDir)lib\fbx_sdk\include;$(SolutionDir)imgui;$(IncludePath);$(SolutionDir)External\imGui</IncludePath>
+    <IncludePath>$(SolutionDir)External\DirectXTex;$(ProjectDir)lib\fbx_sdk\include;$(SolutionDir)imgui;$(IncludePath);$(SolutionDir)External\imGui;$(SolutionDir)External\nlohmann</IncludePath>
     <IntDir>$(SolutionDir)..\Generated\Obj\$(ProjectName)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)..\Generated\Outputs\$(Configuration)\</OutDir>
     <LibraryPath>$(ProjectDir)lib\fbx_sdk\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)External\DirectXTex;$(ProjectDir)lib\fbx_sdk\include;$(SolutionDir)imGui;$(IncludePath);$(SolutionDir)External\imGui</IncludePath>
+    <IncludePath>$(SolutionDir)External\DirectXTex;$(ProjectDir)lib\fbx_sdk\include;$(SolutionDir)imGui;$(IncludePath);$(SolutionDir)External\imGui;$(SolutionDir)External\nlohmann</IncludePath>
     <IntDir>$(SolutionDir)..\Generated\Obj\$(ProjectName)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)..\Generated\Outputs\$(Configuration)\</OutDir>
     <LibraryPath>$(ProjectDir)lib\fbx_sdk\lib;$(LibraryPath)</LibraryPath>
@@ -125,7 +125,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -148,7 +148,7 @@
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -178,6 +178,7 @@
     <ClCompile Include="Application\Game\Scene\Manager\BaseScene.cpp" />
     <ClCompile Include="Application\Math\MyMath.cpp" />
     <ClCompile Include="Application\Math\Quaternion.cpp" />
+    <ClCompile Include="Engine\2d\PostEffect.cpp" />
     <ClCompile Include="Engine\3d\Camera\DebugCamera.cpp" />
     <ClCompile Include="Engine\3d\Camera\RailCamera.cpp" />
     <ClCompile Include="Engine\3d\Light\LightGroup.cpp" />
@@ -192,6 +193,7 @@
     <ClCompile Include="Application\Base\Input.cpp" />
     <ClCompile Include="Engine\Debugger\Text.cpp" />
     <ClCompile Include="Engine\Debugger\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\LevelEditer\LevelLoader.cpp" />
     <ClCompile Include="Engine\Particle\Particle.cpp" />
     <ClCompile Include="Engine\Particle\ParticleManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -236,6 +238,7 @@
     <ClInclude Include="Application\Game\Scene\GameOverScene.h" />
     <ClInclude Include="Application\Math\MyMath.h" />
     <ClInclude Include="Application\Math\Quaternion.h" />
+    <ClInclude Include="Engine\2d\PostEffect.h" />
     <ClInclude Include="Engine\3d\Camera\DebugCamera.h" />
     <ClInclude Include="Engine\3d\Camera\RailCamera.h" />
     <ClInclude Include="Engine\3d\Light\DirectionalLight.h" />
@@ -268,8 +271,10 @@
     <ClInclude Include="Application\Base\WinApp.h" />
     <ClInclude Include="Engine\ConstBuffer\WorldTransform.h" />
     <ClInclude Include="Engine\Debugger\ImGuiManager.h" />
+    <ClInclude Include="Engine\LevelEditer\LevelLoader.h" />
     <ClInclude Include="Engine\Particle\Particle.h" />
     <ClInclude Include="Engine\Particle\ParticleManager.h" />
+    <ClInclude Include="External\nlohmann\json.hpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\shader\ObjPS.hlsl">
@@ -310,6 +315,18 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="Resource\shader\PostEffectPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Resource\shader\PostEffectVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="Resource\shader\SpritePS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -330,6 +347,7 @@
   <ItemGroup>
     <None Include="Resource\shader\Obj.hlsli" />
     <None Include="Resource\shader\Particle.hlsli" />
+    <None Include="Resource\shader\PostEffect.hlsli" />
     <None Include="Resource\shader\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>

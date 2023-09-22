@@ -195,7 +195,7 @@ void Enemy::Draw() {
 }
 
 void Enemy::DrawUI() {
-	hpGauge_->Draw();
+	//hpGauge_->Draw();
 }
 
 void Enemy::DrawImgui() {

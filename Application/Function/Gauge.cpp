@@ -35,7 +35,7 @@ void Gauge::Initialize() {
 }
 
 void Gauge::Update() {
-	//フラグ立ってるならHPゲージを変動させる
+	//フラグ立ってるならゲージを変動させる
 	if (isFluct_) {
 		Fluctuation();
 
@@ -92,7 +92,7 @@ void Gauge::Fluctuation() {
 }
 
 void Gauge::DecisionFluctuation() {
-	//ライフが0以下なら
+	//残量が0以下なら
 	if (rest_ <= 0) {
 		startEaseSize_ = {
 			spriteRest_->GetSize().x,
@@ -189,4 +189,39 @@ void Gauge::ResetArrangement() {
 		positionGauge_.x + (kDefaultTexSize * sizeGauge_.x * 4),
 		positionGauge_.y
 	});
+}
+
+void Gauge::ResetSize() {
+	spriteRest_->SetSize({ size_.x * 5,size_.y });
+	spriteGauge_->SetSize({ size_.x * 4,size_.y });
+	spriteLeft_->SetSize({ size_.x,size_.y});
+	spriteRight_->SetSize({ size_.x,size_.y});
+}
+
+void Gauge::ResetPosition() {
+	spriteRest_->SetPosition({
+		positionGauge_.x + (lengthGauge_ * (lengthGauge_ / 2)) +
+		positionGaugeOffset_.x,
+		positionGauge_.y +
+		positionGaugeOffset_.y });
+
+	spriteGauge_->SetPosition({
+		positionGauge_.x + (lengthGauge_ * (lengthGauge_ / 2)) +
+		positionGaugeOffset_.x,
+		positionGauge_.y +
+		positionGaugeOffset_.y });
+
+	spriteLeft_->
+		SetPosition({
+		positionGauge_.x +
+		positionGaugeOffset_.x,
+			positionGauge_.y +
+			positionGaugeOffset_.y });
+
+	spriteRight_->
+		SetPosition({
+		positionGauge_.x + (lengthGauge_ * ((lengthGauge_ / 4) * (lengthGauge_ / 4))) +
+		positionGaugeOffset_.x,
+			positionGauge_.y +
+			positionGaugeOffset_.y });
 }

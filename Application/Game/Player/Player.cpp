@@ -211,7 +211,7 @@ void Player::Update() {
 	bulletGauge_->DecisionFluctuation();
 	bulletGauge_->SetIsFluct(true);
 	bulletGauge_->Update();
-
+  
 	hpGauge_->SetRest(life_);
 	//通常は緑、ピンチで赤
 	if (life_ <= 5.0f) {
@@ -240,7 +240,7 @@ void Player::Draw() {
 }
 
 void Player::DrawUI() {
-	bulletGauge_->Draw();
+//	bulletGauge_->Draw();
 	hpGauge_->Draw();
 
 	spriteReticle_->Draw();
