@@ -73,13 +73,12 @@ bool Player::Initialize() {
 	hpGauge_ = new Gauge();
 	hpGauge_->Initialize();
 
+	hpGauge_->SetRestMax(life_);
 	hpGauge_->SetRest(life_);
-	hpGauge_->SetLength(lengthHPGauge_);
 	hpGauge_->SetMaxTime(maxTimeHP_);
 
-	hpGauge_->SetSize({ 64,64 });
-	hpGauge_->SetLength(16);
-	hpGauge_->SetPosition({ 32,32 });
+	hpGauge_->SetPosition({ 64,64 });
+	hpGauge_->SetSize({ 1,1 });
 #pragma endregion
 
 #pragma region 残弾数スプライト
@@ -87,14 +86,12 @@ bool Player::Initialize() {
 	bulletGauge_->Initialize();
 
 	bulletGauge_->GetRestSprite()->SetColor({ 0.2f,0.7f,0.2f,0.5f });
+	bulletGauge_->SetRestMax(static_cast<float>(remainBulletCount_));
 	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
-	bulletGauge_->SetLength(lengthBulletGauge_);
 	bulletGauge_->SetMaxTime(maxTimeBullet_);
 
-	bulletGauge_->SetSize({ 64,64 });
-	bulletGauge_->SetLength(16);
-	bulletGauge_->SetPosition({ 16,128 });
-	bulletGauge_->GetRestSprite()->SetColor({ 0.5f,0.5f,0.1f,0.5f });
+	bulletGauge_->SetPosition({ 64,64 });
+	bulletGauge_->SetSize({ 0.5f,0.5f });
 #pragma endregion
 
 	//テキスト
@@ -194,19 +191,28 @@ void Player::Update() {
 		isDead_ = true;
 	}
 
-	spriteReticle_->SetPosition(
-		{ worldTransform3dReticle_.position_.x ,
-		worldTransform3dReticle_.position_.y });
+	spriteReticle_->SetPosition( {
+		worldTransform3dReticle_.position_.x ,
+		worldTransform3dReticle_.position_.y
+		});
 
 	spriteReticle_->SetPosition(input_->GetMousePosition());
-
-	//残弾数ゲージの変動
-	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
-	//bulletGauge_->SetSize({ 64,16 });
-	bulletGauge_->DecisionFluctuation();
-
 	spriteReticle_->Update();
 
+	//残弾数ゲージの変動
+	bulletGauge_->GetRestSprite()->
+		SetColor({ 0.2f,0.7f,0.2f,5.0f });
+	bulletGauge_->SetPosition({
+		input_->GetMousePosition().x - 64.0f+ 16.0f,
+		input_->GetMousePosition().y + 16.0f
+		});
+
+	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
+	bulletGauge_->DecisionFluctuation();
+	bulletGauge_->SetIsFluct(true);
+	bulletGauge_->Update();
+  
+	hpGauge_->SetRest(life_);
 	//通常は緑、ピンチで赤
 	if (life_ <= 5.0f) {
 		hpGauge_->GetRestSprite()->
@@ -217,7 +223,6 @@ void Player::Update() {
 			SetColor({ 0.2f,0.7f,0.2f,1.0f });
 	}
 
-	bulletGauge_->Update();
 	hpGauge_->Update();
 
 	float textSize = 2.5f;
