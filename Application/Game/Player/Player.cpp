@@ -265,7 +265,7 @@ void Player::Draw() {
 }
 
 void Player::DrawUI() {
-	//	bulletGauge_->Draw();
+	bulletGauge_->Draw();
 	hpGauge_->Draw();
 
 	spriteReticle_->Draw();
