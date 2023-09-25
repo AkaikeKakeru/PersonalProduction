@@ -9,6 +9,8 @@
 #include "Gauge.h"
 #include "Text.h"
 
+#include "Shake.h"
+
 #include <list>
 #include <memory>
 
@@ -49,6 +51,9 @@ public: //定数
 
 	//弾数の上限
 	const int kBulletRimit_ = 30;
+
+	//デフォルトクールタイム
+	const int kDefaultBulletCooltime_ = 1;
 
 public: //アクセッサ
 	//ゲームシーンのセット
@@ -156,6 +161,9 @@ private: //メンバ変数
 	//残弾数
 	int remainBulletCount_ = kBulletRimit_;
 
+	//弾のクールタイム
+	int32_t bulletCooltime_ = kDefaultBulletCooltime_;
+
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
 
@@ -198,6 +206,9 @@ private: //メンバ変数
 
 	//残弾用イージング最大時間
 	float maxTimeBullet_ = 30.0f;
+
+	//シェイク
+	Shake shake_;
 
 private: //ImGui用
 	//Vector3の要素数
