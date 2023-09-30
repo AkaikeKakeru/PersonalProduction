@@ -185,7 +185,7 @@ void GamePlayScene::Update3d() {
 	light_->Update();
 
 	skydome_->Update();
-	
+
 	player_->Update();
 
 	//自機弾更新
@@ -200,9 +200,9 @@ void GamePlayScene::Update3d() {
 
 	//敵機の更新
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		
 
-	//被ダメージ処理
+
+		//被ダメージ処理
 		if (enemy->IsDamage()) {
 			float life = enemy->GetLife();
 
@@ -210,6 +210,21 @@ void GamePlayScene::Update3d() {
 			enemy->SetLife(life);
 
 			enemy->SetIsDamage(false);
+
+			pm_->Active(
+				particle_,
+				{
+					enemy->GetMatWorld().m[3][0],
+					enemy->GetMatWorld().m[3][1],
+					enemy->GetMatWorld().m[3][2] },
+				{ 2.0f ,2.0f,2.0f },
+				{ 5.0f,5.0f,5.0f },
+				{ 0.0f,0.001f,0.0f },
+				20,
+				3.0f,
+				0.0f,
+				10
+				);
 		}
 		enemy->Update();
 
@@ -250,9 +265,10 @@ void GamePlayScene::Update3d() {
 
 		pm_->Active(
 			particle_,
-			{	player_->GetMatWorld().m[3][0],
+			{
+				player_->GetMatWorld().m[3][0],
 				player_->GetMatWorld().m[3][1],
-				player_->GetMatWorld().m[3][2]},
+				player_->GetMatWorld().m[3][2] },
 			{ 2.0f ,2.0f,2.0f },
 			{ 5.0f,5.0f,5.0f },
 			{ 0.0f,0.001f,0.0f },
