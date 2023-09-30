@@ -157,15 +157,4 @@ private: // メンバ変数
 
 	//カメラ
 	Camera* camera_ = nullptr;
-
-private:
-	ParticleManager() = default;
-	~ParticleManager() = default;
-	//コピーコンストラクタを無効
-	ParticleManager(const ParticleManager&) = delete;
-	//代入演算子を無効
-	const ParticleManager& operator=(const ParticleManager&) = delete;
-
-public://static
-	static ParticleManager* GetInstance();
 };
