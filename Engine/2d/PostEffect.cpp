@@ -13,11 +13,11 @@ using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 //クリアカラー
 const float PostEffect::clearColor_[4] = {
-	0.25f,//R
-	0.5f,//G
-	0.1f,//B
-	0.0f//A
-};//緑っぽい色
+	0.1f, //R
+	0.25f, //G
+	0.5f, //B
+	0.0f  //A
+};//青っぽい色
 
 void PostEffect::Initialize() {
 	//デバイス
