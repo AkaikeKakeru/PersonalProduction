@@ -6,6 +6,10 @@
 #include "SceneManager.h"
 #include "Random.h"
 
+#pragma region popLoader
+#include <fstream>
+#pragma endregion
+
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GamePlayScene::input_ = Input::GetInstance();
 SpriteBasis* GamePlayScene::spriteBas_ = SpriteBasis::GetInstance();
@@ -414,6 +418,25 @@ void GamePlayScene::SightNextEnemy() {
 	default:
 		break;
 	}
+}
+
+void GamePlayScene::LoadEnemyPopData(std::string filename) {
+	std::ifstream file;
+
+	//フォーマットを今回はcsvに
+	std::string format = ".csv";
+	//フルパスを得る
+	std::string fullpath = filename + format;
+
+	//フルパスでオープン
+	file.open(fullpath);
+	assert(file.is_open());
+
+	//ファイルの内容を文字列ストリームにコピー
+	enemyPopCommands_ << file.rdbuf();
+
+	//ファイルを閉じる
+	file.close();
 }
 
 void GamePlayScene::Finalize() {

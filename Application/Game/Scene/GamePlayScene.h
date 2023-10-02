@@ -25,6 +25,10 @@
 #include "EnemyBullet.h"
 #include "Skydome.h"
 
+#pragma region popLoader
+#include <sstream>
+#pragma endregion
+
 class CollisionManager;
 
 class GamePlayScene :
@@ -65,6 +69,12 @@ public:
 
 	//次の敵の湧き情報を調べる
 	void SightNextEnemy();
+
+#pragma region popLoader
+	//敵発生データの読込
+	void LoadEnemyPopData(std::string filename);
+
+#pragma endregion
 
 	//フェーズ番号取得
 	size_t GetPhaseIndex() {
@@ -174,4 +184,9 @@ public: //メンバ変数
 
 	//デバッグカメラのオンオフ
 	bool isDebugCamera_ = false;
+
+#pragma region popLoader
+	//敵発生コマンド
+	std::stringstream enemyPopCommands_;
+#pragma endregion
 };
