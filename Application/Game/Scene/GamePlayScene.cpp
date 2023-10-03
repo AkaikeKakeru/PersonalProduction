@@ -482,47 +482,23 @@ void GamePlayScene::UpdateEnemyPopCommands() {
 
 		//POSITIONコマンド
 		if (word.find("POSITION") == 0) {
-			//x
-			getline(line_stream, word, ',');
-			position.x = (float)std::atof(word.c_str());
-
-			//y
-			getline(line_stream, word, ',');
-			position.y = (float)std::atof(word.c_str());
-
-			//z
-			getline(line_stream, word, ',');
-			position.z = (float)std::atof(word.c_str());
+			position = LoadCommandsVector3(
+				&line_stream,
+				word);
 		}
 
 		//ROTATIONコマンド
 		if (word.find("ROTATION") == 0) {
-			//x
-			getline(line_stream, word, ',');
-			rotation.x = (float)std::atof(word.c_str());
-
-			//y
-			getline(line_stream, word, ',');
-			rotation.y = (float)std::atof(word.c_str());
-
-			//z
-			getline(line_stream, word, ',');
-			rotation.z = (float)std::atof(word.c_str());
+			rotation = LoadCommandsVector3(
+				&line_stream,
+				word);
 		}
 
 		//SCALEコマンド
 		if (word.find("SCALE") == 0) {
-			//x
-			getline(line_stream, word, ',');
-			scale.x = (float)std::atof(word.c_str());
-
-			//y
-			getline(line_stream, word, ',');
-			scale.y = (float)std::atof(word.c_str());
-
-			//z
-			getline(line_stream, word, ',');
-			scale.z = (float)std::atof(word.c_str());
+			scale = LoadCommandsVector3(
+				&line_stream,
+				word);
 		}
 
 		//POPコマンド
