@@ -13,7 +13,7 @@ template <class T>
 using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 //デフォルトテクスチャ格納ディレクトリ
-std::string SpriteBasis::kDefaultTextureDirectoryPath = "Resource/";
+std::string SpriteBasis::kDefaultTextureDirectoryPath = "Resource/texture/";
 
 //DirectX基盤
 DirectXBasis* SpriteBasis::dxBas_ = nullptr;
