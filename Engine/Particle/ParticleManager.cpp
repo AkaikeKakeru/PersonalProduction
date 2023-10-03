@@ -434,8 +434,3 @@ void ParticleManager::Active(
 		p->Add(life, pos, vel, acc, scaleStart, scaleEnd);
 	}
 }
-
-ParticleManager* ParticleManager::GetInstance() {
-	static ParticleManager instance;
-	return &instance;
-}

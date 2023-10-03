@@ -41,12 +41,18 @@ public://メンバ関数
 	//発射
 	void Fire();
 
+	//落下
+	void Fall();
+
 public://定数
 	//発射間隔
 	static const int kFireInterval = 60 * 5;
 
 	//敵機のデフォルト体力
 	const float kDefaultEnemyLife_ = 10.0f;
+
+	//デスボーダー
+	const float kDeadBorder_ = -30.0f;
 
 public: //アクセッサ
 	const Vector3& GetPosition() const {
@@ -149,6 +155,12 @@ private: //メンバ変数
 	bool isDamage_ = false; 
 	//デスフラグ
 	bool isDead_ = false;
+
+	//落下フラグ
+	bool isFall_ = false;
+
+	//落下の速さ
+	float speedFall_ = 0.2f;
 
 	//発射タイマー
 	int32_t fireTimer_ = 0;

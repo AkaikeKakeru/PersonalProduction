@@ -3,6 +3,10 @@
 #include "Vector3.h"
 
 class Gauge {
+public: //定数
+	//デフォルトテクスチャサイズ
+	const float kDefaultTexSize = 64.0f;
+
 public: //メンバ関数
 	void Initialize();
 	void Update ();
@@ -15,21 +19,20 @@ public: //メンバ関数
 	//変動量決め
 	void DecisionFluctuation();
 
-	//サイズの再設定
+	//配置の再設定
 	void ResetSize();
 
-	//位置の再設定
-	void ResetPosition();
+	//配置の再設定
+	void ResetArrangement();
 
 public: //アクセッサ
 	//サイズの取得
 	const Vector2& GetSize() const {
-		return size_;
+		return sizeGauge_;
 	};
 	//サイズのセット
 	void SetSize(Vector2 const size) {
-		size_ = size;
-
+		sizeGauge_ = size;
 		ResetSize();
 	};
 
@@ -40,13 +43,7 @@ public: //アクセッサ
 	//位置(左上角)のセット
 	void SetPosition(Vector2 const position) {
 		positionGauge_ = position;
-
-		ResetPosition();
-	};
-
-	//位置オフセットのセット
-	void SetPositionOffset(Vector2 const offset) {
-		positionGaugeOffset_ = offset;
+		ResetArrangement();
 	};
 
 	//残量スプライトの取得
@@ -81,19 +78,14 @@ public: //アクセッサ
 		return rest_;
 	}
 
+	//残量上限のセット
+	void SetRestMax(float restMax) {
+		restMax_ = restMax;
+	}
+
 	//残量のセット
 	void SetRest(float rest) {
 		rest_ = rest;
-	}
-
-	//長さの取得
-	float GetLength() {
-		return lengthGauge_;
-	}
-
-	//長さのセット
-	void SetLength(float length) {
-		lengthGauge_ = length;
 	}
 
 	//最大時間の取得
@@ -110,25 +102,19 @@ private: //メンバ変数
 	//残量
 	float rest_ = 0.0f;
 
-	//ゲージ1メモリ当たりの長さ
-	float lengthGauge_ = 16.0f;
+	//残量の上限
+	float restMax_ = 0.0f;
 
-	//サイズ
-	Vector2 size_ = {
-		64.0f,
-		64.0f
+	//ゲージのサイズ倍率
+	Vector2 sizeGauge_ = {
+		1.0f,
+		1.0f 
 	};
 
 	//ゲージの位置(左上角)
 	Vector2 positionGauge_ = {
-		lengthGauge_ * 2,
-		lengthGauge_ * 2 
-	};
-
-	//ゲージ位置のオフセット
-	Vector2 positionGaugeOffset_ = {
-		lengthGauge_ / 2,
-		lengthGauge_ / 2 
+		0,
+		0 
 	};
 
 	//ゲージ左端用スプライト

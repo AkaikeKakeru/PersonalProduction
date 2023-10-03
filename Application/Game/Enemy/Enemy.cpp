@@ -59,11 +59,12 @@ bool Enemy::Initialize() {
 	hpGauge_ = new Gauge();
 	hpGauge_->Initialize();
 
+	hpGauge_->SetRestMax(life_);
 	hpGauge_->SetRest(life_);
-	hpGauge_->SetLength(lengthHPGauge_);
 	hpGauge_->SetMaxTime(maxTimeHP_);
 
-	hpGauge_->SetSize({ 32,32 });
+	hpGauge_->SetPosition({ 64,64 });
+	hpGauge_->SetSize({ 1,0.25f });
 #pragma endregion
 
 #ifdef _DEBUG
@@ -138,9 +139,14 @@ void Enemy::Update() {
 
 	Object3d::Update();
 
-	//ライフ0でデスフラグ
+	//ライフ0で落下フラグ
 	if (life_ <= 0.0f) {
-		isDead_ = true;
+		isFall_ = true;
+	}
+
+	//落下フラグで、撤退させる
+	if (isFall_) {
+		Fall();
 	}
 
 	//HPゲージの変動
@@ -165,7 +171,7 @@ void Enemy::Update() {
 	hpGauge_->GetRestSprite()->
 		SetColor({ 0.2f,0.7f,0.2f,5.0f });
 	hpGauge_->SetPosition({
-		posHpGauge3d.x - 32.0f,
+		posHpGauge3d.x - 64.0f+ 16.0f,
 		posHpGauge3d.y - 32.0f
 		});
 
@@ -194,7 +200,7 @@ void Enemy::Draw() {
 }
 
 void Enemy::DrawUI() {
-	//hpGauge_->Draw();
+	hpGauge_->Draw();
 }
 
 void Enemy::DrawImgui() {
@@ -277,4 +283,25 @@ void Enemy::Fire() {
 	newBullet->Update();
 
 	gameScene_->AddEnemyBullet(std::move(newBullet));
+}
+
+void Enemy::Fall() {
+	//移動ベクトル
+	Vector3 moveVector = { 0.0f,0.0f,0.0f };
+
+	moveVector = { 0.0f,-speedFall_,0.0f };
+
+	Vector3 pos = GetPosition();
+
+	pos += moveVector;
+
+	SetPosition(pos);
+
+	Object3d::Update();
+
+	if (GetPosition().y <= kDeadBorder_) {
+		isDead_ = true;
+	}
+
+	speedFall_ += 0.2f;
 }

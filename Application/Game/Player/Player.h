@@ -9,6 +9,8 @@
 #include "Gauge.h"
 #include "Text.h"
 
+#include "Shake.h"
+
 #include <list>
 #include <memory>
 
@@ -49,6 +51,9 @@ public: //定数
 
 	//弾数の上限
 	const int kBulletRimit_ = 30;
+
+	//デフォルトクールタイム
+	const int kDefaultBulletCooltime_ = 1;
 
 public: //アクセッサ
 	//ゲームシーンのセット
@@ -156,6 +161,9 @@ private: //メンバ変数
 	//残弾数
 	int remainBulletCount_ = kBulletRimit_;
 
+	//弾のクールタイム
+	int32_t bulletCooltime_ = kDefaultBulletCooltime_;
+
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
 
@@ -164,19 +172,16 @@ private: //メンバ変数
 	/// </summary>
 	Gauge* hpGauge_ = {};
 
-	//HPゲージの長さ
-	float lengthHPGauge_ = 16.0f;
-
 	//HPゲージの位置(左上角)
 	Vector2 positionHPGauge_ = {
-		32,
-		32
+		0,
+		0
 	};
 
 	//HPゲージ位置のオフセット
 	Vector2 positionHPGaugeOffset_ = {
-		8,
-		8 
+		0,
+		0
 	};
 
 	//HP用イージング最大時間
@@ -187,23 +192,23 @@ private: //メンバ変数
 	/// </summary>
 	Gauge* bulletGauge_ = {};
 
-	//残弾ゲージの長さ
-	float lengthBulletGauge_ = 4.0f;
-
 	//残弾ゲージの位置(左上角)
 	Vector2 positionBulletGauge_ = {
-		32,
-		256
+		0,
+		0
 	};
 
 	//残弾ゲージ位置のオフセット
 	Vector2 positionBulletGaugeOffset_ = {
-		8,
-		8 
+		0,
+		0
 	};
 
 	//残弾用イージング最大時間
 	float maxTimeBullet_ = 30.0f;
+
+	//シェイク
+	Shake shake_;
 
 private: //ImGui用
 	//Vector3の要素数
