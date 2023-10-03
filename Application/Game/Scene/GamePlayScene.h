@@ -74,6 +74,13 @@ public:
 	//敵発生データの読込
 	void LoadEnemyPopData(std::string filename);
 
+	//敵発生コマンドの実行
+	void UpdateEnemyPopCommands();
+
+	//発生コマンドの読込
+	Vector3 LoadCommandsVector3(
+		std::istringstream* line_stream,
+		std::string word);
 #pragma endregion
 
 	//フェーズ番号取得
@@ -188,5 +195,10 @@ public: //メンバ変数
 #pragma region popLoader
 	//敵発生コマンド
 	std::stringstream enemyPopCommands_;
+
+	//発生待機フラグ
+	bool isWait_ = false;
+	//発生待機タイマー
+	int32_t waitTimer = 0;
 #pragma endregion
 };

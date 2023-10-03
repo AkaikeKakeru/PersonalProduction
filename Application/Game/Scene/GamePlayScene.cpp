@@ -92,11 +92,13 @@ void GamePlayScene::Initialize3d() {
 #pragma endregion
 
 #pragma region Enemy
-	AddEnemy({ 0.0f,-1024.0f,-1024.0f },
-		CreateRotationVector(
-			{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
-		{ 1.0f,1.0f,1.0f },
-		Enemy::Axe_BulletType);
+	LoadEnemyPopData("enemyPop");
+
+	SightNextEnemy();
+	//フェーズ番号を進める
+	phaseIndex_++;
+	//レールカメラを前進させる
+	railCamera_->SetPhaseAdvance(true);
 #pragma endregion
 
 #pragma region Skydome
@@ -110,7 +112,7 @@ void GamePlayScene::Initialize3d() {
 	skydome2_ = Skydome::Create();
 	skydome2_->SetModel(skydomeModel_);
 	skydome2_->SetScale({ 512.0f, 126.0f, 512.0f });
-	skydome2_->SetPosition({ 0,0,skydome2_->GetScale().z});
+	skydome2_->SetPosition({ 0,0,skydome2_->GetScale().z });
 	skydome2_->SetCamera(camera_);
 	skydome2_->Update();
 #pragma endregion
@@ -148,7 +150,7 @@ void GamePlayScene::Update3d() {
 		});
 
 	//敵機が全滅したら(コンテナが空になったら)
-	if (enemys_.size() <= 1) {
+	if (enemys_.size() <= 0) {
 		//ファイナルフェイズに届いてなければ
 		if (phaseIndex_ < kFinalPhaseIndex_) {
 			//次の敵の湧き位置検索
@@ -198,7 +200,7 @@ void GamePlayScene::Update3d() {
 
 	skydome_->Update();
 	skydome2_->Update();
-	
+
 	player_->Update();
 
 	//自機弾更新
@@ -213,9 +215,9 @@ void GamePlayScene::Update3d() {
 
 	//敵機の更新
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		
 
-	//被ダメージ処理
+
+		//被ダメージ処理
 		if (enemy->IsDamage()) {
 			float life = enemy->GetLife();
 
@@ -380,17 +382,18 @@ void GamePlayScene::SightNextEnemy() {
 		//	{ 1.0f, 1.0f, 1.0f },
 		//	Enemy::Gun_BulletType);
 
-		AddEnemy({ -70.0f,0.0f,60.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-			{ 1.0f,1.0f,1.0f },
-			Enemy::Axe_BulletType);
+		//AddEnemy({ -70.0f,0.0f,60.0f },
+		//	CreateRotationVector(
+		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+		//	{ 1.0f,1.0f,1.0f },
+		//	Enemy::Axe_BulletType);
 
-		AddEnemy({ -70.0f,10.0f,45.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-			{ 1.0f,1.0f,1.0f },
-			Enemy::Gun_BulletType);
+		//AddEnemy({ -70.0f,10.0f,45.0f },
+		//	CreateRotationVector(
+		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
+		//	{ 1.0f,1.0f,1.0f },
+		//	Enemy::Gun_BulletType);
+
 		break;
 
 	case 1:
@@ -418,15 +421,19 @@ void GamePlayScene::SightNextEnemy() {
 	default:
 		break;
 	}
+
+	UpdateEnemyPopCommands();
 }
 
 void GamePlayScene::LoadEnemyPopData(std::string filename) {
 	std::ifstream file;
 
+	//ディレクトリパス
+	std::string Directory = "Resource/csv/";
 	//フォーマットを今回はcsvに
 	std::string format = ".csv";
 	//フルパスを得る
-	std::string fullpath = filename + format;
+	std::string fullpath = Directory + filename + format;
 
 	//フルパスでオープン
 	file.open(fullpath);
@@ -437,6 +444,135 @@ void GamePlayScene::LoadEnemyPopData(std::string filename) {
 
 	//ファイルを閉じる
 	file.close();
+}
+
+void GamePlayScene::UpdateEnemyPopCommands() {
+	//待機処理
+	if (isWait_) {
+		waitTimer--;
+		if (waitTimer <= 0) {
+			//待機完了
+			isWait_ = false;
+		}
+		return;
+	}
+
+	// 1行分の文字列を入れる変数
+	std::string line;
+
+	Vector3 position{};
+	Vector3 rotation{};
+	Vector3 scale{};
+
+	//コマンド実行ループ
+	while (getline(enemyPopCommands_, line)) {
+		// 1行分の文字列をストリームに変換して解析しやすくする
+		std::istringstream line_stream(line);
+
+		std::string word;
+
+		//区切りで行の先頭文字列を取得
+		getline(line_stream, word, ',');
+
+		// "//"から始まる行はコメント
+		if (word.find("//") == 0) {
+			// コメント行を飛ばす
+			continue;
+		}
+
+		//POSITIONコマンド
+		if (word.find("POSITION") == 0) {
+			//x
+			getline(line_stream, word, ',');
+			position.x = (float)std::atof(word.c_str());
+
+			//y
+			getline(line_stream, word, ',');
+			position.y = (float)std::atof(word.c_str());
+
+			//z
+			getline(line_stream, word, ',');
+			position.z = (float)std::atof(word.c_str());
+		}
+
+		//ROTATIONコマンド
+		if (word.find("ROTATION") == 0) {
+			//x
+			getline(line_stream, word, ',');
+			rotation.x = (float)std::atof(word.c_str());
+
+			//y
+			getline(line_stream, word, ',');
+			rotation.y = (float)std::atof(word.c_str());
+
+			//z
+			getline(line_stream, word, ',');
+			rotation.z = (float)std::atof(word.c_str());
+		}
+
+		//SCALEコマンド
+		if (word.find("SCALE") == 0) {
+			//x
+			getline(line_stream, word, ',');
+			scale.x = (float)std::atof(word.c_str());
+
+			//y
+			getline(line_stream, word, ',');
+			scale.y = (float)std::atof(word.c_str());
+
+			//z
+			getline(line_stream, word, ',');
+			scale.z = (float)std::atof(word.c_str());
+		}
+
+		//POPコマンド
+		if (word.find("POP") == 0) {
+			//敵を発生させる
+			AddEnemy(
+				position,
+				CreateRotationVector(
+					rotation, 
+					ConvertToRadian(90.0f)
+				),
+				scale,
+				Enemy::Gun_BulletType);
+		}
+
+		//WAITコマンド
+		else if (word.find("WAIT") == 0) {
+			getline(line_stream, word, ',');
+
+			//待ち時間
+			int32_t waitTime = atoi(word.c_str());
+
+			//待機時間
+			isWait_ = true;
+			waitTimer = waitTime;
+
+			//ループ抜け
+			break;
+		}
+	}
+}
+
+Vector3 GamePlayScene::LoadCommandsVector3(
+	std::istringstream* line_stream,
+	std::string word) {
+	Vector3 result{};
+
+	//x
+	getline(*line_stream, word, ',');
+	result.x = (float)std::atof(word.c_str());
+
+	//y
+	getline(*line_stream, word, ',');
+	result.y = (float)std::atof(word.c_str());
+
+	//z
+	getline(*line_stream, word, ',');
+	result.z = (float)std::atof(word.c_str());
+
+	return result;
 }
 
 void GamePlayScene::Finalize() {
