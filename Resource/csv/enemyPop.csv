@@ -1,0 +1,13 @@
+//コマンド, x,y,z,
+
+SET,
+POSITION,-70.0,0.0,60.0,
+ROTATION,0,1.0,0,
+SCALE,1.0,1.0,1.0,
+POP,,
+
+SET,
+POSITION,-70.0,0.0,45.0,
+ROTATION,0,1.0,0,
+SCALE,1.0,1.0,1.0,
+POP,,
