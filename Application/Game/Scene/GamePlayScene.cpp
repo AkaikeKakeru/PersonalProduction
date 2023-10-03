@@ -94,7 +94,7 @@ void GamePlayScene::Initialize3d() {
 #pragma region Enemy
 	LoadEnemyPopData("enemyPop");
 
-	SightNextEnemy();
+	UpdateEnemyPopCommands();
 	//フェーズ番号を進める
 	phaseIndex_++;
 	//レールカメラを前進させる
@@ -154,7 +154,7 @@ void GamePlayScene::Update3d() {
 		//ファイナルフェイズに届いてなければ
 		if (phaseIndex_ < kFinalPhaseIndex_) {
 			//次の敵の湧き位置検索
-			SightNextEnemy();
+			isWait_ = false;
 			//フェーズ番号を進める
 			phaseIndex_++;
 			//レールカメラを前進させる
@@ -215,8 +215,6 @@ void GamePlayScene::Update3d() {
 
 	//敵機の更新
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-
-
 		//被ダメージ処理
 		if (enemy->IsDamage()) {
 			float life = enemy->GetLife();
@@ -227,8 +225,8 @@ void GamePlayScene::Update3d() {
 			enemy->SetIsDamage(false);
 		}
 		enemy->Update();
-
 	}
+	UpdateEnemyPopCommands();
 
 	//自機の被ダメージ処理
 	if (player_->IsDamage()) {
@@ -373,57 +371,6 @@ void GamePlayScene::AddEnemy(
 	enemys_.push_back(std::move(newEnemy));
 }
 
-void GamePlayScene::SightNextEnemy() {
-	switch (phaseIndex_) {
-	case 0:
-		//AddEnemy({ -70.0f,0.0f,30.0f },
-		//	CreateRotationVector(
-		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-		//	{ 1.0f, 1.0f, 1.0f },
-		//	Enemy::Gun_BulletType);
-
-		//AddEnemy({ -70.0f,0.0f,60.0f },
-		//	CreateRotationVector(
-		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-		//	{ 1.0f,1.0f,1.0f },
-		//	Enemy::Axe_BulletType);
-
-		//AddEnemy({ -70.0f,10.0f,45.0f },
-		//	CreateRotationVector(
-		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-		//	{ 1.0f,1.0f,1.0f },
-		//	Enemy::Gun_BulletType);
-
-		break;
-
-	case 1:
-		//AddEnemy({ 70.0f,10.0f,90.0f },
-		//	CreateRotationVector(
-		//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
-		//	{ 1.0f,1.0f,1.0f },
-		//	Enemy::Gun_BulletType);
-
-		AddEnemy({ 70.0f,-10.0f,110.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
-			{ 1.0f,1.0f,1.0f },
-			Enemy::Axe_BulletType);
-		break;
-
-	case 2:
-		AddEnemy({ 0.0f,10.0f,270.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)),
-			{ 1.0f,1.0f,1.0f },
-			Enemy::Gun_BulletType);
-		break;
-
-	default:
-		break;
-	}
-
-	UpdateEnemyPopCommands();
-}
 
 void GamePlayScene::LoadEnemyPopData(std::string filename) {
 	std::ifstream file;
@@ -449,11 +396,6 @@ void GamePlayScene::LoadEnemyPopData(std::string filename) {
 void GamePlayScene::UpdateEnemyPopCommands() {
 	//待機処理
 	if (isWait_) {
-		waitTimer--;
-		if (waitTimer <= 0) {
-			//待機完了
-			isWait_ = false;
-		}
 		return;
 	}
 
@@ -463,6 +405,7 @@ void GamePlayScene::UpdateEnemyPopCommands() {
 	Vector3 position{};
 	Vector3 rotation{};
 	Vector3 scale{};
+	float radian = 0.0f;
 
 	//コマンド実行ループ
 	while (getline(enemyPopCommands_, line)) {
@@ -492,6 +435,9 @@ void GamePlayScene::UpdateEnemyPopCommands() {
 			rotation = LoadCommandsVector3(
 				&line_stream,
 				word);
+
+			getline(line_stream, word, ',');
+			radian = (float)std::atof(word.c_str());
 		}
 
 		//SCALEコマンド
@@ -507,8 +453,8 @@ void GamePlayScene::UpdateEnemyPopCommands() {
 			AddEnemy(
 				position,
 				CreateRotationVector(
-					rotation, 
-					ConvertToRadian(90.0f)
+					rotation,
+					ConvertToRadian(radian)
 				),
 				scale,
 				Enemy::Gun_BulletType);
@@ -516,15 +462,8 @@ void GamePlayScene::UpdateEnemyPopCommands() {
 
 		//WAITコマンド
 		else if (word.find("WAIT") == 0) {
-			getline(line_stream, word, ',');
-
-			//待ち時間
-			int32_t waitTime = atoi(word.c_str());
-
 			//待機時間
 			isWait_ = true;
-			waitTimer = waitTime;
-
 			//ループ抜け
 			break;
 		}

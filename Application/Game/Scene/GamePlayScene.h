@@ -67,9 +67,6 @@ public:
 		const Vector3 scale,
 		const int bulletType);
 
-	//次の敵の湧き情報を調べる
-	void SightNextEnemy();
-
 #pragma region popLoader
 	//敵発生データの読込
 	void LoadEnemyPopData(std::string filename);
@@ -198,7 +195,5 @@ public: //メンバ変数
 
 	//発生待機フラグ
 	bool isWait_ = false;
-	//発生待機タイマー
-	int32_t waitTimer = 0;
 #pragma endregion
 };
