@@ -6,6 +6,10 @@
 #include "SceneManager.h"
 #include "Random.h"
 
+#pragma region popLoader
+#include <fstream>
+#pragma endregion
+
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GamePlayScene::input_ = Input::GetInstance();
 SpriteBasis* GamePlayScene::spriteBas_ = SpriteBasis::GetInstance();
@@ -87,11 +91,13 @@ void GamePlayScene::Initialize3d() {
 #pragma endregion
 
 #pragma region Enemy
-	AddEnemy({ 0.0f,-1024.0f,-1024.0f },
-		CreateRotationVector(
-			{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
-		{ 1.0f,1.0f,1.0f },
-		Enemy::Axe_BulletType);
+	LoadEnemyPopData("enemyPop");
+
+	UpdateEnemyPopCommands();
+	//フェーズ番号を進める
+	phaseIndex_++;
+	//レールカメラを前進させる
+	railCamera_->SetPhaseAdvance(true);
 #pragma endregion
 
 #pragma region Skydome
@@ -136,11 +142,11 @@ void GamePlayScene::Update3d() {
 		});
 
 	//敵機が全滅したら(コンテナが空になったら)
-	if (enemys_.size() <= 1) {
+	if (enemys_.size() <= 0) {
 		//ファイナルフェイズに届いてなければ
 		if (phaseIndex_ < kFinalPhaseIndex_) {
 			//次の敵の湧き位置検索
-			SightNextEnemy();
+			isWait_ = false;
 			//フェーズ番号を進める
 			phaseIndex_++;
 			//レールカメラを前進させる
@@ -200,8 +206,6 @@ void GamePlayScene::Update3d() {
 
 	//敵機の更新
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-
-
 		//被ダメージ処理
 		if (enemy->IsDamage()) {
 			float life = enemy->GetLife();
@@ -227,8 +231,8 @@ void GamePlayScene::Update3d() {
 				);
 		}
 		enemy->Update();
-
 	}
+	UpdateEnemyPopCommands();
 
 	//自機の被ダメージ処理
 	if (player_->IsDamage()) {
@@ -373,41 +377,122 @@ void GamePlayScene::AddEnemy(
 	enemys_.push_back(std::move(newEnemy));
 }
 
-void GamePlayScene::SightNextEnemy() {
-	switch (phaseIndex_) {
-	case 0:
-		AddEnemy({ -70.0f,0.0f,60.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-			{ 1.0f,1.0f,1.0f },
-			Enemy::Axe_BulletType);
+void GamePlayScene::LoadEnemyPopData(std::string filename) {
+	std::ifstream file;
 
-		AddEnemy({ -70.0f,10.0f,45.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(90.0f)),
-			{ 1.0f,1.0f,1.0f },
-			Enemy::Gun_BulletType);
-		break;
+	//ディレクトリパス
+	std::string Directory = "Resource/csv/";
+	//フォーマットを今回はcsvに
+	std::string format = ".csv";
+	//フルパスを得る
+	std::string fullpath = Directory + filename + format;
 
-	case 1:
-		AddEnemy({ 70.0f,-10.0f,110.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(-90.0f)),
-			{ 1.0f,1.0f,1.0f },
-			Enemy::Axe_BulletType);
-		break;
+	//フルパスでオープン
+	file.open(fullpath);
+	assert(file.is_open());
 
-	case 2:
-		AddEnemy({ 0.0f,10.0f,270.0f },
-			CreateRotationVector(
-				{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)),
-			{ 1.0f,1.0f,1.0f },
-			Enemy::Gun_BulletType);
-		break;
+	//ファイルの内容を文字列ストリームにコピー
+	enemyPopCommands_ << file.rdbuf();
 
-	default:
-		break;
+	//ファイルを閉じる
+	file.close();
+}
+
+void GamePlayScene::UpdateEnemyPopCommands() {
+	//待機処理
+	if (isWait_) {
+		return;
 	}
+
+	// 1行分の文字列を入れる変数
+	std::string line;
+
+	Vector3 position{};
+	Vector3 rotation{};
+	Vector3 scale{};
+	float radian = 0.0f;
+
+	//コマンド実行ループ
+	while (getline(enemyPopCommands_, line)) {
+		// 1行分の文字列をストリームに変換して解析しやすくする
+		std::istringstream line_stream(line);
+
+		std::string word;
+
+		//区切りで行の先頭文字列を取得
+		getline(line_stream, word, ',');
+
+		// "//"から始まる行はコメント
+		if (word.find("//") == 0) {
+			// コメント行を飛ばす
+			continue;
+		}
+
+		//POSITIONコマンド
+		if (word.find("POSITION") == 0) {
+			position = LoadCommandsVector3(
+				&line_stream,
+				word);
+		}
+
+		//ROTATIONコマンド
+		if (word.find("ROTATION") == 0) {
+			rotation = LoadCommandsVector3(
+				&line_stream,
+				word);
+
+			getline(line_stream, word, ',');
+			radian = (float)std::atof(word.c_str());
+		}
+
+		//SCALEコマンド
+		if (word.find("SCALE") == 0) {
+			scale = LoadCommandsVector3(
+				&line_stream,
+				word);
+		}
+
+		//POPコマンド
+		if (word.find("POP") == 0) {
+			//敵を発生させる
+			AddEnemy(
+				position,
+				CreateRotationVector(
+					rotation,
+					ConvertToRadian(radian)
+				),
+				scale,
+				Enemy::Gun_BulletType);
+		}
+
+		//WAITコマンド
+		else if (word.find("WAIT") == 0) {
+			//待機時間
+			isWait_ = true;
+			//ループ抜け
+			break;
+		}
+	}
+}
+
+Vector3 GamePlayScene::LoadCommandsVector3(
+	std::istringstream* line_stream,
+	std::string word) {
+	Vector3 result{};
+
+	//x
+	getline(*line_stream, word, ',');
+	result.x = (float)std::atof(word.c_str());
+
+	//y
+	getline(*line_stream, word, ',');
+	result.y = (float)std::atof(word.c_str());
+
+	//z
+	getline(*line_stream, word, ',');
+	result.z = (float)std::atof(word.c_str());
+
+	return result;
 }
 
 void GamePlayScene::Finalize() {
