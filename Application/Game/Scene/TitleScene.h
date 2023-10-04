@@ -24,6 +24,17 @@ public:
 	void Update() override;
 	void Draw() override;
 	void Finalize() override;
+	
+	/// <summary>
+	///float値のループ
+	/// </summary>
+	/// <param name="f">変化対象float</param>
+	/// <param name="s">変化の量(速さ)</param>
+	/// <param name="min">最小値</param>
+	/// <param name="max">最大値</param>
+	/// <returns>変化後の値</returns>
+	float RoopFloat(float f, float speed, float min, float max);
+
 private:
 	static DirectXBasis* dxBas_;
 	static Input* input_;

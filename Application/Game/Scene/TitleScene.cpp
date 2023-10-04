@@ -62,13 +62,8 @@ void TitleScene::Initialize(){
 
 void TitleScene::Update(){
 	input_->Update();
-	static float t = 0.1f;
 
-	if (alpha_ < 0.0f || alpha_ > 1.0f) {
-		t *= -1.0f;
-	}
-
-	alpha_ += t;
+	alpha_ = RoopFloat(alpha_, 0.04f, 0.0f, 1.0f);
 
 	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,alpha_ });
 
@@ -153,4 +148,16 @@ void TitleScene::Finalize(){
 	SafeDelete(buttonStart_);
 
 	SafeDelete(text_);
+}
+
+float TitleScene::RoopFloat(float f, float speed, float min, float max) {
+	static float t = speed;
+
+	if (f < min || f > max) {
+		t *= -1.0f;
+	}
+
+	f += t;
+
+	return f;
 }
