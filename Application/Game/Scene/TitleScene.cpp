@@ -53,17 +53,24 @@ void TitleScene::Initialize(){
 	text_->Initialize(Framework::kTextTextureIndex_);
 
 	//ボタン
-
 	buttonStart_ = new Button();
 	buttonStart_->Initialize(0);
 	buttonStart_->SetPosition({ WinApp::Win_Width / 2 ,500.0f });
 	buttonStart_->SetSize({ 600.0f,96.0f });
+	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,0.0f });
 }
 
 void TitleScene::Update(){
 	input_->Update();
+	static float t = 0.1f;
 
-	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+	if (alpha_ < 0.0f || alpha_ > 1.0f) {
+		t *= -1.0f;
+	}
+
+	alpha_ += t;
+
+	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,alpha_ });
 
 	if (buttonStart_->ChackClick(input_->PressMouse(0))) {
 		buttonStart_->SetColor({ 0.4f,0.4f,0.4f,1.0f });

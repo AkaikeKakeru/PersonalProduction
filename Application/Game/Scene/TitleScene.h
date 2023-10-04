@@ -53,4 +53,5 @@ private:
 
 	//ボタン
 	Button* buttonStart_ = nullptr;
+	float alpha_ = 0.0f;
 };
