@@ -97,6 +97,14 @@ bool Player::Initialize() {
 	//テキスト
 	text_ = new Text();
 	text_->Initialize(Framework::kTextTextureIndex_);
+	text_->SetString("AmmoIsEmpty");
+	text_->SetPosition(
+		{
+			spriteReticle_->GetPosition().x - (text_->fontWidth_ * 12.0f),
+			spriteReticle_->GetPosition().y
+		}
+	);
+	text_->SetSize({ 2.5f,2.5f });
 
 	shake_.SetWidthSwing(5.0f);
 
@@ -150,7 +158,7 @@ void Player::Update() {
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
 	//シェイク後座標
-	Vector3 shakePos =  Object3d::GetPosition();
+	Vector3 shakePos = Object3d::GetPosition();
 
 	//入力で隠れフラグ操作
 	if (input_->PressMouse(1)) {
@@ -253,10 +261,17 @@ void Player::Update() {
 	float textSize = 2.5f;
 
 	if (remainBulletCount_ <= 0) {
-		text_->Print("AmmoIsEmpty",
-			spriteReticle_->GetPosition().x - (text_->fontWidth_ * 12.0f),
-			spriteReticle_->GetPosition().y,
-			textSize);
+		text_->SetString("AmmoIsEmpty");
+		text_->SetPosition(
+			{
+				spriteReticle_->GetPosition().x - (text_->fontWidth_ * 12.0f),
+				spriteReticle_->GetPosition().y
+			}
+		);
+
+		text_->SetSize({ textSize, textSize });
+
+		text_->Print();
 	}
 }
 

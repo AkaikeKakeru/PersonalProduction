@@ -9,7 +9,7 @@ DirectXBasis* TitleScene::dxBas_ = DirectXBasis::GetInstance();
 Input* TitleScene::input_ = Input::GetInstance();
 SpriteBasis* TitleScene::spriteBas_ = SpriteBasis::GetInstance();
 
-void TitleScene::Initialize(){
+void TitleScene::Initialize() {
 	/// 描画初期化
 
 	//imGui
@@ -26,7 +26,7 @@ void TitleScene::Initialize(){
 	planeModel_ = Model::LoadFromOBJ("plane", true);
 
 	skydomeModel_ = new Model();
-	skydomeModel_ = Model::LoadFromOBJ("skydome",false);
+	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
 
 
 	planeObj_ = new Object3d();
@@ -48,19 +48,31 @@ void TitleScene::Initialize(){
 	//描画スプライト
 	sprite_->Initialize(0);
 
-	//テキスト
-	text_ = new Text();
-	text_->Initialize(Framework::kTextTextureIndex_);
+	float textSize = 2.5f;
 
 	//ボタン
 	buttonStart_ = new Button();
 	buttonStart_->Initialize(0);
+	buttonStart_->SetTelop("Press here to Start");
 	buttonStart_->SetPosition({ WinApp::Win_Width / 2 ,500.0f });
 	buttonStart_->SetSize({ 600.0f,96.0f });
 	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,0.0f });
+	buttonStart_->GetText()->SetSize({ textSize,textSize });
+
+	//テキスト
+	textSize = 5.0f;
+
+	text_ = new Text();
+	text_->Initialize(Framework::kTextTextureIndex_);
+	text_->SetString("Personal Production");
+	text_->SetPosition({
+		buttonStart_->GetPosition().x,
+		WinApp::Win_Height / 4,
+		});
+	text_->SetSize({ textSize,textSize });
 }
 
-void TitleScene::Update(){
+void TitleScene::Update() {
 	input_->Update();
 
 	alpha_ = RoopFloat(alpha_, 0.04f, 0.0f, 1.0f);
@@ -92,22 +104,9 @@ void TitleScene::Update(){
 
 	sprite_->Update();
 
-	float textSize = 5.0f;
-
-	text_->Print("Personal Production",
-		buttonStart_->GetPosition().x - (text_->fontWidth_ * 2.0f * 21.0f),
-		WinApp::Win_Height / 4,
-		textSize);
-
-	textSize = 2.5f;
-
-	text_->Print("Press here to Start",
-		buttonStart_->GetPosition().x - (text_->fontWidth_ * 19.0f),
-		buttonStart_->GetPosition().y,
-		textSize);
 }
 
-void TitleScene::Draw(){
+void TitleScene::Draw() {
 #ifdef _DEBUG
 	imGuiManager_->Begin();
 
@@ -128,13 +127,14 @@ void TitleScene::Draw(){
 	//sprite_->Draw();
 
 	buttonStart_->Draw();
+	text_->Print();
 
 	text_->DrawAll();
 
 	SpriteBasis::GetInstance()->PostDraw();
 }
 
-void TitleScene::Finalize(){
+void TitleScene::Finalize() {
 	SafeDelete(planeObj_);
 	SafeDelete(skydomeObj_);
 	SafeDelete(planeModel_);
