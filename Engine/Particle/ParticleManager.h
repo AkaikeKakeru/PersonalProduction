@@ -143,6 +143,10 @@ public://アクセッサ
 		camera_ = camera;
 	}
 
+	void SetColor(Vector4 color) {
+		particle_->SetColor(color);
+	}
+
 private: // メンバ変数
 	// 定数バッファ
 	ComPtr<ID3D12Resource> constBuff_;
