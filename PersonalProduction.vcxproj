@@ -106,6 +106,7 @@
     <ClCompile Include="Application\Function\Collider\CollisionPrimitive.cpp" />
     <ClCompile Include="Application\Function\Collider\SphereCollider.cpp" />
     <ClCompile Include="Application\Function\Gauge.cpp" />
+    <ClCompile Include="Application\Function\Shake.cpp" />
     <ClCompile Include="Application\Game\Background\Skydome.cpp" />
     <ClCompile Include="Application\Game\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\Game\Enemy\EnemyBullet.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Application\Function\Collider\CollisionTypes.h" />
     <ClInclude Include="Application\Function\Collider\RaycastHit.h" />
     <ClInclude Include="Application\Function\Collider\SphereCollider.h" />
+    <ClInclude Include="Application\Function\Shake.h" />
     <ClInclude Include="Application\Game\Background\Skydome.h" />
     <ClInclude Include="Application\Game\Enemy\Enemy.h" />
     <ClInclude Include="Application\Game\Enemy\EnemyBullet.h" />

@@ -45,12 +45,6 @@ void Framework::Initialize(){
 	//音声
 	audio_ = Audio::GetInstance();
 	audio_->Initialize();
-
-	//soundData1 = audio_->SoundLoadWave("Resource/fanfare.wav");
-
-	//再生
-	//audio_->SoundPlayWave(audio_->GetXAudio2().Get(), soundData1);
-
 #ifdef _DEBUG
 	//ImGuiマネージャー
 	ImGuiManager::GetInstance();
@@ -70,8 +64,7 @@ void Framework::Initialize(){
 	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");
 
 	//パーティクルマネージャー
-	ParticleManager* particleManager = ParticleManager::GetInstance();
-	particleManager->StaticInitialize(dxBas_->GetDevice().Get());
+	ParticleManager::StaticInitialize(dxBas_->GetDevice().Get());
 
 	//ライト静的初期化
 	LightGroup::StaticInitialize(dxBas_->GetDevice().Get());

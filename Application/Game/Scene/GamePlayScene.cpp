@@ -24,7 +24,6 @@ void GamePlayScene::Initialize() {
 void GamePlayScene::Update() {
 	input_->Update();
 
-
 	Update3d();
 	Update2d();
 
@@ -108,13 +107,6 @@ void GamePlayScene::Initialize3d() {
 	skydome_->SetPosition({ 0,0,0 });
 	skydome_->SetCamera(camera_);
 	skydome_->Update();
-
-	skydome2_ = Skydome::Create();
-	skydome2_->SetModel(skydomeModel_);
-	skydome2_->SetScale({ 512.0f, 126.0f, 512.0f });
-	skydome2_->SetPosition({ 0,0,skydome2_->GetScale().z });
-	skydome2_->SetCamera(camera_);
-	skydome2_->Update();
 #pragma endregion
 
 	//ライト生成
@@ -124,10 +116,10 @@ void GamePlayScene::Initialize3d() {
 	Object3d::SetLight(light_);
 
 	//パーティクル
-	//particle_ = Particle::LoadFromObjModel("particle2.png");
-	//pm_ = ParticleManager::Create();
-	//pm_->SetParticleModel(particle_);
-	//pm_->SetCamera(camera_);
+	particle_ = Particle::LoadFromObjModel("particle2.png");
+	pm_ = ParticleManager::Create();
+	pm_->SetParticleModel(particle_);
+	pm_->SetCamera(camera_);
 }
 
 void GamePlayScene::Initialize2d() {
@@ -199,7 +191,6 @@ void GamePlayScene::Update3d() {
 	light_->Update();
 
 	skydome_->Update();
-	skydome2_->Update();
 
 	player_->Update();
 
@@ -223,6 +214,21 @@ void GamePlayScene::Update3d() {
 			enemy->SetLife(life);
 
 			enemy->SetIsDamage(false);
+
+			pm_->Active(
+				particle_,
+				{
+					enemy->GetMatWorld().m[3][0],
+					enemy->GetMatWorld().m[3][1],
+					enemy->GetMatWorld().m[3][2] },
+				{ 2.0f ,2.0f,2.0f },
+				{ 5.0f,5.0f,5.0f },
+				{ 0.0f,0.001f,0.0f },
+				20,
+				3.0f,
+				0.0f,
+				10
+				);
 		}
 		enemy->Update();
 	}
@@ -261,19 +267,20 @@ void GamePlayScene::Update3d() {
 
 		player_->SetIsDamage(false);
 
-		//pm_->Active(
-		//	particle_, 
-		//	{	player_->GetMatWorld().m[3][0],
-		//		player_->GetMatWorld().m[3][1],
-		//		player_->GetMatWorld().m[3][2]},
-		//	{ 2.0f ,2.0f,2.0f },
-		//	{ 5.0f,5.0f,5.0f },
-		//	{ 0.0f,0.001f,0.0f },
-		//	20,
-		//	3.0f,
-		//	0.0f,
-		//	10
-		//);
+		pm_->Active(
+			particle_,
+			{
+				player_->GetMatWorld().m[3][0],
+				player_->GetMatWorld().m[3][1],
+				player_->GetMatWorld().m[3][2] },
+			{ 2.0f ,2.0f,2.0f },
+			{ 5.0f,5.0f,5.0f },
+			{ 0.0f,0.001f,0.0f },
+			20,
+			3.0f,
+			0.0f,
+			10
+		);
 	}
 
 	if (player_->IsDead()) {
@@ -281,7 +288,7 @@ void GamePlayScene::Update3d() {
 		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 	}
 
-	//pm_->Update();
+	pm_->Update();
 }
 
 void GamePlayScene::Update2d() {
@@ -290,7 +297,6 @@ void GamePlayScene::Update2d() {
 void GamePlayScene::Draw3d() {
 	//天球描画
 	skydome_->Draw();
-	skydome2_->Draw();
 
 	//敵機描画
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
@@ -312,7 +318,7 @@ void GamePlayScene::Draw3d() {
 }
 
 void GamePlayScene::DrawParticle() {
-	//pm_->Draw();
+	pm_->Draw();
 }
 
 void GamePlayScene::Draw2d() {
@@ -370,7 +376,6 @@ void GamePlayScene::AddEnemy(
 	//リストに登録
 	enemys_.push_back(std::move(newEnemy));
 }
-
 
 void GamePlayScene::LoadEnemyPopData(std::string filename) {
 	std::ifstream file;
@@ -492,7 +497,6 @@ Vector3 GamePlayScene::LoadCommandsVector3(
 
 void GamePlayScene::Finalize() {
 	SafeDelete(skydome_);
-	SafeDelete(skydome2_);
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Finalize();
 	}
@@ -511,6 +515,6 @@ void GamePlayScene::Finalize() {
 	SafeDelete(planeModel_);
 	SafeDelete(skydomeModel_);
 
-	//SafeDelete(particle_);
-	//pm_->Finalize();
+	SafeDelete(particle_);
+	SafeDelete(pm_);
 }

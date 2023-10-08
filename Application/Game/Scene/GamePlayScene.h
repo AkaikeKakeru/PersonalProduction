@@ -142,10 +142,7 @@ public: //メンバ変数
 	Model* planeModel_ = nullptr;
 	Model* planeEnemyModel_ = nullptr;
 
-	//Object3d* skydomeObj_ = nullptr;
-	//std::list<std::unique_ptr<Skydome>> skydomes_;
 	Skydome* skydome_ = nullptr;
-	Skydome* skydome2_ = nullptr;
 
 	Model* skydomeModel_ = nullptr;
 
@@ -154,8 +151,8 @@ public: //メンバ変数
 	/// <summary>
 	/// パーティクル
 	/// </summary>
-	//Particle* particle_ = nullptr;
-	//ParticleManager* pm_ = nullptr;
+	Particle* particle_ = nullptr;
+	ParticleManager* pm_ = nullptr;
 
 	/// <summary>
 	/// スプライト
