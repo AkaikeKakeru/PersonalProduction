@@ -89,6 +89,10 @@ public://アクセッサ
 		Particle::device_ = device;
 	}
 
+	void SetColor(Vector4 color) {
+		color_ = color;
+	}
+
 public://静的メンバ変数
 	// デバイス
 	static ComPtr<ID3D12Device> device_;

@@ -116,10 +116,11 @@ void GamePlayScene::Initialize3d() {
 	Object3d::SetLight(light_);
 
 	//パーティクル
-	particle_ = Particle::LoadFromObjModel("particle2.png");
+	particle_ = Particle::LoadFromObjModel("particle.png");
 	pm_ = ParticleManager::Create();
 	pm_->SetParticleModel(particle_);
 	pm_->SetCamera(camera_);
+	pm_->SetColor({ 0.7f,0.4f,0.1f,0.7f });
 }
 
 void GamePlayScene::Initialize2d() {
