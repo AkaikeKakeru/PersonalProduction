@@ -212,6 +212,8 @@ void TitleScene::PlayerUpdate() {
 		move = { 0,0,0.4f };
 	}
 
+	move.y = RoopFloat(move.y, 0.1f, -1.0f, 1.0f);
+
 	pos += move;
 
 	player_->SetPosition(pos);
