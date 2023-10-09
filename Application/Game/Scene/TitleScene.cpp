@@ -21,7 +21,7 @@ void TitleScene::Initialize() {
 
 	//カメラ生成
 	camera_ = new Camera();
-	camera_->SetTarget({0,ConvertToRadian(-90.0f),0});
+	camera_->SetTarget({ 0,ConvertToRadian(-90.0f),0 });
 
 	planeModel_ = new Model();
 	planeModel_ = Model::LoadFromOBJ("plane", true);
@@ -42,7 +42,7 @@ void TitleScene::Initialize() {
 	skydome_ = Skydome::Create();
 	skydome_->SetModel(skydomeModel_);
 	skydome_->SetScale({ 512.0f, 126.0f, 512.0f });
-	skydome_->SetPosition({ 0,0,-50.0f});
+	skydome_->SetPosition({ 0,0,-50.0f });
 	skydome_->SetCamera(camera_);
 	skydome_->Update();
 #pragma endregion
@@ -54,7 +54,13 @@ void TitleScene::Initialize() {
 	Object3d::SetLight(light_);
 
 	//描画スプライト
+	sprite_ = new Sprite();
 	sprite_->Initialize(0);
+
+	blackOut_ = new Sprite();
+	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
+	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
+	blackOut_->SetColor(cColorBlack_);
 
 	float textSize = 2.5f;
 
@@ -68,13 +74,13 @@ void TitleScene::Initialize() {
 	buttonStart_->GetText()->
 		SetSize({ textSize,textSize });
 
-	float len = 
+	float len =
 		static_cast<float>(
 			buttonStart_->GetText()->GetString().length()
 			);
 
 	buttonStart_->GetText()->
-		SetPosition({ 
+		SetPosition({
 		WinApp::Win_Width / 2.0f + len * 8.0f,
 			500.0f
 			});
@@ -126,6 +132,7 @@ void TitleScene::Update() {
 
 	sprite_->Update();
 
+	BlackOutUpdate();
 }
 
 void TitleScene::Draw() {
@@ -153,6 +160,7 @@ void TitleScene::Draw() {
 
 	text_->DrawAll();
 
+	blackOut_->Draw();
 	SpriteBasis::GetInstance()->PostDraw();
 }
 
@@ -171,17 +179,19 @@ void TitleScene::Finalize() {
 	SafeDelete(buttonStart_);
 
 	SafeDelete(text_);
+
+	SafeDelete(blackOut_);
 }
 
 void TitleScene::CameraUpdate() {
 	Vector3 target = camera_->GetTarget();
-	Vector3 move{0,0,0};
+	Vector3 move{ 0,0,0 };
 
 	if (camera_->GetTarget().y >= 0) {
 		move = { 0,0,0 };
 	}
 	else {
-		move = { 0,ConvertToRadian(1.5f),0}; 
+		move = { 0,ConvertToRadian(1.5f),0 };
 	}
 
 	target += move;
@@ -207,6 +217,51 @@ void TitleScene::PlayerUpdate() {
 	player_->SetPosition(pos);
 
 	player_->Update();
+}
+
+void TitleScene::BlackOutUpdate() {
+	Vector4 fade = {cColorBlack_};
+	float alpha = blackOut_->GetColor().w;
+
+	float speed = 0.1f;
+
+	//ループタイマーのカウント
+	if (roopTimer_ < 0) {
+		isRoop_ = true;
+	}
+	else {
+		roopTimer_--;
+	}
+
+	//ループフラグが立ったら、暗幕を可視化させていく
+	if (isRoop_) {
+		speed = 0.1f;
+		alpha += speed;
+
+		if (alpha >= 1.0f) {
+			//シーンの切り替えを依頼
+			SceneManager::GetInstance()->ChangeScene("TITLE");
+
+			speed = 0.0f;
+			alpha = 1.0f;
+		}
+	}
+	//立っていなければ、透明化させていく
+	else {
+		speed = -0.1f;
+		alpha += speed;
+
+		if (alpha <= 0.0f) {
+			speed = 0.0f;
+			alpha = 0.0f;
+		}
+	}
+
+	fade.w = alpha;
+
+	blackOut_->SetColor(fade);
+
+	blackOut_->Update();
 }
 
 float TitleScene::RoopFloat(float f, float speed, float min, float max) {
