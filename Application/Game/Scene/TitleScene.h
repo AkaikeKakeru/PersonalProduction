@@ -7,6 +7,8 @@
 #include "Sprite.h"
 #include "Object3d.h"
 
+#include "Skydome.h"
+
 #include "Text.h"
 #include "Button.h"
 
@@ -53,7 +55,7 @@ private:
 	Object3d* planeObj_ = nullptr;
 	Model* planeModel_ = nullptr;
 
-	Object3d* skydomeObj_ = nullptr;
+	Skydome* skydome_ = nullptr;
 	Model* skydomeModel_ = nullptr;
 	/// スプライト
 	/// </summary>

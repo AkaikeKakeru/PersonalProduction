@@ -34,10 +34,14 @@ void TitleScene::Initialize() {
 	planeObj_->SetModel(planeModel_);
 	planeObj_->SetCamera(camera_);
 
-	skydomeObj_ = new Object3d();
-	skydomeObj_ = Object3d::Create();
-	skydomeObj_->SetModel(skydomeModel_);
-	skydomeObj_->SetCamera(camera_);
+#pragma region Skydome
+	skydome_ = Skydome::Create();
+	skydome_->SetModel(skydomeModel_);
+	skydome_->SetScale({ 512.0f, 126.0f, 512.0f });
+	skydome_->SetPosition({ 0,0,0 });
+	skydome_->SetCamera(camera_);
+	skydome_->Update();
+#pragma endregion
 
 	//ライト生成
 	light_ = new LightGroup();
@@ -97,7 +101,7 @@ void TitleScene::Update() {
 
 	light_->Update();
 
-	skydomeObj_->Update();
+	skydome_->Update();
 	planeObj_->Update();
 
 	buttonStart_->Update();
@@ -115,8 +119,8 @@ void TitleScene::Draw() {
 
 	//モデル本命処理
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
-
-	//skydomeObj_->Draw();
+	//天球描画
+	skydome_->Draw();
 	planeObj_->Draw();
 
 	Object3d::PostDraw();
@@ -135,8 +139,9 @@ void TitleScene::Draw() {
 }
 
 void TitleScene::Finalize() {
+	SafeDelete(skydome_);
+
 	SafeDelete(planeObj_);
-	SafeDelete(skydomeObj_);
 	SafeDelete(planeModel_);
 	SafeDelete(skydomeModel_);
 	SafeDelete(sprite_);
