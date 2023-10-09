@@ -27,6 +27,11 @@ public:
 	void Draw() override;
 	void Finalize() override;
 	
+	//カメラの処理
+	void CameraUpdate();
+	//プレイヤーオブジェクトの処理
+	void PlayerUpdate();
+
 	/// <summary>
 	///float値のループ
 	/// </summary>
@@ -52,7 +57,7 @@ private:
 	/// オブジェクト
 	/// </summary>
 	/// <summary>
-	Object3d* planeObj_ = nullptr;
+	Object3d* player_ = nullptr;
 	Model* planeModel_ = nullptr;
 
 	Skydome* skydome_ = nullptr;

@@ -21,24 +21,28 @@ void TitleScene::Initialize() {
 
 	//カメラ生成
 	camera_ = new Camera();
+	camera_->SetTarget({0,ConvertToRadian(-90.0f),0});
 
 	planeModel_ = new Model();
 	planeModel_ = Model::LoadFromOBJ("plane", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
+#pragma region Player
+	player_ = new Object3d();
+	player_ = Object3d::Create();
 
+	player_->SetPosition({ 0,0,-50.0f });
 
-	planeObj_ = new Object3d();
-	planeObj_ = Object3d::Create();
-	planeObj_->SetModel(planeModel_);
-	planeObj_->SetCamera(camera_);
+	player_->SetModel(planeModel_);
+	player_->SetCamera(camera_);
+#pragma endregion
 
 #pragma region Skydome
 	skydome_ = Skydome::Create();
 	skydome_->SetModel(skydomeModel_);
 	skydome_->SetScale({ 512.0f, 126.0f, 512.0f });
-	skydome_->SetPosition({ 0,0,0 });
+	skydome_->SetPosition({ 0,0,-50.0f});
 	skydome_->SetCamera(camera_);
 	skydome_->Update();
 #pragma endregion
@@ -61,7 +65,19 @@ void TitleScene::Initialize() {
 	buttonStart_->SetPosition({ WinApp::Win_Width / 2 ,500.0f });
 	buttonStart_->SetSize({ 600.0f,96.0f });
 	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,0.0f });
-	buttonStart_->GetText()->SetSize({ textSize,textSize });
+	buttonStart_->GetText()->
+		SetSize({ textSize,textSize });
+
+	float len = 
+		static_cast<float>(
+			buttonStart_->GetText()->GetString().length()
+			);
+
+	buttonStart_->GetText()->
+		SetPosition({ 
+		WinApp::Win_Width / 2.0f + len * 8.0f,
+			500.0f
+			});
 
 	//テキスト
 	textSize = 5.0f;
@@ -101,8 +117,10 @@ void TitleScene::Update() {
 
 	light_->Update();
 
+	CameraUpdate();
+
 	skydome_->Update();
-	planeObj_->Update();
+	PlayerUpdate();
 
 	buttonStart_->Update();
 
@@ -121,7 +139,7 @@ void TitleScene::Draw() {
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
 	//天球描画
 	skydome_->Draw();
-	planeObj_->Draw();
+	player_->Draw();
 
 	Object3d::PostDraw();
 
@@ -141,7 +159,7 @@ void TitleScene::Draw() {
 void TitleScene::Finalize() {
 	SafeDelete(skydome_);
 
-	SafeDelete(planeObj_);
+	SafeDelete(player_);
 	SafeDelete(planeModel_);
 	SafeDelete(skydomeModel_);
 	SafeDelete(sprite_);
@@ -153,6 +171,42 @@ void TitleScene::Finalize() {
 	SafeDelete(buttonStart_);
 
 	SafeDelete(text_);
+}
+
+void TitleScene::CameraUpdate() {
+	Vector3 target = camera_->GetTarget();
+	Vector3 move{0,0,0};
+
+	if (camera_->GetTarget().y >= 0) {
+		move = { 0,0,0 };
+	}
+	else {
+		move = { 0,ConvertToRadian(1.5f),0}; 
+	}
+
+	target += move;
+
+	camera_->SetTarget(target);
+
+	camera_->Update();
+}
+
+void TitleScene::PlayerUpdate() {
+	Vector3 pos = player_->GetPosition();
+	Vector3 move{ 0,0,0 };
+
+	if (player_->GetPosition().z >= 0.0f) {
+		move = { 0,0,0 };
+	}
+	else {
+		move = { 0,0,0.4f };
+	}
+
+	pos += move;
+
+	player_->SetPosition(pos);
+
+	player_->Update();
 }
 
 float TitleScene::RoopFloat(float f, float speed, float min, float max) {
