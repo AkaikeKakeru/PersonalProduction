@@ -61,7 +61,7 @@ void TitleScene::Initialize() {
 	//ボタン
 	buttonStart_ = new Button();
 	buttonStart_->Initialize(0);
-	buttonStart_->SetTelop("Press here to Start");
+	buttonStart_->SetTelop("Click here to Start");
 	buttonStart_->SetPosition({ WinApp::Win_Width / 2 ,500.0f });
 	buttonStart_->SetSize({ 600.0f,96.0f });
 	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,0.0f });
