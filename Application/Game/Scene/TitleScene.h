@@ -31,6 +31,8 @@ public:
 	void CameraUpdate();
 	//プレイヤーオブジェクトの処理
 	void PlayerUpdate();
+	//暗幕の処理
+	void BlackOutUpdate();
 
 	/// <summary>
 	///float値のループ
@@ -41,6 +43,10 @@ public:
 	/// <param name="max">最大値</param>
 	/// <returns>変化後の値</returns>
 	float RoopFloat(float f, float speed, float min, float max);
+
+public:
+	//黒色
+	const Vector4 cColorBlack_ = { 0.0f,0.0f,0.0f,1.0f, };
 
 private:
 	static DirectXBasis* dxBas_;
@@ -64,7 +70,7 @@ private:
 	Model* skydomeModel_ = nullptr;
 	/// スプライト
 	/// </summary>
-	Sprite* sprite_ = new Sprite();
+	Sprite* sprite_ = nullptr;
 
 	//テキスト
 	Text* text_ = nullptr;
@@ -72,4 +78,13 @@ private:
 	//ボタン
 	Button* buttonStart_ = nullptr;
 	float alpha_ = 0.0f;
+
+	//タイトルループまで
+	int32_t roopTimer_ = 60 * 30;
+
+	//タイトルループフラグ
+	bool isRoop_ = false;
+
+	//画面の暗幕
+	Sprite* blackOut_ = nullptr;
 };
