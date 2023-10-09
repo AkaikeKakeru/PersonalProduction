@@ -61,6 +61,7 @@ void Framework::Initialize(){
 	spriteBas->LoadTexture(1, "cursor.png");
 	spriteBas->LoadTexture(2, "HPgauge.png");
 
+	spriteBas->LoadTexture(kWhiteTextureIndex_, "white1x1.png");
 	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");
 
 	//パーティクルマネージャー
