@@ -125,7 +125,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer;$(ProjectDir)Application\Function\UI;$(ProjectDir)Application\Function\System;$(ProjectDir)Engine\Color</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -161,13 +161,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application\Function\Button.cpp" />
+    <ClCompile Include="Application\Function\System\SceneChange.cpp" />
+    <ClCompile Include="Application\Function\UI\Button.cpp" />
     <ClCompile Include="Application\Function\Collider\Collision.cpp" />
     <ClCompile Include="Application\Function\Collider\CollisionManager.cpp" />
     <ClCompile Include="Application\Function\Collider\CollisionPrimitive.cpp" />
     <ClCompile Include="Application\Function\Collider\SphereCollider.cpp" />
-    <ClCompile Include="Application\Function\Gauge.cpp" />
-    <ClCompile Include="Application\Function\Shake.cpp" />
+    <ClCompile Include="Application\Function\UI\Gauge.cpp" />
+    <ClCompile Include="Application\Function\System\Shake.cpp" />
     <ClCompile Include="Application\Game\Background\Skydome.cpp" />
     <ClCompile Include="Application\Game\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\Game\Enemy\EnemyBullet.cpp" />
@@ -185,7 +186,7 @@
     <ClCompile Include="Engine\3d\Light\LightGroup.cpp" />
     <ClCompile Include="Engine\Audio\Audio.cpp" />
     <ClCompile Include="Engine\3d\Camera\Camera.cpp" />
-    <ClCompile Include="Application\Function\Cursor.cpp" />
+    <ClCompile Include="Application\Function\UI\Cursor.cpp" />
     <ClCompile Include="Application\Base\DirectXBasis.cpp" />
     <ClCompile Include="Engine\2d\SpriteBasis.cpp" />
     <ClCompile Include="Application\Base\FixFPS.cpp" />
@@ -203,7 +204,7 @@
     <ClCompile Include="Engine\3d\Object\Mesh.cpp" />
     <ClCompile Include="Engine\3d\Object\Model.cpp" />
     <ClCompile Include="Engine\3d\Object\Object3d.cpp" />
-    <ClCompile Include="Application\Function\Random.cpp" />
+    <ClCompile Include="Application\Function\System\Random.cpp" />
     <ClCompile Include="Application\Game\Scene\Manager\SceneFactory.cpp" />
     <ClCompile Include="Application\Game\Scene\Manager\SceneManager.cpp" />
     <ClCompile Include="Engine\2d\Sprite.cpp" />
@@ -216,7 +217,8 @@
     <ClCompile Include="Engine\ConstBuffer\WorldTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application\Function\Button.h" />
+    <ClInclude Include="Application\Function\System\SceneChange.h" />
+    <ClInclude Include="Application\Function\UI\Button.h" />
     <ClInclude Include="Application\Function\Collider\BaseCollider.h" />
     <ClInclude Include="Application\Function\Collider\Collision.h" />
     <ClInclude Include="Application\Function\Collider\CollisionAttribute.h" />
@@ -226,12 +228,12 @@
     <ClInclude Include="Application\Function\Collider\CollisionTypes.h" />
     <ClInclude Include="Application\Function\Collider\RaycastHit.h" />
     <ClInclude Include="Application\Function\Collider\SphereCollider.h" />
-    <ClInclude Include="Application\Function\Shake.h" />
+    <ClInclude Include="Application\Function\System\Shake.h" />
     <ClInclude Include="Application\Game\Background\Skydome.h" />
     <ClInclude Include="Application\Game\Enemy\Enemy.h" />
     <ClInclude Include="Application\Game\Enemy\EnemyBullet.h" />
     <ClInclude Include="Application\Game\GameMain.h" />
-    <ClInclude Include="Application\Function\Gauge.h" />
+    <ClInclude Include="Application\Function\UI\Gauge.h" />
     <ClInclude Include="Application\Game\Player\Player.h" />
     <ClInclude Include="Application\Game\Player\PlayerBullet.h" />
     <ClInclude Include="Application\Game\Scene\GameClearScene.h" />
@@ -247,7 +249,8 @@
     <ClInclude Include="Engine\3d\Light\LightGroup.h" />
     <ClInclude Include="Engine\Audio\Audio.h" />
     <ClInclude Include="Engine\3d\Camera\Camera.h" />
-    <ClInclude Include="Application\Function\Cursor.h" />
+    <ClInclude Include="Application\Function\UI\Cursor.h" />
+    <ClInclude Include="Engine\Color\ColorPallet.h" />
     <ClInclude Include="Engine\Debugger\Text.h" />
     <ClInclude Include="Application\Base\DirectXBasis.h" />
     <ClInclude Include="Engine\2d\SpriteBasis.h" />
@@ -260,8 +263,8 @@
     <ClInclude Include="Engine\3d\Object\Mesh.h" />
     <ClInclude Include="Engine\3d\Object\Model.h" />
     <ClInclude Include="Engine\3d\Object\Object3d.h" />
-    <ClInclude Include="Application\Function\Random.h" />
-    <ClInclude Include="Application\Function\SafeDelete.h" />
+    <ClInclude Include="Application\Function\System\Random.h" />
+    <ClInclude Include="Application\Function\System\SafeDelete.h" />
     <ClInclude Include="Application\Game\Scene\Manager\SceneFactory.h" />
     <ClInclude Include="Application\Game\Scene\Manager\SceneManager.h" />
     <ClInclude Include="Engine\2d\Sprite.h" />

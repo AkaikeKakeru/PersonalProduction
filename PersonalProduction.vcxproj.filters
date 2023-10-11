@@ -156,10 +156,10 @@
     <ClCompile Include="Application\Game\GameMain.cpp">
       <Filter>ソース ファイル\Application\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Function\Cursor.cpp">
+    <ClCompile Include="Application\Function\UI\Cursor.cpp">
       <Filter>ソース ファイル\Application\Function</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Function\Random.cpp">
+    <ClCompile Include="Application\Function\System\Random.cpp">
       <Filter>ソース ファイル\Application\Function</Filter>
     </ClCompile>
     <ClCompile Include="Application\Base\Framework.cpp">
@@ -249,7 +249,7 @@
     <ClCompile Include="Application\Game\Scene\GameClearScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Function\Button.cpp">
+    <ClCompile Include="Application\Function\UI\Button.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Application\Math\Quaternion.cpp">
@@ -267,7 +267,7 @@
     <ClCompile Include="Engine\Particle\Particle.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Function\Gauge.cpp">
+    <ClCompile Include="Application\Function\UI\Gauge.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Engine\LevelEditer\LevelLoader.cpp">
@@ -276,7 +276,10 @@
     <ClCompile Include="Engine\2d\PostEffect.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Function\Shake.cpp">
+    <ClCompile Include="Application\Function\System\Shake.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Function\System\SceneChange.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -314,10 +317,10 @@
     <ClInclude Include="Application\Game\Scene\GamePlayScene.h">
       <Filter>ヘッダー ファイル\Application\Game\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\Cursor.h">
+    <ClInclude Include="Application\Function\UI\Cursor.h">
       <Filter>ヘッダー ファイル\Application\Function</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\Random.h">
+    <ClInclude Include="Application\Function\System\Random.h">
       <Filter>ヘッダー ファイル\Application\Function</Filter>
     </ClInclude>
     <ClInclude Include="Application\Base\Framework.h">
@@ -359,7 +362,7 @@
     <ClInclude Include="Application\Game\Scene\Manager\SceneManager.h">
       <Filter>ヘッダー ファイル\Application\Game\Scene\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\SafeDelete.h">
+    <ClInclude Include="Application\Function\System\SafeDelete.h">
       <Filter>ヘッダー ファイル\Application\Function</Filter>
     </ClInclude>
     <ClInclude Include="Application\Game\GameMain.h">
@@ -431,7 +434,7 @@
     <ClInclude Include="Application\Game\Scene\GameClearScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\Button.h">
+    <ClInclude Include="Application\Function\UI\Button.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Application\Math\Quaternion.h">
@@ -449,7 +452,7 @@
     <ClInclude Include="Engine\Particle\Particle.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\Gauge.h">
+    <ClInclude Include="Application\Function\UI\Gauge.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Engine\LevelEditer\LevelLoader.h">
@@ -461,7 +464,13 @@
     <ClInclude Include="Engine\2d\PostEffect.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\Shake.h">
+    <ClInclude Include="Application\Function\System\Shake.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\System\SceneChange.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Color\ColorPallet.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
