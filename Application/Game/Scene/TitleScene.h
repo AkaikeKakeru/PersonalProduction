@@ -16,9 +16,11 @@
 #include "LightGroup.h"
 
 #include "SceneManager.h"
+#include "SceneChange.h"
+
 #include "ImGuiManager.h"
 
-class TitleScene : public BaseScene{
+class TitleScene : public BaseScene {
 public://構造体
 
 public:
@@ -26,7 +28,7 @@ public:
 	void Update() override;
 	void Draw() override;
 	void Finalize() override;
-	
+
 	//カメラの処理
 	void CameraUpdate();
 	//プレイヤーオブジェクトの処理
@@ -43,10 +45,6 @@ public:
 	/// <param name="max">最大値</param>
 	/// <returns>変化後の値</returns>
 	float RoopFloat(float f, float speed, float min, float max);
-
-public:
-	//黒色
-	const Vector4 cColorBlack_ = { 0.0f,0.0f,0.0f,1.0f, };
 
 private:
 	static DirectXBasis* dxBas_;
@@ -86,5 +84,6 @@ private:
 	bool isRoop_ = false;
 
 	//画面の暗幕
-	Sprite* blackOut_ = nullptr;
+	//Sprite* blackOut_ = nullptr;
+	SceneChange* blackOut_ = nullptr;
 };

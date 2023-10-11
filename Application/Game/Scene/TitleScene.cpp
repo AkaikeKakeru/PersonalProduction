@@ -4,6 +4,9 @@
 #include "Framework.h"
 #include "SceneManager.h"
 #include <imgui.h>
+#include "ColorPallet.h"
+
+using namespace ColorPallet;
 
 DirectXBasis* TitleScene::dxBas_ = DirectXBasis::GetInstance();
 Input* TitleScene::input_ = Input::GetInstance();
@@ -57,10 +60,12 @@ void TitleScene::Initialize() {
 	sprite_ = new Sprite();
 	sprite_->Initialize(0);
 
-	blackOut_ = new Sprite();
+	//暗幕
+	blackOut_ = new SceneChange();
 	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
+	blackOut_->SetPreset(SceneChange::preFade_);
 	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
-	blackOut_->SetColor(cColorBlack_);
+	blackOut_->SetColor(colorBlackVivit_);
 
 	float textSize = 2.5f;
 
@@ -180,6 +185,7 @@ void TitleScene::Finalize() {
 
 	SafeDelete(text_);
 
+	blackOut_->Finalize();
 	SafeDelete(blackOut_);
 }
 
@@ -222,48 +228,21 @@ void TitleScene::PlayerUpdate() {
 }
 
 void TitleScene::BlackOutUpdate() {
-	Vector4 fade = {cColorBlack_};
-	float alpha = blackOut_->GetColor().w;
-
-	float speed = 0.1f;
-
 	//ループタイマーのカウント
 	if (roopTimer_ < 0) {
-		isRoop_ = true;
+		blackOut_->SetIs(true);
+		blackOut_->SetIsOpen(false);
 	}
 	else {
 		roopTimer_--;
 	}
 
-	//ループフラグが立ったら、暗幕を可視化させていく
-	if (isRoop_) {
-		speed = 0.1f;
-		alpha += speed;
-
-		if (alpha >= 1.0f) {
-			//シーンの切り替えを依頼
-			SceneManager::GetInstance()->ChangeScene("TITLE");
-
-			speed = 0.0f;
-			alpha = 1.0f;
-		}
-	}
-	//立っていなければ、透明化させていく
-	else {
-		speed = -0.1f;
-		alpha += speed;
-
-		if (alpha <= 0.0f) {
-			speed = 0.0f;
-			alpha = 0.0f;
-		}
-	}
-
-	fade.w = alpha;
-
-	blackOut_->SetColor(fade);
-
 	blackOut_->Update();
+
+	if (blackOut_->IsEnd()) {
+		//シーンの切り替えを依頼
+		SceneManager::GetInstance()->ChangeScene("TITLE");
+	}
 }
 
 float TitleScene::RoopFloat(float f, float speed, float min, float max) {
