@@ -16,16 +16,16 @@ void Text::Initialize(UINT fontTexNum) {
 	}
 }
 
-void Text::Print(const std::string & text, float x, float y, float scale) {
+void Text::Print() {
 	// 全ての文字について
-	for (size_t i = 0; i < text.size(); i++) {
+	for (size_t i = 0; i < string_.size(); i++) {
 		// 最大文字数超過
 		if (spriteIndex_ >= maxCharCount_) {
 			break;
 		}
 
 		// 1文字取り出す(※ASCIIコードでしか成り立たない)
-		const unsigned char& character = static_cast<const unsigned char>(text[i]);
+		const unsigned char& character = static_cast<const unsigned char>(string_[i]);
 
 		int fontIndex = character - 32;
 		if (character >= 0x7f) {
@@ -36,8 +36,8 @@ void Text::Print(const std::string & text, float x, float y, float scale) {
 		int fontIndexX = fontIndex % fontLineCount_;
 
 		// 座標計算
-		sprites_[spriteIndex_]->SetPosition({ x + fontWidth_ * scale * i, y });
-		sprites_[spriteIndex_]->SetSize({ fontWidth_ * scale, fontHeight_ * scale });
+		sprites_[spriteIndex_]->SetPosition({ position_.x + fontWidth_ * size_.x * i, position_.y });
+		sprites_[spriteIndex_]->SetSize({ fontWidth_ * size_.x, fontHeight_ * size_.y });
 		sprites_[spriteIndex_]->SetAnchorPoint({ 0.5f,0.5f });
 		sprites_[spriteIndex_]->SetTextureLeftTop({ (float)fontIndexX * fontWidth_, (float)fontIndexY * fontHeight_ });
 		sprites_[spriteIndex_]->SetTextureSize({ (float)fontWidth_, (float)fontHeight_ });

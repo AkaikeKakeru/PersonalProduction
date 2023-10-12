@@ -37,7 +37,7 @@ public:
 
 public: //定数
 	static const int kTextTextureIndex_ = 100;
-
+	static const int kWhiteTextureIndex_ = 200;
 private:
 	//ウィンドウアプリ
 	WinApp* winApp_ = nullptr;
