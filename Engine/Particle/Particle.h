@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*パーティクル*/
+
+#pragma once
 
 #include "Vector4.h"
 #include "Vector3.h"
@@ -79,7 +81,15 @@ public://メンバ関数
 	// 描画
 	void Draw(ID3D12GraphicsCommandList* cmdList);
 
-	//パーティクルの追加
+	/// <summary>
+	/// パーティクルの追加
+	/// </summary>
+	/// <param name="life">持続時間</param>
+	/// <param name="position">位置</param>
+	/// <param name="velocity">速度</param>
+	/// <param name="accel">加速度</param>
+	/// <param name="start_scale">開始時スケール</param>
+	/// <param name="end_scale">終了時スケール</param>
 	void Add(int life, Vector3 position, Vector3 velocity, Vector3 accel,
 		float start_scale, float end_scale);
 
@@ -89,6 +99,7 @@ public://アクセッサ
 		Particle::device_ = device;
 	}
 
+	//色取得
 	void SetColor(Vector4 color) {
 		color_ = color;
 	}

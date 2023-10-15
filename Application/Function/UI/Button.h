@@ -1,9 +1,12 @@
-﻿#pragma once
+﻿/*スプライトとしてのボタンUI*/
+
+#pragma once
 
 #include "Vector2.h"
 #include "Sprite.h"
 #include "Text.h"
 
+/*スプライトとしてのボタンUI*/
 class Button {
 public://メンバ関数
 	void Initialize(uint32_t index);
@@ -11,8 +14,12 @@ public://メンバ関数
 	void Draw();
 	void Finalize();
 
-	//マウスクリックを確認
-	bool ChackClick(bool whichMouseButtonWasPressed);
+	/// <summary>
+	/// マウスクリックを確認
+	/// </summary>
+	/// <param name="mouseButtonWasPressed">押されたか</param>
+	/// <returns></returns>
+	bool ChackClick(bool mouseButtonWasClick);
 
 public://アクセッサ
 	//中心位置取得

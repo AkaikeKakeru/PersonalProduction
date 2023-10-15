@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*タイトルシーン*/
+
+#pragma once
 #include "BaseScene.h"
 
 #include "Input.h"
@@ -20,6 +22,7 @@
 
 #include "ImGuiManager.h"
 
+/*タイトルシーン*/
 class TitleScene : public BaseScene {
 public://構造体
 
@@ -57,10 +60,7 @@ private:
 	//ImGuiマネージャー
 	ImGuiManager* imGuiManager_ = nullptr;
 
-	/// <summary>
-	/// オブジェクト
-	/// </summary>
-	/// <summary>
+	// オブジェクト
 	Object3d* player_ = nullptr;
 	Model* planeModel_ = nullptr;
 

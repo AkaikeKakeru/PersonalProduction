@@ -1,3 +1,5 @@
+/*ƒV[ƒ“‚ÌŠî‘b*/
+
 #include "BaseScene.h"
 #include "Framework.h"
 

@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*ワールド変換*/
+
+#pragma once
 #include "Vector3.h"
 #include "Matrix4.h"
 #include <d3d12.h>
@@ -11,6 +13,7 @@ struct ConstBufferDataWorldTransform{
 	Vector3 cameraPos_;//カメラ座標(ワールド座標)
 };
 
+/*ワールド変換*/
 struct WorldTransform {
 private: // 省略
 	// Microsoft::WRL::を省略

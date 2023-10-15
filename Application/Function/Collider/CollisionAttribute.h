@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*衝突属性*/
+
+#pragma once
 
 //衝突属性
 const unsigned short COLLISION_ATTR_LANDSHAPE = 0b1 << 0;//地形

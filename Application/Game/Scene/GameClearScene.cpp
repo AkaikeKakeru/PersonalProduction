@@ -1,4 +1,6 @@
-﻿#include "GameClearScene.h"
+﻿/*ゲームクリアシーン*/
+
+#include "GameClearScene.h"
 #include "SafeDelete.h"
 
 #include "Framework.h"

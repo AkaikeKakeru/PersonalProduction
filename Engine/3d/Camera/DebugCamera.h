@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*デバッグカメラ*/
+
+#pragma once
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 #include "Input.h"
@@ -9,7 +11,9 @@ public://静的メンバ変数
 	static Input* input_;
 
 public:
-	void Initialize(const Vector3 pos,const Vector3 rotaRadianAngle);
+	void Initialize(
+		const Vector3 pos,
+		const Vector3 rotaRadianAngle);
 	void Update();
 
 public://アクセッサ

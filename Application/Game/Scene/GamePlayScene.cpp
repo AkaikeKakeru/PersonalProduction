@@ -1,4 +1,6 @@
-﻿#include "GamePlayScene.h"
+﻿/*ゲームプレイシーン*/
+
+#include "GamePlayScene.h"
 #include "SafeDelete.h"
 #include "Quaternion.h"
 #include <imgui.h>
@@ -327,13 +329,6 @@ void GamePlayScene::Draw2d() {
 		enemy->DrawUI();
 	}
 	player_->DrawUI();
-}
-
-Vector3 GamePlayScene::CreateRotationVector(Vector3 axisAngle, float angleRadian) {
-	Quaternion rotation = MakeAxisAngle(axisAngle, ConvertToRadian(1.0f));
-	Vector3 point = axisAngle * angleRadian;
-
-	return RotateVector(point, rotation);
 }
 
 void GamePlayScene::AddPlayerBullet(std::unique_ptr<PlayerBullet> playerBullet) {

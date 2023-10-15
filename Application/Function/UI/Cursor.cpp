@@ -1,4 +1,6 @@
-﻿#include "Cursor.h"
+﻿/*カーソルの2D座標を求める*/
+
+#include "Cursor.h"
 #include "Input.h"
 #include <WinApp.h>
 #include <cassert>

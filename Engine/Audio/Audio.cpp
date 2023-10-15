@@ -1,4 +1,6 @@
-﻿#include "Audio.h"
+﻿/*オーディオ*/
+
+#include "Audio.h"
 #include <cassert>
 
 void Audio::Initialize() {

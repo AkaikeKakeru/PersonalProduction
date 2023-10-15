@@ -1,5 +1,8 @@
-﻿#include "MyMath.h"
+﻿/*自作の数学関数まとめ*/
 
+#include "MyMath.h"
+
+//円周率
 const float PI = 3.1415926535f;
 
 float ConvertToRadian(float degree) {

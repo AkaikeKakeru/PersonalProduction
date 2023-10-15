@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*ビュープロジェクション*/
+
+#pragma once
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix4.h"
@@ -16,6 +18,7 @@ struct ConstBufferDataViewProjection {
 	Vector3 cameraPos_;
 };
 
+/*ビュープロジェクション*/
 struct ViewProjection {
 private: // エイリアス
 		 // Microsoft::WRL::を省略

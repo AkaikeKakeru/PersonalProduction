@@ -1,8 +1,11 @@
+/*シーンの基礎*/
+
 #pragma once
 
 //前方宣言
 class SceneManager;
 
+//シーンの基礎
 class BaseScene {
 public:
 	virtual void Initialize() = 0;
@@ -10,7 +13,8 @@ public:
 	virtual void Draw() = 0;
 	virtual void Finalize() = 0;
 
-	virtual void SetSceneManager(SceneManager* sceneManager) { sceneManager_ = sceneManager; }
+	virtual void SetSceneManager(SceneManager* sceneManager) {
+		sceneManager_ = sceneManager; }
 
 private:
 	//シーンマネージャ(借りてくる)

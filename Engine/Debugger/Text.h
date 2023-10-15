@@ -1,13 +1,17 @@
-﻿#pragma once
+﻿/*テキスト*/
+
+#pragma once
 #include "SpriteBasis.h"
 #include "Sprite.h"
 
+/*テキスト*/
 class Text {
 public://メンバ関数
 	void Initialize(UINT fontTexNum);
 
+	//テキストをプリント
 	void Print();
-
+	//プリントした全ストックを描画
 	void DrawAll();
 
 public:

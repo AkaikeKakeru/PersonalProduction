@@ -1,4 +1,6 @@
-﻿#include "ParticleManager.h"
+﻿/*パーティクルマネージャー*/
+
+#include "ParticleManager.h"
 #include <d3dcompiler.h>
 #include <DirectXTex.h>
 #include "Random.h"

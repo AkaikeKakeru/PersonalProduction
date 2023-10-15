@@ -1,4 +1,6 @@
-﻿#include "Model.h"
+﻿/*OBJモデル*/
+
+#include "Model.h"
 #include <cassert>
 #include <fstream>
 #include <sstream>

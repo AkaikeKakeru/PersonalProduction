@@ -1,4 +1,6 @@
-﻿#include "Matrix4.h"
+﻿/*4x4行列*/
+
+#include "Matrix4.h"
 #include "Vector3.h"
 #include <cmath> //sin cos
 

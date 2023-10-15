@@ -1,6 +1,9 @@
-﻿#pragma once
+﻿/*シーン遷移用オブジェクト*/
+
+#pragma once
 #include "Sprite.h"
 
+/*シーン遷移オブジェクト*/
 class SceneChange {
 public:
 	//プリセット名

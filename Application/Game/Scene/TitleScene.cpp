@@ -1,4 +1,6 @@
-﻿#include "TitleScene.h"
+﻿/*タイトルシーン*/
+
+#include "TitleScene.h"
 #include "SafeDelete.h"
 
 #include "Framework.h"

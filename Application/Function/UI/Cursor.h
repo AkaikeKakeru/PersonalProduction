@@ -1,10 +1,13 @@
-﻿#pragma once
+﻿/*カーソルの2D座標を求める*/
+
+#pragma once
 #include "Vector2.h"
 #include "Matrix4.h"
 
 #include "Object3d.h"
 #include "Camera.h"
 
+/*カーソルの2D座標を求める*/
 class Corsor {
 public: //アクセッサ
 	//3D照準位置取得

@@ -1,4 +1,9 @@
-﻿#pragma once
+﻿/*コードの全体の処理を、
+初期化　更新　描画のグループとして三つに独立させる*/
+
+/*プロジェクト内の、ウィンドウ作成や基盤の初期化等の枠組みを行う*/
+
+#pragma once
 #include "WinApp.h"
 #include "DirectXBasis.h"
 #include "Input.h"
@@ -8,6 +13,7 @@
 #include "AbstractSceneFactory.h"
 #include "PostEffect.h"
 
+//枠組み
 class Framework {
 public:
 	//実行
@@ -19,18 +25,24 @@ public:
 
 	virtual bool IsEndRequest() { return isEndRequest_; }
 
+public:
+	//ウィンドウズアプリケーションの取得
 	WinApp* GetWinApp() const {
 		return winApp_;
 	}
+	//DirectX基盤の取得
 	DirectXBasis* GetDirectXBasis() const {
 		return dxBas_;
 	}
+	//入力の取得
 	Input* GetInput() const {
 		return input_;
 	}
+	//ポストエフェクトの取得
 	PostEffect* GetPostEffect() const {
 		return postEffect_;
 	}
+	//シーンマネージャーの取得
 	static SceneManager* GetSceneManager() {
 		return sceneManager_;
 	}

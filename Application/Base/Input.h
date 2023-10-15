@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*入力装置で入力された情報を扱う*/
+
+#pragma once
 #define DIRECTINPUT_VERSION 0x0800 //DirectInput Version
 #include <dinput.h>
 #include <wrl.h>
@@ -6,6 +8,7 @@
 #include "Vector2.h"
 #include <cstdint>
 
+//入力
 class Input {
 private://省略
 	template <class T>
@@ -68,7 +71,10 @@ public: //public固有関数
 	/// <returns>今離した瞬間か否か</returns>
 	bool ReleaseMouse(int32_t buttonNum);
 
-	const Vector2& GetMousePosition() const { return mousePos_; }
+public:
+	//マウスポジションの取得
+	const Vector2& GetMousePosition() const {
+		return mousePos_; }
 
 public://固有関数
 	void GenerateDirectInput();

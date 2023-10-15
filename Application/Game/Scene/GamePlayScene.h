@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*ゲームプレイシーン*/
+
+#pragma once
 #include "BaseScene.h"
 
 #include "Input.h"
@@ -31,6 +33,7 @@
 
 class CollisionManager;
 
+/*ゲームプレイシーン*/
 class GamePlayScene :
 	public BaseScene {
 public:
@@ -54,8 +57,6 @@ public://定数
 	const int kFinalPhaseIndex_ = 3;
 
 public:
-	Vector3 CreateRotationVector(Vector3 axisAngle, float angleRadian);
-
 	//自機弾を追加
 	void AddPlayerBullet(std::unique_ptr<PlayerBullet> playerBullet);
 

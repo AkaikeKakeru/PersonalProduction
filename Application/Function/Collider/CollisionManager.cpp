@@ -1,4 +1,6 @@
-﻿#include "CollisionManager.h"
+﻿/*衝突処理の管理*/
+
+#include "CollisionManager.h"
 #include "BaseCollider.h"
 #include "Collision.h"
 

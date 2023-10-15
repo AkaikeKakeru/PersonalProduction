@@ -1,4 +1,6 @@
-﻿#include "DebugCamera.h"
+﻿/*デバッグカメラ*/
+
+#include "DebugCamera.h"
 #include <MyMath.h>
 
 Input* DebugCamera::input_ = Input::GetInstance();

@@ -1,3 +1,5 @@
+/*ƒ‰ƒ“ƒ_ƒ€‚È’l‚ğo—Í‚·‚éŠÖ”‚Ì“Z‚ß*/
+
 #include "Random.h"
 
 float RandomOutput(float min, float max) {

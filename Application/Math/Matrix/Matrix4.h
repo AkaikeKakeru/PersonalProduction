@@ -1,7 +1,10 @@
-﻿#pragma once
+﻿/*4x4行列*/
+
+#pragma once
 #include "Vector3.h"
 #include <Vector4.h>
 
+/*4x4行列*/
 struct Matrix4 {
 	float m[4][4];
 };

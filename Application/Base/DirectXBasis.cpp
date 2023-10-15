@@ -1,4 +1,6 @@
-﻿#include "DirectXBasis.h"
+﻿/*DirectXを起動実行更新するための基盤*/
+
+#include "DirectXBasis.h"
 #include <string>
 #include <cassert>
 

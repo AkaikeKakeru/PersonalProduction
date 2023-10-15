@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*スプライト基盤*/
+
+#pragma once
 #include "DirectXBasis.h"
 #include "Vector2.h"
 #include "Vector3.h"
@@ -6,6 +8,7 @@
 #include <string>
 #include <array>
 
+/*スプライト基盤*/
 class SpriteBasis {
 private://省略
 	template <class T>
@@ -14,7 +17,6 @@ private://省略
 private://構造体
 
 public://基本関数
-
 	static void Initialize();
 	static void PreDraw();
 	static void PostDraw();

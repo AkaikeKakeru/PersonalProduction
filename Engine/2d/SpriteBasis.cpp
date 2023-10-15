@@ -1,4 +1,6 @@
-﻿#include "SpriteBasis.h"
+﻿/*スプライト基盤*/
+
+#include "SpriteBasis.h"
 #include <d3d12.h>
 #include <d3dcompiler.h>
 #include <wrl.h>

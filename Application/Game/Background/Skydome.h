@@ -1,9 +1,11 @@
-﻿#pragma once
+﻿/*天球*/
+
+#pragma once
 #include "Model.h"
 #include "Object3d.h"
 #include <Input.h>
 
-//プレイヤー
+//天球
 class Skydome
 	: public Object3d {
 public: //静的メンバ関数

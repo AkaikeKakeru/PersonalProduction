@@ -1,4 +1,6 @@
-﻿#include "LevelLoader.h"
+﻿/*レベルエディター*/
+
+#include "LevelLoader.h"
 #include <json.hpp>
 #include <cassert>
 #include <fstream>
