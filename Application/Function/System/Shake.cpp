@@ -1,4 +1,6 @@
-﻿#include "Shake.h"
+﻿/*シェイク*/
+
+#include "Shake.h"
 #include "Random.h"
 
 void Shake::Update() {

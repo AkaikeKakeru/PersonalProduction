@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*メッシュ*/
+
+#pragma once
 
 #include "Material.h"
 #include <Windows.h>
@@ -10,6 +12,7 @@
 #include "Vector2.h"
 #include <unordered_map>
 
+/*メッシュ*/
 class Mesh {
 private: // エイリアス
 	//省略

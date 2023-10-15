@@ -1,11 +1,20 @@
-﻿#pragma once
+﻿/*衝突時の相手コライダー情報*/
+
+#pragma once
 #include "Vector3.h"
 
 class Object3d;
 class BaseCollider;
 
+/*衝突時の相手コライダー情報*/
 struct CollisionInfo {
 public:
+	/// <summary>
+	/// コライダー情報
+	/// </summary>
+	/// <param name="object">オブジェクト</param>
+	/// <param name="collider">コライダ－</param>
+	/// <param name="inter">衝突点</param>
 	CollisionInfo(Object3d* object, BaseCollider* collider,
 		const Vector3& inter) {
 		object_ = object;

@@ -1,8 +1,11 @@
-﻿#pragma once
+﻿/*ポストエフェクト*/
+
+#pragma once
 #include "SpriteBasis.h"
 #include <Matrix4.h>
 #include <MyMath.h>
 
+/*ポストエフェクト*/
 class PostEffect {
 private://省略
 	template <class T>
@@ -33,6 +36,7 @@ public://構造体
 		Vector2 uv = { 0,0 };//uv座標
 	}Vertex;
 
+	//上下左右
 	typedef struct TopBottomLeftRight {
 		float left;//左
 		float right;//右

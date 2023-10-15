@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*プレイヤー*/
+
+#pragma once
 #include "Model.h"
 #include "Object3d.h"
 #include "RailCamera.h"
@@ -61,13 +63,16 @@ public: //アクセッサ
 		gameScene_ = gameScene;
 	}
 
+	//位置の取得
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_;
 	}
+	//半径の取得
 	float GetRadius() const {
 		return radius_;
 	}
 
+	//レールカメラのワールド変換取得
 	void SetWorldTransformRailCamera(WorldTransform* worldTransformRailCamera) {
 		worldTransform_.parent_ = worldTransformRailCamera;
 	}

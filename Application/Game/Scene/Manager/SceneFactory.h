@@ -1,5 +1,6 @@
-﻿#pragma once
+﻿/*シーンファクトリー*/
 
+#pragma once
 #include "AbstractSceneFactory.h"
 
 //このゲーム用のシーン工場

@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*DirectXを起動実行更新するための基盤*/
+
+#pragma once
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
@@ -10,6 +12,7 @@
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 
+//DirectXの基盤
 class DirectXBasis{
 private://省略
 	template <class T>
@@ -37,12 +40,15 @@ private://固有関数
 
 public://アクセス
 	//デバイス取得
-	ComPtr<ID3D12Device> GetDevice() { return device_; }
+	ComPtr<ID3D12Device> GetDevice() {
+		return device_; }
 	//コマンドリスト取得
-	ComPtr<ID3D12GraphicsCommandList> GetCommandList() { return cmdList_; }
+	ComPtr<ID3D12GraphicsCommandList> GetCommandList() {
+		return cmdList_; }
 
 	//バックバッファの数取得
-	size_t GetBackBufferCount() const { return backBuffers_.size(); }
+	size_t GetBackBufferCount() const {
+		return backBuffers_.size(); }
 
 public://定数
 	static const int BackBufferCount = 2;
@@ -68,7 +74,6 @@ private://変数
 	ComPtr<ID3D12DescriptorHeap> rtvHeap_;
 	std::vector<ComPtr<ID3D12Resource>> backBuffers_;
 	ComPtr<ID3D12Fence> fence_;
-
 
 	ComPtr<ID3D12Resource> depthBuff_;
 	ComPtr<ID3D12DescriptorHeap> dsvHeap_;

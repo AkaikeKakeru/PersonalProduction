@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*パーティクルマネージャー*/
+
+#pragma once
 
 #include <Windows.h>
 #include <wrl.h>
@@ -10,9 +12,7 @@
 #include "Vector3.h"
 #include "Vector2.h"
 
-/// <summary>
-/// 3Dオブジェクト
-/// </summary>
+/*パーティクルマネージャー*/
 class ParticleManager {
 private: //省略
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -20,7 +20,6 @@ private: //省略
 public: // サブクラス
 	// 定数バッファ用データ構造体
 	struct ConstBufferData {
-		//Vector4 color;	// 色 (RGBA)
 		Matrix4 mat;// ３Ｄ変換行列
 		Matrix4 matBillboard;	//ビルボード行列
 	};

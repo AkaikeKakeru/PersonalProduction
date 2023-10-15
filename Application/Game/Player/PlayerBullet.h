@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*プレイヤー弾*/
+
+#pragma once
 #include "Model.h"
 #include "Object3d.h"
 #include "Sprite.h"
@@ -7,6 +9,7 @@
 class CollisionManager;
 class GamePlayScene;
 
+//プレイヤー弾
 class PlayerBullet :
 	public Object3d{
 public: //静的メンバ関数
@@ -30,8 +33,10 @@ public: //アクセッサ
 		gameScene_ = gameScene;
 	}
 
+	//位置の取得
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_; }
+	//位置の半径
 	float GetRadius() const {
 		return radius_; }
 

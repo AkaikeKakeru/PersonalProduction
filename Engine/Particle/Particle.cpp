@@ -1,4 +1,6 @@
-﻿#include "Particle.h"
+﻿/*パーティクル*/
+
+#include "Particle.h"
 #include <DirectXTex.h>
 #include <cassert>
 #include <string>

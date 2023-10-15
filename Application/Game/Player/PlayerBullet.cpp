@@ -1,4 +1,6 @@
-﻿#include "PlayerBullet.h"
+﻿/*プレイヤー弾*/
+
+#include "PlayerBullet.h"
 #include <Input.h>
 #include "CollisionManager.h"
 #include "CollisionAttribute.h"

@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*エネミー*/
+
+#pragma once
 #include "Model.h"
 #include "Object3d.h"
 #include "Sprite.h"

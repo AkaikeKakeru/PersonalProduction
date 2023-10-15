@@ -1,5 +1,8 @@
-﻿#pragma once
+﻿/*3次元ベクトル*/
 
+#pragma once
+
+/*3次元ベクトル*/
 class Vector3 {
 public:
 	float x;

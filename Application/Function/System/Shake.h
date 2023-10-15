@@ -1,11 +1,17 @@
-﻿#pragma once
+﻿/*シェイク*/
+
+#pragma once
 #include "Vector3.h"
 
+/*シェイク*/
 class Shake {
 public:
 	void Update();
 
-	//位置のシェイク
+	/// <summary>
+	/// 位置のシェイク
+	/// </summary>
+	/// <param name="widthSwing">振れ幅</param>
 	void ShakePosition(float widthSwing);
 
 public:

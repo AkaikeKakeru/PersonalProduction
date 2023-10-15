@@ -1,4 +1,6 @@
-﻿#include "GameOverScene.h"
+﻿/*ゲームオーバーシーン*/
+
+#include "GameOverScene.h"
 #include "SafeDelete.h"
 
 #include "Framework.h"

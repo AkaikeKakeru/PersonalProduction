@@ -1,4 +1,6 @@
-﻿#include "RailCamera.h"
+﻿/*レールカメラ*/
+
+#include "RailCamera.h"
 #include "GamePlayScene.h"
 #include <imgui.h>
 
@@ -67,26 +69,6 @@ void RailCamera::Update() {
 	}
 	else {
 		nowTime_ += 1.0f;
-	}
-
-	{
-		//if (timeRate >= 1.0f) {
-		//	if (phaseIndex_ < points_.size() - 3) {
-		//		phaseIndex_++;
-		//		timeRate -= 1.0f;
-		//	}
-		//	else {
-		//		phaseIndex_ = 1;
-		//		timeRate = 1.0f;
-		//	}
-		//}
-
-		//if (nowTime_ >= kTotalTime_) {
-		//	nowTime_ = 0.0f;
-		//}
-		//else {
-		//	nowTime_ += 1.0f;
-		//}
 	}
 
 	//座標更新

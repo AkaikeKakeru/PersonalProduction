@@ -1,4 +1,6 @@
-﻿#include "Enemy.h"
+﻿/*エネミー*/
+
+#include "Enemy.h"
 
 #include "CollisionManager.h"
 #include "CollisionAttribute.h"

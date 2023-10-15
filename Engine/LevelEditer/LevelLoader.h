@@ -1,14 +1,14 @@
-﻿#pragma once
+﻿/*レベルエディター*/
+#pragma once
 
 #include "json.hpp"
-
 #include <string>
-
 #include <vector>
 #include <Vector3.h>
 #include <Object3d.h>
 #include <Model.h>
 
+/*レベルエディター*/
 class LevelLoader {
 public:
 	// 構造体
@@ -24,10 +24,13 @@ public:
 	};
 
 public:
+	//Jsonファイルの読込
 	void LoadFileJson(const std::string fileName,Camera* camera);
 
 	void Finalize();
 
+public:
+	//オブジェクトの取得
 	std::vector<Object3d*> GetObjects() {
 		return objects_;
 	}

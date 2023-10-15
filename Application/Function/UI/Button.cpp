@@ -1,4 +1,6 @@
-﻿#include "Button.h"
+﻿/*スプライトとしてのボタンUI*/
+
+#include "Button.h"
 #include "Input.h"
 #include "SpriteBasis.h"
 #include "SafeDelete.h"
@@ -42,10 +44,10 @@ void Button::Finalize() {
 	SafeDelete(text_);
 }
 
-bool Button::ChackClick(bool whichMouseButtonWasPressed) {
+bool Button::ChackClick(bool mouseButtonWasClick) {
 	Vector2 mousePosition = Input::GetInstance()->GetMousePosition();
 
-	if (whichMouseButtonWasPressed) {
+	if (mouseButtonWasClick) {
 		//ボタンと、マウスカーソルが重なっている状態かどうか
 		if(mousePosition.x > 
 			(position_.x - (size_.x / 2)) &&

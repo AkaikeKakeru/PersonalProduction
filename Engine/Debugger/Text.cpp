@@ -1,4 +1,6 @@
-﻿#include "Text.h"
+﻿/*テキスト*/
+
+#include "Text.h"
 
 SpriteBasis* Text::spriteBas_ = SpriteBasis::GetInstance();
 

@@ -1,8 +1,11 @@
-﻿#pragma once
+﻿/*ゲームメイン*/
+
+#pragma once
 #include "SafeDelete.h"
 #include "Framework.h"
 #include "BaseScene.h"
 
+/*ゲームメイン*/
 class GameMain :public Framework{
 public://構造体
 

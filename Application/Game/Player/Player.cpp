@@ -1,4 +1,6 @@
-﻿#include "Player.h"
+﻿/*プレイヤー*/
+
+#include "Player.h"
 
 #include "CollisionManager.h"
 #include "CollisionAttribute.h"

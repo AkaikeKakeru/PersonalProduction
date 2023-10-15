@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*衝突処理の管理*/
+
+#pragma once
 
 #include <forward_list>
 #include "CollisionPrimitive.h"
@@ -6,6 +8,7 @@
 
 class BaseCollider;
 
+/*衝突処理の管理*/
 class CollisionManager {
 public: //静的メンバ関数
 	static CollisionManager* GetInstance();

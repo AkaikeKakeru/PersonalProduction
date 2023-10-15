@@ -1,4 +1,6 @@
-﻿#include "Collision.h"
+﻿/*二つのオブジェクトの衝突判定*/
+
+#include "Collision.h"
 #include "MyMath.h"
 
 const float Collision::EPSILON_ = 1.0e-5f;

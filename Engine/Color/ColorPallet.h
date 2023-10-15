@@ -1,6 +1,9 @@
+/*基本色のまとめ*/
+
 #pragma once
 #include "Vector4.h"
 
+/*基本色のパレット*/
 namespace ColorPallet {
 	Vector4 colorBlackVivit_ =	{ 0.0f,0.0f,0.0f,1.0f };
 	Vector4 colorWhiteVivit_ =	{ 1.0f,1.0f,1.0f,1.0f };

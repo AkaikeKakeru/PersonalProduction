@@ -1,4 +1,6 @@
-﻿#include "PostEffect.h"
+﻿/*ポストエフェクト*/
+
+#include "PostEffect.h"
 #include "WinApp.h"
 #include "Input.h"
 #include <d3dcompiler.h>

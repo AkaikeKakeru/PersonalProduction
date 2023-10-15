@@ -1,7 +1,10 @@
-﻿#pragma once
+﻿/*スプライト型のゲージUI*/
+
+#pragma once
 #include "Sprite.h"
 #include "Vector3.h"
 
+/*スプライト型のゲージUI*/
 class Gauge {
 public: //定数
 	//デフォルトテクスチャサイズ

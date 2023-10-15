@@ -1,4 +1,6 @@
-﻿#include "Gauge.h"
+﻿/*スプライト型のゲージUI*/
+
+#include "Gauge.h"
 #include "SafeDelete.h"
 
 void Gauge::Initialize() {

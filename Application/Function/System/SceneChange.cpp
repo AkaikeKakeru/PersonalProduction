@@ -1,4 +1,6 @@
-﻿#include "SceneChange.h"
+﻿/*シーン遷移用オブジェクト*/
+
+#include "SceneChange.h"
 #include <SafeDelete.h>
 
 void SceneChange::Initialize(int32_t texIndex) {

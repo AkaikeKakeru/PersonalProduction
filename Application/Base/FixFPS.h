@@ -1,6 +1,9 @@
+/*FPSを60に固定させる*/
+
 #pragma once
 #include <chrono>
 
+//FPSを固定
 class FixFPS {
 public: //基本メンバ関数
 	void Initialize();

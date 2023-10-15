@@ -1,9 +1,13 @@
-﻿#pragma once
+﻿/*ウィンドウズアプリケーション。
+このクラスでウィンドウを作成する。*/
+
+#pragma once
 #include <Windows.h>
 
+//ウィンドウズアプリケーション
 class WinApp {
 public://static
-	   //プロシージャ
+	//プロシージャ
 	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 public://基本関数	
@@ -14,8 +18,13 @@ public://固有関数
 	bool ProcessMessage();
 
 public://アクセス
-	HWND GetHWND() const { return hwnd_; }
-	HINSTANCE GetHInstance() const { return w_.hInstance; }
+	//HWNDの取得
+	HWND GetHWND() const {
+		return hwnd_; }
+	//インスタンスハンドルの取得
+	HINSTANCE GetHInstance() const {
+		return w_.hInstance; }
+
 public://定数
 	   //横幅
 	static const int Win_Width = 1280;

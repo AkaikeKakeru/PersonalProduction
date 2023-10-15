@@ -1,4 +1,6 @@
-﻿#include "Skydome.h"
+﻿/*天球*/
+
+#include "Skydome.h"
 
 #include <cassert>
 #include <Quaternion.h>

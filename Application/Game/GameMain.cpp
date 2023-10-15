@@ -1,4 +1,6 @@
-﻿#include "GameMain.h"
+﻿/*ゲームメイン*/
+
+#include "GameMain.h"
 #include "SceneFactory.h"
 
 SceneManager* GameMain::sceneManager_ = Framework::GetSceneManager();
