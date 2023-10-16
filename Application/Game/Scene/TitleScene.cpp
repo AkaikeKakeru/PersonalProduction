@@ -1,4 +1,4 @@
-﻿/*タイトルシーン*/
+/*タイトルシーン*/
 
 #include "TitleScene.h"
 #include "SafeDelete.h"
@@ -117,8 +117,11 @@ void TitleScene::Update() {
 	}
 
 	if (buttonStart_->ChackClick(input_->ReleaseMouse(0))) {
-		//シーンの切り替えを依頼
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+		////シーンの切り替えを依頼
+		//SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+
+		blackOut_->SetIs(true);
+		blackOut_->SetIsOpen(false);
 	}
 
 #ifdef _DEBUG
@@ -230,20 +233,11 @@ void TitleScene::PlayerUpdate() {
 }
 
 void TitleScene::BlackOutUpdate() {
-	//ループタイマーのカウント
-	if (roopTimer_ < 0) {
-		blackOut_->SetIs(true);
-		blackOut_->SetIsOpen(false);
-	}
-	else {
-		roopTimer_--;
-	}
-
 	blackOut_->Update();
 
 	if (blackOut_->IsEnd()) {
 		//シーンの切り替えを依頼
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}
 }
 

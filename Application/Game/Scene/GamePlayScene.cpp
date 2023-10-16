@@ -1,4 +1,4 @@
-﻿/*ゲームプレイシーン*/
+/*ゲームプレイシーン*/
 
 #include "GamePlayScene.h"
 #include "SafeDelete.h"
@@ -10,6 +10,7 @@
 
 #pragma region popLoader
 #include <fstream>
+#include <Framework.h>
 #pragma endregion
 
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
@@ -126,6 +127,12 @@ void GamePlayScene::Initialize3d() {
 }
 
 void GamePlayScene::Initialize2d() {
+	//暗幕
+	blackOut_ = new SceneChange();
+	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
+	blackOut_->SetPreset(SceneChange::preFade_);
+	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
+	blackOut_->SetColor({0,0,0,1});
 }
 
 void GamePlayScene::Update3d() {
@@ -156,8 +163,12 @@ void GamePlayScene::Update3d() {
 			railCamera_->SetPhaseAdvance(true);
 		}
 		else {
-			//シーンの切り替えを依頼
-			SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+			blackOut_->SetIs(true);
+			blackOut_->SetIsOpen(false);
+			if (blackOut_->IsEnd()) {
+				//シーンの切り替えを依頼
+				SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+			}
 		}
 	}
 
@@ -287,11 +298,16 @@ void GamePlayScene::Update3d() {
 	}
 
 	if (player_->IsDead()) {
-		//シーンの切り替えを依頼
-		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+		blackOut_->SetIs(true);
+		blackOut_->SetIsOpen(false);
+		if (blackOut_->IsEnd()) {
+			//シーンの切り替えを依頼
+			SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+		}
 	}
 
 	pm_->Update();
+	blackOut_->Update();
 }
 
 void GamePlayScene::Update2d() {
@@ -329,6 +345,8 @@ void GamePlayScene::Draw2d() {
 		enemy->DrawUI();
 	}
 	player_->DrawUI();
+
+	blackOut_->Draw();
 }
 
 void GamePlayScene::AddPlayerBullet(std::unique_ptr<PlayerBullet> playerBullet) {
@@ -513,4 +531,10 @@ void GamePlayScene::Finalize() {
 
 	SafeDelete(particle_);
 	SafeDelete(pm_);
+
+	blackOut_->Finalize();
+	SafeDelete(blackOut_);
+}
+
+void GamePlayScene::BlackOutUpdate() {
 }
