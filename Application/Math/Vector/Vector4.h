@@ -1,7 +1,7 @@
-/*4次元ベクトル*/
+/*4谺｡蜈�繝吶け繝医Ν*/
 #pragma once
 
-/*4次元ベクトル*/
+/*4谺｡蜈�繝吶け繝医Ν*/
 class Vector4 {
 public:
 	float x;

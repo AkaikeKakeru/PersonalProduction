@@ -1,9 +1,9 @@
-/*Šî–{F‚Ì‚Ü‚Æ‚ß*/
+/*åŸºæœ¬è‰²ã®ã¾ã¨ã‚*/
 
 #pragma once
 #include "Vector4.h"
 
-/*Šî–{F‚ÌƒpƒŒƒbƒg*/
+/*åŸºæœ¬è‰²ã®ãƒ‘ãƒ¬ãƒƒãƒˆ*/
 namespace ColorPallet {
 	Vector4 colorBlackVivit_ =	{ 0.0f,0.0f,0.0f,1.0f };
 	Vector4 colorWhiteVivit_ =	{ 1.0f,1.0f,1.0f,1.0f };

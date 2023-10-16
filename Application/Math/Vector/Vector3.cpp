@@ -1,4 +1,4 @@
-/*3ŽŸŒ³ƒxƒNƒgƒ‹*/
+/*3æ¬¡å…ƒãƒ™ã‚¯ãƒˆãƒ«*/
 
 #include "Vector3.h"
 #include <cmath>	//sqrt
