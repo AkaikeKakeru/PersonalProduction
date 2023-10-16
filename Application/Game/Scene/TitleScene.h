@@ -1,4 +1,4 @@
-﻿/*タイトルシーン*/
+/*タイトルシーン*/
 
 #pragma once
 #include "BaseScene.h"
@@ -84,6 +84,5 @@ private:
 	bool isRoop_ = false;
 
 	//画面の暗幕
-	//Sprite* blackOut_ = nullptr;
 	SceneChange* blackOut_ = nullptr;
 };

@@ -1,4 +1,4 @@
-﻿/*ゲームプレイシーン*/
+/*ゲームプレイシーン*/
 
 #pragma once
 #include "BaseScene.h"
@@ -26,6 +26,8 @@
 #include "Enemy.h"
 #include "EnemyBullet.h"
 #include "Skydome.h"
+
+#include "SceneChange.h"
 
 #pragma region popLoader
 #include <sstream>
@@ -81,6 +83,10 @@ public:
 		std::string word);
 #pragma endregion
 
+	//黒幕の更新
+	void BlackOutUpdate();
+
+public:
 	//フェーズ番号取得
 	size_t GetPhaseIndex() {
 		return phaseIndex_;
@@ -194,4 +200,7 @@ public: //メンバ変数
 	//発生待機フラグ
 	bool isWait_ = false;
 #pragma endregion
+
+	//画面の暗幕
+	SceneChange* blackOut_ = nullptr;
 };

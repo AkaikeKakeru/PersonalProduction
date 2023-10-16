@@ -1,7 +1,7 @@
-/*ƒ‰ƒ“ƒ_ƒ€‚È’l‚ğo—Í‚·‚éŠÖ”‚Ì“Z‚ß*/
+/*ãƒ©ãƒ³ãƒ€ãƒ ãªå€¤ã‚’å‡ºåŠ›ã™ã‚‹é–¢æ•°ã®çºã‚*/
 
 #pragma once
 #include <random>
 
-//floatŒ^‚Ìƒ‰ƒ“ƒ_ƒ€o—Í
+//floatå‹ã®ãƒ©ãƒ³ãƒ€ãƒ å‡ºåŠ›
 float RandomOutput(float min, float max);

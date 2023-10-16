@@ -1,4 +1,4 @@
-/*ƒV[ƒ“‚ÌŠî‘b*/
+/*ã‚·ãƒ¼ãƒ³ã®åŸºç¤*/
 
 #include "BaseScene.h"
 #include "Framework.h"

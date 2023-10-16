@@ -1,9 +1,9 @@
-/*�|�C���^�̍폜��null����������܂Ƃ߂�*/
+/*ポインタの削除とnull初期化を一まとめに*/
 
 #pragma once
 
 template <class T>
-//�Z�[�t�f���[�g
+//セーフデリート
 void SafeDelete(T* &p) {
 	delete p; 
 	p = nullptr;
