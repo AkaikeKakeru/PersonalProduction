@@ -128,9 +128,8 @@ void GamePlayScene::Initialize3d() {
 
 void GamePlayScene::Initialize2d() {
 	//暗幕
-	blackOut_ = new SceneChange();
+	blackOut_ = new Fade();
 	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
-	blackOut_->SetPreset(SceneChange::preFade_);
 	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
 	blackOut_->SetColor({0,0,0,1});
 }
@@ -294,7 +293,7 @@ void GamePlayScene::Update3d() {
 			3.0f,
 			0.0f,
 			10
-		);
+			);
 	}
 
 	if (player_->IsDead()) {

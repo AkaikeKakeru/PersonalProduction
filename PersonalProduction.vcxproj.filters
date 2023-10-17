@@ -279,7 +279,10 @@
     <ClCompile Include="Application\Function\System\Shake.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Function\System\SceneChange.cpp">
+    <ClCompile Include="Application\Function\System\Fade.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Function\System\FadeTile.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -467,10 +470,13 @@
     <ClInclude Include="Application\Function\System\Shake.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\System\SceneChange.h">
+    <ClInclude Include="Application\Function\System\Fade.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Color\ColorPallet.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\System\FadeTile.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

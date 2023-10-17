@@ -100,7 +100,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application\Function\System\SceneChange.cpp" />
+    <ClCompile Include="Application\Function\System\Fade.cpp" />
+    <ClCompile Include="Application\Function\System\FadeTile.cpp" />
     <ClCompile Include="Application\Function\UI\Button.cpp" />
     <ClCompile Include="Application\Function\Collider\Collision.cpp" />
     <ClCompile Include="Application\Function\Collider\CollisionManager.cpp" />
@@ -156,7 +157,8 @@
     <ClCompile Include="Engine\ConstBuffer\WorldTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application\Function\System\SceneChange.h" />
+    <ClInclude Include="Application\Function\System\Fade.h" />
+    <ClInclude Include="Application\Function\System\FadeTile.h" />
     <ClInclude Include="Application\Function\UI\Button.h" />
     <ClInclude Include="Application\Function\Collider\BaseCollider.h" />
     <ClInclude Include="Application\Function\Collider\Collision.h" />

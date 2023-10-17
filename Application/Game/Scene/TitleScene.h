@@ -18,7 +18,7 @@
 #include "LightGroup.h"
 
 #include "SceneManager.h"
-#include "SceneChange.h"
+#include "Fade.h"
 
 #include "ImGuiManager.h"
 
@@ -84,5 +84,5 @@ private:
 	bool isRoop_ = false;
 
 	//画面の暗幕
-	SceneChange* blackOut_ = nullptr;
+	Fade* blackOut_ = nullptr;
 };

@@ -63,9 +63,8 @@ void TitleScene::Initialize() {
 	sprite_->Initialize(0);
 
 	//暗幕
-	blackOut_ = new SceneChange();
+	blackOut_ = new Fade();
 	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
-	blackOut_->SetPreset(SceneChange::preFade_);
 	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
 	blackOut_->SetColor(colorBlackVivit_);
 

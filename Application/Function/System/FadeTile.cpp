@@ -1,9 +1,9 @@
-﻿/*シーン遷移用オブジェクト*/
+/*シーン遷移用オブジェクト*/
 
-#include "SceneChange.h"
+#include "FadeTile.h"
 #include <SafeDelete.h>
 
-void SceneChange::Initialize(int32_t texIndex) {
+void FadeTile::Initialize(int32_t texIndex) {
 	preset_ = preFade_;
 	alpha_ = 1.0f;
 
@@ -17,7 +17,7 @@ void SceneChange::Initialize(int32_t texIndex) {
 	isEnd_ = false;
 }
 
-void SceneChange::Update() {
+void FadeTile::Update() {
 	if (is_) {
 		switch (preset_) {
 		case preFade_:
@@ -36,15 +36,15 @@ void SceneChange::Update() {
 	sprite_->Update();
 }
 
-void SceneChange::Draw() {
+void FadeTile::Draw() {
 	sprite_->Draw();
 }
 
-void SceneChange::Finalize() {
+void FadeTile::Finalize() {
 	SafeDelete(sprite_);
 }
 
-void SceneChange::Fade() {
+void FadeTile::Fade() {
 	//開くときはアルファ値を減らす。閉めるときは増やす。
 	speed_ = isOpen_ ? -kSpeedDefault_ : kSpeedDefault_;
 

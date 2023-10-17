@@ -27,7 +27,7 @@
 #include "EnemyBullet.h"
 #include "Skydome.h"
 
-#include "SceneChange.h"
+#include "Fade.h"
 
 #pragma region popLoader
 #include <sstream>
@@ -202,5 +202,5 @@ public: //メンバ変数
 #pragma endregion
 
 	//画面の暗幕
-	SceneChange* blackOut_ = nullptr;
+	Fade* blackOut_ = nullptr;
 };
