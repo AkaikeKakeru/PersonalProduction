@@ -502,6 +502,5 @@
     </None>
     <None Include="Resource\shader\Particle.hlsli" />
     <None Include="Resource\shader\PostEffect.hlsli" />
-    <None Include=".editorconfig" />
   </ItemGroup>
 </Project>
