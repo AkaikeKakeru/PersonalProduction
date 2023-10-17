@@ -1,4 +1,4 @@
-/*タイトルシーン*/
+﻿/*タイトルシーン*/
 
 #pragma once
 #include "BaseScene.h"

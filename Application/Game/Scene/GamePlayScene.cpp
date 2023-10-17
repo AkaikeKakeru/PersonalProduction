@@ -1,4 +1,4 @@
-/*ゲームプレイシーン*/
+﻿/*ゲームプレイシーン*/
 
 #include "GamePlayScene.h"
 #include "SafeDelete.h"

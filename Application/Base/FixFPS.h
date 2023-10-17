@@ -1,4 +1,4 @@
-/*FPSを60に固定させる*/
+﻿/*FPSを60に固定させる*/
 
 #pragma once
 #include <chrono>

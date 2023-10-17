@@ -1,4 +1,4 @@
-/*3次元ベクトル*/
+﻿/*3次元ベクトル*/
 
 #include "Vector3.h"
 #include <cmath>	//sqrt

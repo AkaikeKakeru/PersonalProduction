@@ -1,4 +1,4 @@
-/*タイトルシーン*/
+﻿/*タイトルシーン*/
 
 #include "TitleScene.h"
 #include "SafeDelete.h"
@@ -89,7 +89,7 @@ void TitleScene::Initialize() {
 	buttonStart_->GetText()->
 		SetPosition({
 		WinApp::Win_Width / 2.0f + len * 8.0f,
-			500.0f
+		500.0f
 			});
 
 	//テキスト
