@@ -19,6 +19,7 @@
 
 #include "SceneManager.h"
 #include "Fade.h"
+#include "ArrangeTile.h"
 
 #include "ImGuiManager.h"
 
@@ -85,4 +86,7 @@ private:
 
 	//画面の暗幕
 	Fade* blackOut_ = nullptr;
+
+	//タイルならべのシーン遷移
+	ArrangeTile* arrangeTile_ = nullptr;
 };
