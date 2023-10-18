@@ -1,4 +1,4 @@
-﻿/*コードの全体の処理を、
+/*コードの全体の処理を、
 初期化　更新　描画のグループとして三つに独立させる*/
 
 /*プロジェクト内の、ウィンドウ作成や基盤の初期化等の枠組みを行う*/
@@ -62,9 +62,10 @@ void Framework::Initialize(){
 	//描画基盤(スプライト)
 	SpriteBasis* spriteBas = SpriteBasis::GetInstance();
 	spriteBas->Initialize();
-	spriteBas->LoadTexture(0, "texture.png");
-	spriteBas->LoadTexture(1, "cursor.png");
-	spriteBas->LoadTexture(2, "HPgauge.png");
+	spriteBas->LoadTexture(kSampleTextureIndex_, "texture.png");
+	spriteBas->LoadTexture(kCursorTextureIndex_, "cursor.png");
+	spriteBas->LoadTexture(kGaugeTextureIndex_, "HPgauge.png");
+	spriteBas->LoadTexture(kBackgroundTextureIndex_, "remains_BG.png");
 
 	spriteBas->LoadTexture(kWhiteTextureIndex_, "white.png");
 	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");

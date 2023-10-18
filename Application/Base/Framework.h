@@ -1,4 +1,4 @@
-﻿/*コードの全体の処理を、
+/*コードの全体の処理を、
 初期化　更新　描画のグループとして三つに独立させる*/
 
 /*プロジェクト内の、ウィンドウ作成や基盤の初期化等の枠組みを行う*/
@@ -15,6 +15,23 @@
 
 //枠組み
 class Framework {
+public:
+	//テクスチャ番号
+	enum TextureIndex {
+		//サンプルテクスチャ番号
+		kSampleTextureIndex_ = 0,
+		//カーソルテクスチャ番号
+		kCursorTextureIndex_ = 1,
+		//ゲージテクスチャ番号
+		kGaugeTextureIndex_ = 2,
+		//背景テクスチャ番号
+		kBackgroundTextureIndex_ = 3,
+		//テキストテクスチャ番号
+		kTextTextureIndex_ = 100,
+		//白塗りテクスチャ番号
+		kWhiteTextureIndex_ = 200,
+	};
+
 public:
 	//実行
 	void Run();
@@ -48,8 +65,6 @@ public:
 	}
 
 public: //定数
-	static const int kTextTextureIndex_ = 100;
-	static const int kWhiteTextureIndex_ = 200;
 private:
 	//ウィンドウアプリ
 	WinApp* winApp_ = nullptr;

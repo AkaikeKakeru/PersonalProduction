@@ -1,4 +1,4 @@
-﻿/*プレイヤー*/
+/*プレイヤー*/
 
 #include "Player.h"
 
@@ -66,7 +66,7 @@ bool Player::Initialize() {
 	SetPosition({ 0.0f,-5.0f,30.0f });
 
 	spriteReticle_ = new Sprite();
-	spriteReticle_->Initialize(1);
+	spriteReticle_->Initialize(Framework::kCursorTextureIndex_);
 
 	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
 	spriteReticle_->SetSize({ 64,64 });

@@ -1,29 +1,30 @@
-﻿/*スプライト型のゲージUI*/
+/*スプライト型のゲージUI*/
 
 #include "Gauge.h"
 #include "SafeDelete.h"
+#include <Framework.h>
 
 void Gauge::Initialize() {
 	float texSize = 64.0f;
 
 	spriteRest_ = new Sprite();
-	spriteRest_->Initialize(2);
+	spriteRest_->Initialize(Framework::kGaugeTextureIndex_);
 	spriteRest_->SetTextureSize({ texSize, texSize });
 	spriteRest_->SetTextureLeftTop({ 64,64 });
 	spriteRest_->SetColor({ 0.2f,0.7f,0.2f,1.0f });
 
 	spriteGauge_ = new Sprite();
-	spriteGauge_->Initialize(2);
+	spriteGauge_->Initialize(Framework::kGaugeTextureIndex_);
 	spriteGauge_->SetTextureSize({ texSize / 2, texSize });
 	spriteGauge_->SetTextureLeftTop({ 16,64 });
 
 	spriteLeft_ = new Sprite();
-	spriteLeft_->Initialize(2);
+	spriteLeft_->Initialize(Framework::kGaugeTextureIndex_);
 	spriteLeft_->SetTextureSize({ texSize, texSize });
 	spriteLeft_->SetTextureLeftTop({ 0,0 });
 
 	spriteRight_ = new Sprite();
-	spriteRight_->Initialize(2);
+	spriteRight_->Initialize(Framework::kGaugeTextureIndex_);
 	spriteRight_->SetTextureSize({ texSize, texSize });
 	spriteRight_->SetTextureLeftTop({ 64,0 });
 
