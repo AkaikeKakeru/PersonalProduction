@@ -1,4 +1,4 @@
-/*タイルを並べるようなシーン遷移オブジェクト*/
+﻿/*タイルを並べるようなシーン遷移オブジェクト*/
 
 #include "ArrangeTile.h"
 #include <SafeDelete.h>
@@ -19,6 +19,7 @@ void ArrangeTile::Initialize(
 	timerMax_ = 60 /3;
 
 	posStart_ = pos;
+	sizeStart_ = size;
 
 	is_ = true;
 	isOpen_ = true;
@@ -31,7 +32,7 @@ void ArrangeTile::Update() {
 	//移動
 	Vector3 move{};
 	//ワイド
-	//Vector3 wide{};
+	Vector3 wide{};
 
 	//横に並べる枚数
 	float width = (WinApp::Win_Width / judgeSize_.x) + 1;
@@ -64,21 +65,21 @@ void ArrangeTile::Update() {
 					time
 				);
 
-				//wide = EaseOut(
-				//	//開始サイズ
+				wide = EaseOut(
+					//開始サイズ
 
-				//	ConvertVector2ToVector3(sizeStart_),
-				//	//終了位置
-				//	ConvertVector2ToVector3(sizeEnd_),
-				//	time
-				//);
+					ConvertVector2ToVector3(sizeStart_),
+					//終了位置
+					ConvertVector2ToVector3(sizeEnd_),
+					time
+				);
 
 				sprites_[nowSpriteNum]->SetPosition(
 					ConvertVector3ToVector2(move)
 				);
-				//sprites_[nowSpriteNum]->SetSize(
-				//	ConvertVector3ToVector2(wide)
-				//);
+				sprites_[nowSpriteNum]->SetSize(
+					ConvertVector3ToVector2(wide)
+				);
 
 				sprites_[nowSpriteNum]->Update();
 			}

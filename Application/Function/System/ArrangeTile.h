@@ -1,4 +1,4 @@
-/*タイルを並べるようなシーン遷移オブジェクト*/
+﻿/*タイルを並べるようなシーン遷移オブジェクト*/
 
 #pragma once
 #include "Sprite.h"
@@ -74,6 +74,8 @@ private:
 
 	//通過位置
 	Vector2 posPass_;
+	//通過サイズ
+	Vector2 sizePass_;
 
 	//開始位置
 	Vector2 posStart_;
