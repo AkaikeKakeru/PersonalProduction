@@ -1,4 +1,4 @@
-/*タイトルシーン*/
+﻿/*タイトルシーン*/
 
 #include "TitleScene.h"
 #include "SafeDelete.h"
@@ -92,7 +92,7 @@ void TitleScene::Initialize() {
 			tileSize
 		},
 		(int)(width * height)
-		);
+	);
 
 	float textSize = 2.5f;
 
@@ -265,7 +265,7 @@ void TitleScene::BlackOutUpdate() {
 	//blackOut_->Update();
 
 	if (!arrangeTile_->IsOpen()) {
-	arrangeTile_->Update();
+		arrangeTile_->Update();
 	}
 
 	if (arrangeTile_->IsEnd()) {

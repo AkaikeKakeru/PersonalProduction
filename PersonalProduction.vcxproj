@@ -275,6 +275,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
     <None Include="Resource\shader\Obj.hlsli" />
     <None Include="Resource\shader\Particle.hlsli" />
     <None Include="Resource\shader\PostEffect.hlsli" />

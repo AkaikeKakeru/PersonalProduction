@@ -1,4 +1,4 @@
-/*スプライト型のゲージUI*/
+﻿/*スプライト型のゲージUI*/
 
 #include "Gauge.h"
 #include "SafeDelete.h"
@@ -150,22 +150,22 @@ void Gauge::ResetSize() {
 	spriteRest_->SetSize({
 		(kDefaultTexSize * sizeGauge_.x * 5) * (rest_ / restMax_),
 		kDefaultTexSize * sizeGauge_.y
-	});
+		});
 	spriteRest_->SetColor({
 		0.2f,0.7f,0.2f,1.0f
-	});
+		});
 	spriteGauge_->SetSize({
 		kDefaultTexSize * sizeGauge_.x * 4,
 		kDefaultTexSize * sizeGauge_.y
-	});
+		});
 	spriteLeft_->SetSize({
 		kDefaultTexSize * sizeGauge_.x,
 		kDefaultTexSize * sizeGauge_.y
-	});
+		});
 	spriteRight_->SetSize({
 		kDefaultTexSize * sizeGauge_.x,
 		kDefaultTexSize * sizeGauge_.y
-	});
+		});
 }
 
 void Gauge::ResetArrangement() {
@@ -173,23 +173,23 @@ void Gauge::ResetArrangement() {
 	spriteRest_->SetPosition({
 		positionGauge_.x - ((kDefaultTexSize / 2) * sizeGauge_.x),
 		positionGauge_.y
-	});
+		});
 
 	//ゲージ中腹は、左端から2枚目の位置が、左上位置とする
 	spriteGauge_->SetPosition({
 		positionGauge_.x + (kDefaultTexSize * sizeGauge_.x * 2),
 		positionGauge_.y
-	});
+		});
 
 	//ゲージ左端はゲージの左上位置に合わせる
 	spriteLeft_->SetPosition({
 		positionGauge_.x ,
 		positionGauge_.y
-	});
+		});
 
 	//ゲージの右端は一番右に配置されるように合わせる
 	spriteRight_->SetPosition({
 		positionGauge_.x + (kDefaultTexSize * sizeGauge_.x * 4),
 		positionGauge_.y
-	});
+		});
 }

@@ -1,4 +1,4 @@
-/*シーン遷移用オブジェクト*/
+﻿/*シーン遷移用オブジェクト*/
 
 #include "Fade.h"
 #include <SafeDelete.h>

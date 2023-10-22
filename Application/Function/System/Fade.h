@@ -1,4 +1,4 @@
-/*フェード*/
+﻿/*フェード*/
 
 #pragma once
 #include "Sprite.h"
