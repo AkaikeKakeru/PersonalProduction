@@ -1,4 +1,4 @@
-﻿/*タイルを並べるようなシーン遷移オブジェクト*/
+/*タイルを並べるようなシーン遷移オブジェクト*/
 
 #include "ArrangeTile.h"
 #include <SafeDelete.h>
@@ -16,10 +16,11 @@ void ArrangeTile::Initialize(
 		AddSprite(texIndex, pos, rotation, size);
 	}
 
-	timerMax_ = 60 /3;
+	timerMax_ = 60 / 3;
 
 	posStart_ = pos;
-	sizeStart_ = size;
+	sizeStart_ = {};
+	sizeEnd_ = size;
 
 	is_ = true;
 	isOpen_ = true;
@@ -33,6 +34,11 @@ void ArrangeTile::Update() {
 	Vector3 move{};
 	//ワイド
 	Vector3 wide{};
+
+	//イージングの開始点
+	Vector2 easeS{};
+	//イージングの終了地点
+	Vector2 easeE{};
 
 	//横に並べる枚数
 	float width = (WinApp::Win_Width / judgeSize_.x) + 1;
@@ -53,24 +59,33 @@ void ArrangeTile::Update() {
 					h * judgeSize_.y
 				};
 
-				//開くときは画面外から画面内に
-				//閉じるときは、画面内から画面外に
-				posStart_ = isOpen_ ? posPass_  : posStart_;
-				posEnd_ = isOpen_ ? posEnd_ : posPass_ ;
+				sizePass_ = sizeEnd_;
+
+				//幕を開くときは画面内から画面外に
+				//幕を閉じるときは、画面外から画面内に
+				easeS = isOpen_ ? posPass_ : posStart_;
+				easeE = isOpen_ ?
+					Vector2{
+					posPass_.x ,
+					posPass_.y + 900.0f
+				} : posPass_;
 
 				move = EaseOut(
-					ConvertVector2ToVector3(posStart_),
+					ConvertVector2ToVector3(easeS),
 					//終了位置
-					ConvertVector2ToVector3(posEnd_),
+					ConvertVector2ToVector3(easeE),
 					time
 				);
 
+				//幕を閉じるときは、スプライトを拡大していく
+				easeS = isOpen_ ? sizePass_ : sizeStart_;
+				easeE = sizePass_;
+
 				wide = EaseOut(
 					//開始サイズ
-
-					ConvertVector2ToVector3(sizeStart_),
+					ConvertVector2ToVector3(easeS),
 					//終了位置
-					ConvertVector2ToVector3(sizeEnd_),
+					ConvertVector2ToVector3(easeE),
 					time
 				);
 
@@ -129,11 +144,11 @@ void ArrangeTile::AddSprite(
 	sprites_.push_back(std::move(newSprite));
 }
 
-void ArrangeTile::Reset(	
+void ArrangeTile::Reset(
 	bool is,
 	bool isOpen) {
 	timerNow_ = 0;
-	
+
 	is_ = is;
 	isOpen_ = isOpen;
 	isEnd_ = false;
