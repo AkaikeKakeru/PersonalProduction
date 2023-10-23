@@ -197,8 +197,8 @@ void TitleScene::Draw() {
 
 	text_->DrawAll();
 
-	arrangeTile_->Draw();
 	blackOut_->Draw();
+	arrangeTile_->Draw();
 	SpriteBasis::GetInstance()->PostDraw();
 }
 
@@ -262,7 +262,7 @@ void TitleScene::PlayerUpdate() {
 }
 
 void TitleScene::BlackOutUpdate() {
-	//blackOut_->Update();
+	blackOut_->Update();
 
 	if (!arrangeTile_->IsOpen()) {
 		arrangeTile_->Update();
