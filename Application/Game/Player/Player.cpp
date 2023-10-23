@@ -63,7 +63,7 @@ bool Player::Initialize() {
 	SetScale({ 1.0f, 1.0f, 1.0f });
 	SetRotation(CreateRotationVector(
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	SetPosition({ 0.0f,-5.0f,30.0f });
+	SetPosition({ 0.0f,-5.0f,0.0f });
 
 	spriteReticle_ = new Sprite();
 	spriteReticle_->Initialize(Framework::kCursorTextureIndex_);
@@ -162,68 +162,90 @@ void Player::Update() {
 	//シェイク後座標
 	Vector3 shakePos = Object3d::GetPosition();
 
-	//入力で隠れフラグ操作
-	if (input_->PressMouse(1)) {
-		isHide_ = true;
+
+	if (isStart_) {
+
+		//入力で隠れフラグ操作
+		if (input_->PressMouse(1)) {
+			isHide_ = true;
+		}
+		else {
+			isHide_ = false;
+		}
+
+		Reticle();
+
+		//隠れフラグが立っている時
+		if (isHide_) {
+			if (remainBulletCount_ < kBulletRimit_) {
+				remainBulletCount_++;
+			}
+
+			if (position.y >= -7.5f) {
+				moveVector += { 0, -0.5f, 0 };
+			}
+		}
+		else {
+			Attack();
+
+			if (position.y < -5.0f) {
+				moveVector += { 0, 0.5f, 0 };
+			}
+		}
+
+		position += moveVector;
+
+		//ダメージフラグを確認
+		if (isDamage_) {
+			//ダメージ時にシェイクをセット
+			shake_.SetWidthSwing(5.0f);
+			shake_.SetIs(true);
+		}
+
+		//シェイクフラグを確認
+		if (shake_.Is()) {
+			//シェイクの出力を、自機の位置に加算
+			shake_.Update();
+
+			shakePos = position;
+			shakePos += shake_.GetOutput();
+		}
+
+		rot += rotVector;
+
+		// 座標の回転を反映
+		Object3d::SetRotation(rot);
+
+		// 座標の変更を反映
+		Object3d::SetPosition(shakePos);
+
+		Object3d::Update();
+
+		//シェイク前の座標をセットしなおし
+		Object3d::SetPosition(position);
 	}
 	else {
-		isHide_ = false;
+		StartMove();
 	}
 
-	Reticle();
 
-	//隠れフラグが立っている時
-	if (isHide_) {
-		if (remainBulletCount_ < kBulletRimit_) {
-			remainBulletCount_++;
+	if (isStart_) {
+
+		//ライフ0でデスフラグ
+		if (life_ <= 0.0f) {
+			isDead_ = true;
 		}
 
-		if (position.y >= -7.5f) {
-			moveVector += { 0, -0.5f, 0 };
+		hpGauge_->SetRest(life_);
+		//通常は緑、ピンチで赤
+		if (life_ <= 5.0f) {
+			hpGauge_->GetRestSprite()->
+				SetColor({ 0.7f,0.2f,0.2f,1.0f });
 		}
-	}
-	else {
-		Attack();
-
-		if (position.y < -5.0f) {
-			moveVector += { 0, 0.5f, 0 };
+		else {
+			hpGauge_->GetRestSprite()->
+				SetColor({ 0.2f,0.7f,0.2f,1.0f });
 		}
-	}
-
-	position += moveVector;
-
-	//ダメージフラグを確認
-	if (isDamage_) {
-		//ダメージ時にシェイクをセット
-		shake_.SetWidthSwing(5.0f);
-		shake_.SetIs(true);
-	}
-
-	//シェイクフラグを確認
-	if (shake_.Is()) {
-		//シェイクの出力を、自機の位置に加算
-		shake_.Update();
-
-		shakePos = position;
-		shakePos += shake_.GetOutput();
-	}
-
-	rot += rotVector;
-
-	// 座標の回転を反映
-	Object3d::SetRotation(rot);
-
-	// 座標の変更を反映
-	Object3d::SetPosition(shakePos);
-
-	Object3d::Update();
-
-	//シェイク前の座標をセットしなおし
-	Object3d::SetPosition(position);
-
-	//ライフ0でデスフラグ
-	if (life_ <= 0.0f) {
-		isDead_ = true;
 	}
 
 	spriteReticle_->SetPosition({
@@ -247,17 +269,6 @@ void Player::Update() {
 	bulletGauge_->SetIsFluct(true);
 	bulletGauge_->Update();
 
-	hpGauge_->SetRest(life_);
-	//通常は緑、ピンチで赤
-	if (life_ <= 5.0f) {
-		hpGauge_->GetRestSprite()->
-			SetColor({ 0.7f,0.2f,0.2f,1.0f });
-	}
-	else {
-		hpGauge_->GetRestSprite()->
-			SetColor({ 0.2f,0.7f,0.2f,1.0f });
-	}
-
 	hpGauge_->Update();
 
 	float textSize = 2.5f;
@@ -270,9 +281,7 @@ void Player::Update() {
 				spriteReticle_->GetPosition().y
 			}
 		);
-
 		text_->SetSize({ textSize, textSize });
-
 		text_->Print();
 	}
 }
@@ -343,10 +352,7 @@ void Player::Attack() {
 	if (remainBulletCount_ > 0) {
 		//発射操作を確認
 		if (input_->PressMouse(0)) {
-
 			if (bulletCooltime_ <= 0) {
-
-
 				//弾スピード
 				const float kBulletSpeed = 10.0f;
 				//毎フレーム弾が前進する速度
@@ -405,4 +411,77 @@ void Player::Attack() {
 			}
 		}
 	}
+}
+
+void Player::StartMove() {
+	Vector3 move{};
+	//Vector3 pos = Object3d::GetPosition();
+	bulletGauge_->SetPosition({ 64,64 });
+
+	Vector2 start{ -500,64 };
+	Vector2 end{ 64,64 };
+
+	//タイマー最大値
+	static int timerMax_ = 60;
+	//タイマー現在値
+	static int timerNow_ = 0;
+
+	//タイム
+	float time = (float)timerNow_ / timerMax_;
+
+	move = EaseIn(
+		ConvertVector2ToVector3(start),
+		//終了位置
+		ConvertVector2ToVector3(end),
+		time
+	);
+
+	hpGauge_->SetPosition(
+		ConvertVector3ToVector2(move)
+	);
+
+	hpGauge_->Update();
+
+	move = {};
+	move = EaseIn(
+		{
+			0.0f,
+			-5.0f,
+			0.0f
+		},
+		//終了位置
+		{
+			0.0f,
+			-5.0f,
+			30.0f
+		},
+		time
+	);
+
+	Object3d::SetPosition(move);
+
+	Object3d::Update();
+
+	if (Object3d::GetPosition().z >= 30.0f) {
+		Object3d::SetPosition({ 0.0f,-5.0f,30.0f });
+
+		isStart_ = true;
+	}
+
+	//タイマーを進める
+	if (timerNow_ < timerMax_) {
+		timerNow_++;
+	}
+	//最大値を超えたら、現在値を最大値に
+	else {
+		timerNow_ = timerMax_;
+	}
+}
+
+Vector2 Player::ConvertVector3ToVector2(const Vector3 v) {
+	return Vector2(v.x, v.y);
+}
+
+Vector3 Player::ConvertVector2ToVector3(const Vector2 v) {
+	return Vector3(v.x, v.y, 0.0f);
 }

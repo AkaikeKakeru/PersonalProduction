@@ -44,6 +44,15 @@ public://メンバ関数
 	//発射攻撃
 	void Attack();
 
+	//開始時移動
+	void StartMove();
+
+private:
+	//ベクター3をベクター2に変換
+	Vector2 ConvertVector3ToVector2(const Vector3 v);
+	//ベクター2をベクター3に変換
+	Vector3 ConvertVector2ToVector3(const Vector2 v);
+
 public: //定数
 	//自機のデフォルト体力
 	const float kDefaultPlayerLife_ = 10.0f;
@@ -120,6 +129,16 @@ public: //アクセッサ
 	//隠れフラグのセット
 	void SetIsHide(bool isHide) {
 		isHide_ = isHide;
+	}
+
+	//スタートフラグの取得
+	bool IsStart() {
+		return isStart_;
+	}
+
+	//スタートフラグのセット
+	void SetIsStart(bool isStart) {
+		isStart_ = isStart;
 	}
 
 	//HPゲージの取得
@@ -214,6 +233,9 @@ private: //メンバ変数
 
 	//シェイク
 	Shake shake_;
+
+	//スタートフラグ
+	bool isStart_ = false;
 
 private: //ImGui用
 	//Vector3の要素数
