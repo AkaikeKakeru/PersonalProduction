@@ -1,4 +1,4 @@
-/*ゲームプレイシーン*/
+﻿/*ゲームプレイシーン*/
 
 #pragma once
 #include "BaseScene.h"
