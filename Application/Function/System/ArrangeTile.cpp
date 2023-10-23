@@ -1,4 +1,4 @@
-/*タイルを並べるようなシーン遷移オブジェクト*/
+﻿/*タイルを並べるようなシーン遷移オブジェクト*/
 
 #include "ArrangeTile.h"
 #include <SafeDelete.h>
