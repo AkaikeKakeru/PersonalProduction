@@ -1,4 +1,4 @@
-﻿/*ゲームプレイシーン*/
+/*ゲームプレイシーン*/
 
 #pragma once
 #include "BaseScene.h"
@@ -28,6 +28,7 @@
 #include "Skydome.h"
 
 #include "Fade.h"
+#include "ArrangeTile.h"
 
 #pragma region popLoader
 #include <sstream>
@@ -203,4 +204,7 @@ public: //メンバ変数
 
 	//画面の暗幕
 	Fade* blackOut_ = nullptr;
+
+	//タイルならべのシーン遷移
+	ArrangeTile* arrangeTile_ = nullptr;
 };

@@ -1,4 +1,4 @@
-﻿/*ゲームプレイシーン*/
+/*ゲームプレイシーン*/
 
 #include "GamePlayScene.h"
 #include "SafeDelete.h"
@@ -132,6 +132,32 @@ void GamePlayScene::Initialize2d() {
 	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
 	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
 	blackOut_->SetColor({0,0,0,1});
+
+	//タイルならべ
+
+	//タイルサイズ
+	float tileSize = WinApp::Win_Width / 8.0f;
+
+	//横に並べる枚数
+	float width = (WinApp::Win_Width / tileSize) + 1;
+	//縦に並べる枚数
+	float height = (WinApp::Win_Height / tileSize) + 1;
+
+	arrangeTile_ = new ArrangeTile();
+	arrangeTile_->Initialize(
+		Framework::kBackgroundTextureIndex_,
+		//開始位置
+		{
+			WinApp::Win_Width / 2,
+			-200.0f
+		},
+		0.0f,
+		{
+			tileSize,
+			tileSize
+		},
+		(int)(width * height)
+	);
 }
 
 void GamePlayScene::Update3d() {
@@ -306,7 +332,9 @@ void GamePlayScene::Update3d() {
 	}
 
 	pm_->Update();
-	blackOut_->Update();
+//	blackOut_->Update();
+
+	BlackOutUpdate();
 }
 
 void GamePlayScene::Update2d() {
@@ -346,6 +374,7 @@ void GamePlayScene::Draw2d() {
 	player_->DrawUI();
 
 	blackOut_->Draw();
+	arrangeTile_->Draw();
 }
 
 void GamePlayScene::AddPlayerBullet(std::unique_ptr<PlayerBullet> playerBullet) {
@@ -533,7 +562,15 @@ void GamePlayScene::Finalize() {
 
 	blackOut_->Finalize();
 	SafeDelete(blackOut_);
+	SafeDelete(arrangeTile_);
 }
 
 void GamePlayScene::BlackOutUpdate() {
+	if (arrangeTile_->IsOpen()) {
+		arrangeTile_->Update();
+	}
+
+	if (arrangeTile_->IsEnd()) {
+		arrangeTile_->SetIs(false);
+	}
 }
