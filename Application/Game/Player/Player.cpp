@@ -421,11 +421,6 @@ void Player::StartMove() {
 	Vector2 start{ -500,64 };
 	Vector2 end{ 64,64 };
 
-	//タイマー最大値
-	static int timerMax_ = 60;
-	//タイマー現在値
-	static int timerNow_ = 0;
-
 	//タイム
 	float time = (float)timerNow_ / timerMax_;
 

@@ -207,4 +207,9 @@ public: //メンバ変数
 
 	//タイルならべのシーン遷移
 	ArrangeTile* arrangeTile_ = nullptr;
+
+	//タイマー最大値
+	int timerMax_ = 60;
+	//タイマー現在値
+	int timerNow_ = 0;
 };

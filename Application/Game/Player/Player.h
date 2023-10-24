@@ -237,6 +237,11 @@ private: //メンバ変数
 	//スタートフラグ
 	bool isStart_ = false;
 
+	//タイマー最大値
+	int timerMax_ = 60;
+	//タイマー現在値
+	int timerNow_ = 0;
+
 private: //ImGui用
 	//Vector3の要素数
 	static const int kVector3Count_ = 3;
