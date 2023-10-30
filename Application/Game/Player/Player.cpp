@@ -151,6 +151,17 @@ bool Player::Initialize() {
 		}
 		);
 
+	ease_3.Reset(
+		Ease::In_,
+		60,
+		Object3d::GetPosition(),
+		{
+			Object3d::GetPosition().x,
+			Object3d::GetPosition().y - 100.0f,
+			Object3d::GetPosition().z
+		}
+	);
+
 	return true;
 }
 
@@ -254,7 +265,9 @@ void Player::Update() {
 		Object3d::SetPosition(position);
 	}
 	else {
-		StartMove();
+		if (!isOver_) {
+			StartMove();
+		}
 	}
 
 
@@ -262,6 +275,19 @@ void Player::Update() {
 
 		//ライフ0でデスフラグ
 		if (life_ <= 0.0f) {
+			if (!isDead_) {
+
+				ease_3.Reset(
+					Ease::In_,
+					60,
+					Object3d::GetPosition(),
+					{
+						Object3d::GetPosition().x,
+						Object3d::GetPosition().y - 100.0f,
+						Object3d::GetPosition().z
+					}
+				);
+			}
 			isDead_ = true;
 		}
 
@@ -275,6 +301,11 @@ void Player::Update() {
 			hpGauge_->GetRestSprite()->
 				SetColor({ 0.2f,0.7f,0.2f,1.0f });
 		}
+	}
+
+	if (isDead_) {
+
+		OverMove();
 	}
 
 	spriteReticle_->SetPosition({
@@ -467,18 +498,27 @@ void Player::StartMove() {
 
 	Object3d::Update();
 
-	if (Object3d::GetPosition().z >= 30.0f) {
+	if (ease_2.IsEnd()) {
 		Object3d::SetPosition({ 0.0f,-5.0f,30.0f });
 
 		isStart_ = true;
 	}
+}
 
-	//タイマーを進める
-	if (timerNow_ < timerMax_) {
-		timerNow_++;
-	}
-	//最大値を超えたら、現在値を最大値に
-	else {
-		timerNow_ = timerMax_;
+void Player::OverMove() {
+	Vector3 move{};
+	move = {};
+
+	ease_3.Update();
+	move = ease_3.GetReturn();
+
+	Object3d::SetPosition(move);
+
+	Object3d::Update();
+
+	if (ease_3.IsEnd()) {
+		Object3d::SetPosition({ 0.0f,-5.0f,30.0f });
+
+		isOver_ = true;
 	}
 }

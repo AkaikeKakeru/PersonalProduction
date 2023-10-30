@@ -1,4 +1,4 @@
-﻿/*ゲームプレイシーン*/
+/*ゲームプレイシーン*/
 
 #include "GamePlayScene.h"
 #include "SafeDelete.h"
@@ -160,99 +160,132 @@ void GamePlayScene::Update3d() {
 		light_->SetDirLightDir(0, lightDir);
 	}
 	if (player_->IsStart()) {
-	//プレイ会用処置
-	{
-		//タイマーを進める
-		if (timerNow_ < timerMax_) {
-			timerNow_++;
-		}
-		//最大値を超えたらタイトルシーンへフェード
-		else {
-			timerNow_ = timerMax_;
 
-			blackOut_->SetIs(true);
-			blackOut_->SetIsOpen(false);
-			if (blackOut_->IsEnd()) {
-				//シーンの切り替えを依頼
-				SceneManager::GetInstance()->ChangeScene("TITLE");
+		//自機弾自壊フラグの立った弾を削除
+		playerBullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+			return bullet->IsDead();
+			});
+
+		//敵機弾自壊フラグの立った弾を削除
+		enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
+			return bullet->IsDead();
+			});
+
+		//敵機が全滅したら(コンテナが空になったら)
+		if (enemys_.size() <= 0) {
+			//ファイナルフェイズに届いてなければ
+			if (phaseIndex_ < kFinalPhaseIndex_) {
+				//次の敵の湧き位置検索
+				isWait_ = false;
+				//フェーズ番号を進める
+				phaseIndex_++;
+				//レールカメラを前進させる
+				railCamera_->SetPhaseAdvance(true);
+			}
+			else {
+				blackOut_->SetIs(true);
+				blackOut_->SetIsOpen(false);
+				if (blackOut_->IsEnd()) {
+					//シーンの切り替えを依頼
+					SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+				}
 			}
 		}
-	}
-	//自機弾自壊フラグの立った弾を削除
-	playerBullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
-		return bullet->IsDead();
-		});
 
-	//敵機弾自壊フラグの立った弾を削除
-	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
-		return bullet->IsDead();
-		});
+		//敵機をデスフラグで削除
+		enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
+			return enemy->IsDead();
+			});
 
-	//敵機が全滅したら(コンテナが空になったら)
-	if (enemys_.size() <= 0) {
-		//ファイナルフェイズに届いてなければ
-		if (phaseIndex_ < kFinalPhaseIndex_) {
-			//次の敵の湧き位置検索
-			isWait_ = false;
-			//フェーズ番号を進める
-			phaseIndex_++;
-			//レールカメラを前進させる
-			railCamera_->SetPhaseAdvance(true);
-		}
-		else {
-			blackOut_->SetIs(true);
-			blackOut_->SetIsOpen(false);
-			if (blackOut_->IsEnd()) {
-				//シーンの切り替えを依頼
-				SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-			}
-		}
-	}
-
-	//敵機をデスフラグで削除
-	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
-		return enemy->IsDead();
-		});
-
-	railCamera_->Update();
+		railCamera_->Update();
 
 #ifdef _DEBUG
-	if (input_->ReleaseKey(DIK_Q)) {
-		isDebugCamera_ = !isDebugCamera_;
-	}
+		if (input_->ReleaseKey(DIK_Q)) {
+			isDebugCamera_ = !isDebugCamera_;
+		}
 #endif // _DEBUG
 
-	//デバッグカメラが起動中なら
-	if (isDebugCamera_) {
-		debugCamera_->Update();
+		//デバッグカメラが起動中なら
+		if (isDebugCamera_) {
+			debugCamera_->Update();
 
-		railCamera_->SetEye(debugCamera_->GetEye());
-		railCamera_->SetTarget(debugCamera_->GetTarget());
-		railCamera_->SetUp(debugCamera_->GetUp());
-	}
+			railCamera_->SetEye(debugCamera_->GetEye());
+			railCamera_->SetTarget(debugCamera_->GetTarget());
+			railCamera_->SetUp(debugCamera_->GetUp());
+		}
 
-	camera_->SetEye(railCamera_->GetEye());
-	camera_->SetTarget(railCamera_->GetTarget());
-	camera_->SetUp(railCamera_->GetUp());
-	player_->SetWorldTransformRailCamera(railCamera_->GetWorldTransform());
-	//敵機のダメージ処理
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		enemy->Update();
-		//被ダメージ処理
-		if (enemy->IsDamage()) {
-			float life = enemy->GetLife();
+		camera_->SetEye(railCamera_->GetEye());
+		camera_->SetTarget(railCamera_->GetTarget());
+		camera_->SetUp(railCamera_->GetUp());
+		player_->SetWorldTransformRailCamera(railCamera_->GetWorldTransform());
+		//敵機のダメージ処理
+		for (std::unique_ptr<Enemy>& enemy : enemys_) {
+			enemy->Update();
+			//被ダメージ処理
+			if (enemy->IsDamage()) {
+				float life = enemy->GetLife();
 
-			life -= nowDamagePlayer_;
-			enemy->SetLife(life);
+				life -= nowDamagePlayer_;
+				enemy->SetLife(life);
 
-			enemy->SetIsDamage(false);
+				enemy->SetIsDamage(false);
+
+				pm_->Active(
+					particle_,
+					{
+						enemy->GetMatWorld().m[3][0],
+						enemy->GetMatWorld().m[3][1],
+						enemy->GetMatWorld().m[3][2] },
+					{ 2.0f ,2.0f,2.0f },
+					{ 5.0f,5.0f,5.0f },
+					{ 0.0f,0.001f,0.0f },
+					20,
+					3.0f,
+					0.0f,
+					10
+					);
+			}
+		}
+
+		//自機の被ダメージ処理
+		if (player_->IsDamage()) {
+			bool hit = false;
+
+			if (nowBulletTypeEnemy_ != EnemyBullet::Axe_BulletType) {
+				if (player_->IsHide()) {
+					hit = false;
+				}
+				else {
+					hit = true;
+				}
+			}
+			else {
+				hit = true;
+			}
+
+			if (hit) {
+				float life = player_->GetLife();
+				life -= nowDamageEnemy_;
+				player_->SetLife(life);
+			}
+
+			//ダメージ受けたらHPの変動を実行
+			player_->GetHPGauge()->
+				SetRest(player_->GetLife());
+
+			player_->GetHPGauge()->
+				DecisionFluctuation();
+			player_->GetHPGauge()->
+				SetIsFluct(true);
+
+			player_->SetIsDamage(false);
 
 			pm_->Active(
 				particle_,
 				{
-					enemy->GetMatWorld().m[3][0],
-					enemy->GetMatWorld().m[3][1],
-					enemy->GetMatWorld().m[3][2] },
+					player_->GetMatWorld().m[3][0],
+					player_->GetMatWorld().m[3][1],
+					player_->GetMatWorld().m[3][2] },
 				{ 2.0f ,2.0f,2.0f },
 				{ 5.0f,5.0f,5.0f },
 				{ 0.0f,0.001f,0.0f },
@@ -262,74 +295,24 @@ void GamePlayScene::Update3d() {
 				10
 				);
 		}
-	}
 
-	//自機の被ダメージ処理
-	if (player_->IsDamage()) {
-		bool hit = false;
-
-		if (nowBulletTypeEnemy_ != EnemyBullet::Axe_BulletType) {
-			if (player_->IsHide()) {
-				hit = false;
-			}
-			else {
-				hit = true;
+		if (player_->IsOver()) {
+			blackOut_->SetIs(true);
+			blackOut_->SetIsOpen(false);
+			if (blackOut_->IsEnd()) {
+				//シーンの切り替えを依頼
+				SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 			}
 		}
-		else {
-			hit = true;
-		}
 
-		if (hit) {
-			float life = player_->GetLife();
-			life -= nowDamageEnemy_;
-			player_->SetLife(life);
-		}
-
-		//ダメージ受けたらHPの変動を実行
-		player_->GetHPGauge()->
-			SetRest(player_->GetLife());
-
-		player_->GetHPGauge()->
-			DecisionFluctuation();
-		player_->GetHPGauge()->
-			SetIsFluct(true);
-
-		player_->SetIsDamage(false);
-
-		pm_->Active(
-			particle_,
-			{
-				player_->GetMatWorld().m[3][0],
-				player_->GetMatWorld().m[3][1],
-				player_->GetMatWorld().m[3][2] },
-			{ 2.0f ,2.0f,2.0f },
-			{ 5.0f,5.0f,5.0f },
-			{ 0.0f,0.001f,0.0f },
-			20,
-			3.0f,
-			0.0f,
-			10
-			);
+		UpdateEnemyPopCommands();
 	}
-
-	if (player_->IsDead()) {
-		blackOut_->SetIs(true);
-		blackOut_->SetIsOpen(false);
-		if (blackOut_->IsEnd()) {
-			//シーンの切り替えを依頼
-			SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-		}
-	}
-
-	UpdateEnemyPopCommands();
-}
 	else {
-	Vector3 startCameraMove = railCamera_->GetWorldTransform()->position_;
+		Vector3 startCameraMove = railCamera_->GetWorldTransform()->position_;
 
-	startCameraMove += {0.0f, 0.0f, -0.2f};
+		startCameraMove += {0.0f, 0.0f, -0.2f};
 
-	railCamera_->GetWorldTransform()->position_ = startCameraMove;
+		railCamera_->GetWorldTransform()->position_ = startCameraMove;
 	}
 	camera_->SetEye(railCamera_->GetEye());
 	camera_->SetTarget(railCamera_->GetTarget());

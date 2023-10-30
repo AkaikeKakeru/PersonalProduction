@@ -48,6 +48,9 @@ public://メンバ関数
 	//開始時移動
 	void StartMove();
 
+	//脱落時移動
+	void OverMove();
+
 public: //定数
 	//自機のデフォルト体力
 	const float kDefaultPlayerLife_ = 10.0f;
@@ -134,6 +137,16 @@ public: //アクセッサ
 	//スタートフラグのセット
 	void SetIsStart(bool isStart) {
 		isStart_ = isStart;
+	}
+
+	//ゲームオーバーフラグの取得
+	bool IsOver() {
+		return isOver_;
+	}
+
+	//ゲームオーバーフラグのセット
+	void SetIsOver(bool isOver) {
+		isOver_ = isOver;
 	}
 
 	//HPゲージの取得
@@ -231,6 +244,8 @@ private: //メンバ変数
 
 	//スタートフラグ
 	bool isStart_ = false;
+	//ゲームオーバーフラグ
+	bool isOver_ = false;
 
 	//タイマー最大値
 	int timerMax_ = 60;
@@ -242,6 +257,9 @@ private: //メンバ変数
 
 	//イーズ2
 	Ease ease_2;
+
+	//イーズ3
+	Ease ease_3;
 
 private: //ImGui用
 	//Vector3の要素数
