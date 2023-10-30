@@ -1,7 +1,8 @@
-﻿/*レールカメラ*/
+/*レールカメラ*/
 
 #include "RailCamera.h"
 #include "GamePlayScene.h"
+#include "Ease.h"
 #include <imgui.h>
 
 Input* RailCamera::input_ = Input::GetInstance();
@@ -194,6 +195,8 @@ Vector3 RailCamera::SplinePosition(
 	const std::vector<Vector3>& points,
 	size_t startIndex,
 	float t) {
+	Ease ease;
+
 	//補間するべき点の数
 	size_t n = points.size() - 2;
 
@@ -207,7 +210,7 @@ Vector3 RailCamera::SplinePosition(
 	Vector3 p3 = points[startIndex + 2];
 
 	// Catmull-Rom の式で補間
-	Vector3 position = CatmullRomSpline(p0, p1, p2, p3, t);
+	Vector3 position = ease.CatmullRomSpline(p0, p1, p2, p3, t);
 
 	return position;
 }

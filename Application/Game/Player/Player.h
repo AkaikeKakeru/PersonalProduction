@@ -1,4 +1,4 @@
-﻿/*プレイヤー*/
+/*プレイヤー*/
 
 #pragma once
 #include "Model.h"
@@ -8,6 +8,7 @@
 #include "SpriteBasis.h"
 #include <Input.h>
 
+#include "Ease.h"
 #include "Gauge.h"
 #include "Text.h"
 
@@ -46,12 +47,6 @@ public://メンバ関数
 
 	//開始時移動
 	void StartMove();
-
-private:
-	//ベクター3をベクター2に変換
-	Vector2 ConvertVector3ToVector2(const Vector3 v);
-	//ベクター2をベクター3に変換
-	Vector3 ConvertVector2ToVector3(const Vector2 v);
 
 public: //定数
 	//自機のデフォルト体力
@@ -241,6 +236,12 @@ private: //メンバ変数
 	int timerMax_ = 60;
 	//タイマー現在値
 	int timerNow_ = 0;
+
+	//イーズ
+	Ease ease_;
+
+	//イーズ2
+	Ease ease_2;
 
 private: //ImGui用
 	//Vector3の要素数

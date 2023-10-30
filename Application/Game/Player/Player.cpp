@@ -17,6 +17,7 @@
 #include "GamePlayScene.h"
 #include "PlayerBullet.h"
 #include <Framework.h>
+#include <Ease.h>
 
 Input* Player::input_ = Input::GetInstance();
 CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
@@ -121,6 +122,34 @@ bool Player::Initialize() {
 		debugDir_[2] = { GetRotation().z };
 	}
 #endif // _DEBUG
+
+	Vector3 move{};
+	bulletGauge_->SetPosition({ 64,64 });
+
+	Vector2 start{ -500,64 };
+	Vector2 end{ 64,64 };
+
+	ease_.Reset(
+		Ease::In_,
+		timerMax_,
+		ConvertVector2ToVector3(start),
+		ConvertVector2ToVector3(end)
+	);
+
+	ease_2.Reset(
+		Ease::In_,
+		timerMax_,
+		{
+			0.0f,
+			-5.0f,
+			0.0f
+		},
+		{
+			0.0f,
+			-5.0f,
+			30.0f
+		}
+		);
 
 	return true;
 }
@@ -415,21 +444,13 @@ void Player::Attack() {
 
 void Player::StartMove() {
 	Vector3 move{};
-	//Vector3 pos = Object3d::GetPosition();
 	bulletGauge_->SetPosition({ 64,64 });
 
 	Vector2 start{ -500,64 };
 	Vector2 end{ 64,64 };
 
-	//タイム
-	float time = (float)timerNow_ / timerMax_;
-
-	move = EaseIn(
-		ConvertVector2ToVector3(start),
-		//終了位置
-		ConvertVector2ToVector3(end),
-		time
-	);
+	ease_.Update();
+	move = ease_.GetReturn();
 
 	hpGauge_->SetPosition(
 		ConvertVector3ToVector2(move)
@@ -438,20 +459,9 @@ void Player::StartMove() {
 	hpGauge_->Update();
 
 	move = {};
-	move = EaseIn(
-		{
-			0.0f,
-			-5.0f,
-			0.0f
-		},
-		//終了位置
-		{
-			0.0f,
-			-5.0f,
-			30.0f
-		},
-		time
-	);
+
+	ease_2.Update();
+	move = ease_2.GetReturn();
 
 	Object3d::SetPosition(move);
 
@@ -471,12 +481,4 @@ void Player::StartMove() {
 	else {
 		timerNow_ = timerMax_;
 	}
-}
-
-Vector2 Player::ConvertVector3ToVector2(const Vector3 v) {
-	return Vector2(v.x, v.y);
-}
-
-Vector3 Player::ConvertVector2ToVector3(const Vector2 v) {
-	return Vector3(v.x, v.y, 0.0f);
 }

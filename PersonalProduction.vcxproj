@@ -100,6 +100,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application\Function\System\Ease.cpp" />
     <ClCompile Include="Application\Function\System\Fade.cpp" />
     <ClCompile Include="Application\Function\System\ArrangeTile.cpp" />
     <ClCompile Include="Application\Function\UI\Button.cpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="Engine\ConstBuffer\WorldTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\Function\System\Ease.h" />
     <ClInclude Include="Application\Function\System\Fade.h" />
     <ClInclude Include="Application\Function\System\ArrangeTile.h" />
     <ClInclude Include="Application\Function\UI\Button.h" />
