@@ -1,4 +1,4 @@
-#include "Ease.h"
+﻿#include "Ease.h"
 
 void Ease::Update() {
 	//タイム
