@@ -122,7 +122,7 @@ void TitleScene::Initialize() {
 
 	text_ = new Text();
 	text_->Initialize(Framework::kTextTextureIndex_);
-	text_->SetString("Personal Production");
+	text_->SetString("Remain");
 	text_->SetPosition({
 		buttonStart_->GetPosition().x,
 		WinApp::Win_Height / 4,
