@@ -162,6 +162,17 @@ bool Player::Initialize() {
 		}
 	);
 
+	ease_4.Reset(
+		Ease::In_,
+		60,
+		Object3d::GetPosition(),
+		{
+			Object3d::GetPosition().x,
+			Object3d::GetPosition().y - 100.0f,
+			Object3d::GetPosition().z
+		}
+	);
+
 	return true;
 }
 
@@ -284,7 +295,18 @@ void Player::Update() {
 					{
 						Object3d::GetPosition().x,
 						Object3d::GetPosition().y - 100.0f,
-						Object3d::GetPosition().z
+						Object3d::GetPosition().z - 5.0f
+					}
+				);
+
+				ease_4.Reset(
+					Ease::In_,
+					30,
+					Object3d::GetRotation(),
+					{
+						Object3d::GetRotation().x,
+						40.0f,
+						Object3d::GetRotation().z
 					}
 				);
 			}
@@ -510,15 +532,26 @@ void Player::OverMove() {
 	move = {};
 
 	ease_3.Update();
+	ease_4.Update();
+
 	move = ease_3.GetReturn();
 
 	Object3d::SetPosition(move);
 
+	move = {};
+	move = ease_4.GetReturn();
+
+	move = {
+		ConvertToRadian(move.x),
+		ConvertToRadian(move.y),
+		ConvertToRadian(move.z) };
+
+	Object3d::SetRotation(move);
+
 	Object3d::Update();
 
 	if (ease_3.IsEnd()) {
-		Object3d::SetPosition({ 0.0f,-5.0f,30.0f });
-
 		isOver_ = true;
 	}
+
 }

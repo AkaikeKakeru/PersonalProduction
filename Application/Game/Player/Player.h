@@ -261,6 +261,8 @@ private: //メンバ変数
 	//イーズ3
 	Ease ease_3;
 
+	//イーズ4
+	Ease ease_4;
 private: //ImGui用
 	//Vector3の要素数
 	static const int kVector3Count_ = 3;
