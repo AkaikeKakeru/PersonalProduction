@@ -53,6 +53,10 @@ public: //アクセッサ
 	Sprite* GetRestSprite() {
 		return spriteRest_;
 	};
+	//変動量スプライトの取得
+	Sprite* GetAmountSprite() {
+		return spriteAmount_;
+	};
 	//左スプライトの取得
 	Sprite* GetLeftSprite() {
 		return spriteLeft_;
@@ -128,6 +132,8 @@ private: //メンバ変数
 	Sprite* spriteGauge_ = nullptr;
 	//残量用スプライト
 	Sprite* spriteRest_ = nullptr;
+	//変動量用スプライト
+	Sprite* spriteAmount_ = nullptr;
 
 	//位置イージング始発点
 	Vector3 startEasePosition_{};

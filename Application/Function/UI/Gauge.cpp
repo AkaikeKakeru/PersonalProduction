@@ -13,6 +13,12 @@ void Gauge::Initialize() {
 	spriteRest_->SetTextureLeftTop({ 64,64 });
 	spriteRest_->SetColor({ 0.2f,0.7f,0.2f,1.0f });
 
+	spriteAmount_ = new Sprite();
+	spriteAmount_->Initialize(Framework::kGaugeTextureIndex_);
+	spriteAmount_->SetTextureSize({ texSize, texSize });
+	spriteAmount_->SetTextureLeftTop({ 64,64 });
+	spriteAmount_->SetColor({ 0.5f,0.1f,0.1f,0.7f });
+
 	spriteGauge_ = new Sprite();
 	spriteGauge_->Initialize(Framework::kGaugeTextureIndex_);
 	spriteGauge_->SetTextureSize({ texSize / 2, texSize });
@@ -29,6 +35,7 @@ void Gauge::Initialize() {
 	spriteRight_->SetTextureLeftTop({ 64,0 });
 
 	spriteRest_->SetAnchorPoint({ 0.0f,0.5f });
+	spriteAmount_->SetAnchorPoint({ 0.0f,0.5f });
 	spriteGauge_->SetAnchorPoint({ 0.5f,0.5f });
 	spriteLeft_->SetAnchorPoint({ 0.5f,0.5f });
 	spriteRight_->SetAnchorPoint({ 0.5f,0.5f });
@@ -57,10 +64,12 @@ void Gauge::Update() {
 	spriteGauge_->Update();
 	spriteLeft_->Update();
 	spriteRight_->Update();
+	spriteAmount_->Update();
 	spriteRest_->Update();
 }
 
 void Gauge::Draw() {
+	spriteAmount_->Draw();
 	spriteRest_->Draw();
 	spriteGauge_->Draw();
 	spriteLeft_->Draw();
@@ -71,6 +80,7 @@ void Gauge::Finalize() {
 	SafeDelete(spriteLeft_);
 	SafeDelete(spriteRight_);
 	SafeDelete(spriteGauge_);
+	SafeDelete(spriteAmount_);
 	SafeDelete(spriteRest_);
 }
 
@@ -90,8 +100,11 @@ void Gauge::Fluctuation() {
 		endEasePosition_,
 		nowTime_ / maxTime_);
 
-	spriteRest_->SetSize({ reSize.x,reSize.y });
-	spriteRest_->SetPosition({ move.x,move.y });
+	spriteAmount_->SetSize({ reSize.x,reSize.y });
+	spriteAmount_->SetPosition({ move.x,move.y });
+
+	spriteRest_->SetSize({endEaseSize_.x,endEaseSize_.y});
+	spriteRest_->SetPosition({endEasePosition_.x,endEasePosition_.y});
 }
 
 void Gauge::DecisionFluctuation() {
@@ -154,6 +167,12 @@ void Gauge::ResetSize() {
 	spriteRest_->SetColor({
 		0.2f,0.7f,0.2f,1.0f
 		});
+
+	spriteAmount_->SetSize({
+		(kDefaultTexSize * sizeGauge_.x * 5) * (rest_ / restMax_),
+		kDefaultTexSize * sizeGauge_.y
+		});
+
 	spriteGauge_->SetSize({
 		kDefaultTexSize * sizeGauge_.x * 4,
 		kDefaultTexSize * sizeGauge_.y
@@ -171,6 +190,12 @@ void Gauge::ResetSize() {
 void Gauge::ResetArrangement() {
 	//アンカーが他とは違う上で、ゲージ全体の左上に位置を合わせる
 	spriteRest_->SetPosition({
+		positionGauge_.x - ((kDefaultTexSize / 2) * sizeGauge_.x),
+		positionGauge_.y
+		});
+
+	//アンカーが他とは違う上で、ゲージ全体の左上に位置を合わせる
+	spriteAmount_->SetPosition({
 		positionGauge_.x - ((kDefaultTexSize / 2) * sizeGauge_.x),
 		positionGauge_.y
 		});
