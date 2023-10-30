@@ -1,16 +1,10 @@
-﻿/*シーン遷移用オブジェクト*/
+﻿/*フェード*/
 
 #pragma once
 #include "Sprite.h"
 
-/*シーン遷移オブジェクト*/
-class SceneChange {
-public:
-	//プリセット名
-	enum PresetName {
-		preFade_ //フェード
-	};
-
+/*フェード*/
+class Fade {
 public: //定数
 	//デフォルト速さ
 	const float kSpeedDefault_ = 0.1f;
@@ -21,15 +15,7 @@ public: //メンバ関数
 	void Draw();
 	void Finalize();
 
-	//フェード用
-	void Fade();
-
 public: //アクセッサ
-	//プリセットのセット
-	void SetPreset(int presetNum) {
-		preset_ = presetNum;
-	}
-
 	//色のセット
 	void SetColor(const Vector4& color) {
 		sprite_->SetColor(color);
@@ -69,8 +55,6 @@ public: //アクセッサ
 	}
 
 private:
-	//プリセット
-	int preset_ = preFade_;
 	//スプライト
 	Sprite* sprite_;
 	//アルファ値

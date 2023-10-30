@@ -16,6 +16,23 @@
 //枠組み
 class Framework {
 public:
+	//テクスチャ番号
+	enum TextureIndex {
+		//サンプルテクスチャ番号
+		kSampleTextureIndex_ = 0,
+		//カーソルテクスチャ番号
+		kCursorTextureIndex_ = 1,
+		//ゲージテクスチャ番号
+		kGaugeTextureIndex_ = 2,
+		//背景テクスチャ番号
+		kBackgroundTextureIndex_ = 3,
+		//テキストテクスチャ番号
+		kTextTextureIndex_ = 100,
+		//白塗りテクスチャ番号
+		kWhiteTextureIndex_ = 200,
+	};
+
+public:
 	//実行
 	void Run();
 	virtual void Initialize();
@@ -48,8 +65,6 @@ public:
 	}
 
 public: //定数
-	static const int kTextTextureIndex_ = 100;
-	static const int kWhiteTextureIndex_ = 200;
 private:
 	//ウィンドウアプリ
 	WinApp* winApp_ = nullptr;

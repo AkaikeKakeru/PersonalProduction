@@ -17,6 +17,7 @@
 #include "GamePlayScene.h"
 #include "PlayerBullet.h"
 #include <Framework.h>
+#include <Ease.h>
 
 Input* Player::input_ = Input::GetInstance();
 CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
@@ -63,10 +64,10 @@ bool Player::Initialize() {
 	SetScale({ 1.0f, 1.0f, 1.0f });
 	SetRotation(CreateRotationVector(
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	SetPosition({ 0.0f,-5.0f,30.0f });
+	SetPosition({ 0.0f,-5.0f,0.0f });
 
 	spriteReticle_ = new Sprite();
-	spriteReticle_->Initialize(1);
+	spriteReticle_->Initialize(Framework::kCursorTextureIndex_);
 
 	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
 	spriteReticle_->SetSize({ 64,64 });
@@ -122,6 +123,45 @@ bool Player::Initialize() {
 	}
 #endif // _DEBUG
 
+	Vector3 move{};
+	bulletGauge_->SetPosition({ 64,64 });
+
+	Vector2 start{ -500,64 };
+	Vector2 end{ 64,64 };
+
+	ease_.Reset(
+		Ease::In_,
+		timerMax_,
+		ConvertVector2ToVector3(start),
+		ConvertVector2ToVector3(end)
+	);
+
+	ease_2.Reset(
+		Ease::In_,
+		timerMax_,
+		{
+			0.0f,
+			-5.0f,
+			0.0f
+		},
+		{
+			0.0f,
+			-5.0f,
+			30.0f
+		}
+		);
+
+	ease_3.Reset(
+		Ease::In_,
+		60,
+		Object3d::GetPosition(),
+		{
+			Object3d::GetPosition().x,
+			Object3d::GetPosition().y - 100.0f,
+			Object3d::GetPosition().z
+		}
+	);
+
 	return true;
 }
 
@@ -162,68 +202,110 @@ void Player::Update() {
 	//シェイク後座標
 	Vector3 shakePos = Object3d::GetPosition();
 
-	//入力で隠れフラグ操作
-	if (input_->PressMouse(1)) {
-		isHide_ = true;
+
+	if (isStart_) {
+
+		//入力で隠れフラグ操作
+		if (input_->PressMouse(1)) {
+			isHide_ = true;
+		}
+		else {
+			isHide_ = false;
+		}
+
+		Reticle();
+
+		//隠れフラグが立っている時
+		if (isHide_) {
+			if (remainBulletCount_ < kBulletRimit_) {
+				remainBulletCount_++;
+			}
+
+			if (position.y >= -7.5f) {
+				moveVector += { 0, -0.5f, 0 };
+			}
+		}
+		else {
+			Attack();
+
+			if (position.y < -5.0f) {
+				moveVector += { 0, 0.5f, 0 };
+			}
+		}
+
+		position += moveVector;
+
+		//ダメージフラグを確認
+		if (isDamage_) {
+			//ダメージ時にシェイクをセット
+			shake_.SetWidthSwing(5.0f);
+			shake_.SetIs(true);
+		}
+
+		//シェイクフラグを確認
+		if (shake_.Is()) {
+			//シェイクの出力を、自機の位置に加算
+			shake_.Update();
+
+			shakePos = position;
+			shakePos += shake_.GetOutput();
+		}
+
+		rot += rotVector;
+
+		// 座標の回転を反映
+		Object3d::SetRotation(rot);
+
+		// 座標の変更を反映
+		Object3d::SetPosition(shakePos);
+
+		Object3d::Update();
+
+		//シェイク前の座標をセットしなおし
+		Object3d::SetPosition(position);
 	}
 	else {
-		isHide_ = false;
-	}
-
-	Reticle();
-
-	//隠れフラグが立っている時
-	if (isHide_) {
-		if (remainBulletCount_ < kBulletRimit_) {
-			remainBulletCount_++;
-		}
-
-		if (position.y >= -7.5f) {
-			moveVector += { 0, -0.5f, 0 };
-		}
-	}
-	else {
-		Attack();
-
-		if (position.y < -5.0f) {
-			moveVector += { 0, 0.5f, 0 };
+		if (!isOver_) {
+			StartMove();
 		}
 	}
 
-	position += moveVector;
 
-	//ダメージフラグを確認
-	if (isDamage_) {
-		//ダメージ時にシェイクをセット
-		shake_.SetWidthSwing(5.0f);
-		shake_.SetIs(true);
+	if (isStart_) {
+
+		//ライフ0でデスフラグ
+		if (life_ <= 0.0f) {
+			if (!isDead_) {
+
+				ease_3.Reset(
+					Ease::In_,
+					60,
+					Object3d::GetPosition(),
+					{
+						Object3d::GetPosition().x,
+						Object3d::GetPosition().y - 100.0f,
+						Object3d::GetPosition().z
+					}
+				);
+			}
+			isDead_ = true;
+		}
+
+		hpGauge_->SetRest(life_);
+		//通常は緑、ピンチで赤
+		if (life_ <= 5.0f) {
+			hpGauge_->GetRestSprite()->
+				SetColor({ 0.7f,0.2f,0.2f,1.0f });
+		}
+		else {
+			hpGauge_->GetRestSprite()->
+				SetColor({ 0.2f,0.7f,0.2f,1.0f });
+		}
 	}
 
-	//シェイクフラグを確認
-	if (shake_.Is()) {
-		//シェイクの出力を、自機の位置に加算
-		shake_.Update();
+	if (isDead_) {
 
-		shakePos = position;
-		shakePos += shake_.GetOutput();
-	}
-
-	rot += rotVector;
-
-	// 座標の回転を反映
-	Object3d::SetRotation(rot);
-
-	// 座標の変更を反映
-	Object3d::SetPosition(shakePos);
-
-	Object3d::Update();
-
-	//シェイク前の座標をセットしなおし
-	Object3d::SetPosition(position);
-
-	//ライフ0でデスフラグ
-	if (life_ <= 0.0f) {
-		isDead_ = true;
+		OverMove();
 	}
 
 	spriteReticle_->SetPosition({
@@ -247,17 +329,6 @@ void Player::Update() {
 	bulletGauge_->SetIsFluct(true);
 	bulletGauge_->Update();
 
-	hpGauge_->SetRest(life_);
-	//通常は緑、ピンチで赤
-	if (life_ <= 5.0f) {
-		hpGauge_->GetRestSprite()->
-			SetColor({ 0.7f,0.2f,0.2f,1.0f });
-	}
-	else {
-		hpGauge_->GetRestSprite()->
-			SetColor({ 0.2f,0.7f,0.2f,1.0f });
-	}
-
 	hpGauge_->Update();
 
 	float textSize = 2.5f;
@@ -270,9 +341,7 @@ void Player::Update() {
 				spriteReticle_->GetPosition().y
 			}
 		);
-
 		text_->SetSize({ textSize, textSize });
-
 		text_->Print();
 	}
 }
@@ -343,10 +412,7 @@ void Player::Attack() {
 	if (remainBulletCount_ > 0) {
 		//発射操作を確認
 		if (input_->PressMouse(0)) {
-
 			if (bulletCooltime_ <= 0) {
-
-
 				//弾スピード
 				const float kBulletSpeed = 10.0f;
 				//毎フレーム弾が前進する速度
@@ -404,5 +470,55 @@ void Player::Attack() {
 				bulletCooltime_--;
 			}
 		}
+	}
+}
+
+void Player::StartMove() {
+	Vector3 move{};
+	bulletGauge_->SetPosition({ 64,64 });
+
+	Vector2 start{ -500,64 };
+	Vector2 end{ 64,64 };
+
+	ease_.Update();
+	move = ease_.GetReturn();
+
+	hpGauge_->SetPosition(
+		ConvertVector3ToVector2(move)
+	);
+
+	hpGauge_->Update();
+
+	move = {};
+
+	ease_2.Update();
+	move = ease_2.GetReturn();
+
+	Object3d::SetPosition(move);
+
+	Object3d::Update();
+
+	if (ease_2.IsEnd()) {
+		Object3d::SetPosition({ 0.0f,-5.0f,30.0f });
+
+		isStart_ = true;
+	}
+}
+
+void Player::OverMove() {
+	Vector3 move{};
+	move = {};
+
+	ease_3.Update();
+	move = ease_3.GetReturn();
+
+	Object3d::SetPosition(move);
+
+	Object3d::Update();
+
+	if (ease_3.IsEnd()) {
+		Object3d::SetPosition({ 0.0f,-5.0f,30.0f });
+
+		isOver_ = true;
 	}
 }

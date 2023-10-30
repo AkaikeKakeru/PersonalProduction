@@ -1,4 +1,4 @@
-/*ゲームプレイシーン*/
+﻿/*ゲームプレイシーン*/
 
 #pragma once
 #include "BaseScene.h"
@@ -27,7 +27,8 @@
 #include "EnemyBullet.h"
 #include "Skydome.h"
 
-#include "SceneChange.h"
+#include "Fade.h"
+#include "ArrangeTile.h"
 
 #pragma region popLoader
 #include <sstream>
@@ -202,5 +203,13 @@ public: //メンバ変数
 #pragma endregion
 
 	//画面の暗幕
-	SceneChange* blackOut_ = nullptr;
+	Fade* blackOut_ = nullptr;
+
+	//タイルならべのシーン遷移
+	ArrangeTile* arrangeTile_ = nullptr;
+
+	//タイマー最大値
+	int timerMax_ = 60;
+	//タイマー現在値
+	int timerNow_ = 0;
 };

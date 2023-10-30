@@ -1,4 +1,4 @@
-/*タイトルシーン*/
+﻿/*タイトルシーン*/
 
 #include "TitleScene.h"
 #include "SafeDelete.h"
@@ -63,11 +63,36 @@ void TitleScene::Initialize() {
 	sprite_->Initialize(0);
 
 	//暗幕
-	blackOut_ = new SceneChange();
+	blackOut_ = new Fade();
 	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
-	blackOut_->SetPreset(SceneChange::preFade_);
 	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
 	blackOut_->SetColor(colorBlackVivit_);
+
+	//タイルならべ
+
+	//タイルサイズ
+	float tileSize = WinApp::Win_Width / 8.0f;
+
+	//横に並べる枚数
+	float width = (WinApp::Win_Width / tileSize) + 1;
+	//縦に並べる枚数
+	float height = (WinApp::Win_Height / tileSize) + 1;
+
+	arrangeTile_ = new ArrangeTile();
+	arrangeTile_->Initialize(
+		Framework::kBackgroundTextureIndex_,
+		//開始位置
+		{
+			WinApp::Win_Width / 2,
+			-200.0f
+		},
+		0.0f,
+		{
+			tileSize,
+			tileSize
+		},
+		(int)(width * height)
+	);
 
 	float textSize = 2.5f;
 
@@ -89,7 +114,7 @@ void TitleScene::Initialize() {
 	buttonStart_->GetText()->
 		SetPosition({
 		WinApp::Win_Width / 2.0f + len * 8.0f,
-			500.0f
+		500.0f
 			});
 
 	//テキスト
@@ -122,6 +147,8 @@ void TitleScene::Update() {
 
 		blackOut_->SetIs(true);
 		blackOut_->SetIsOpen(false);
+
+		arrangeTile_->Reset(true, false);
 	}
 
 #ifdef _DEBUG
@@ -171,6 +198,7 @@ void TitleScene::Draw() {
 	text_->DrawAll();
 
 	blackOut_->Draw();
+	arrangeTile_->Draw();
 	SpriteBasis::GetInstance()->PostDraw();
 }
 
@@ -192,6 +220,7 @@ void TitleScene::Finalize() {
 
 	blackOut_->Finalize();
 	SafeDelete(blackOut_);
+	SafeDelete(arrangeTile_);
 }
 
 void TitleScene::CameraUpdate() {
@@ -235,7 +264,11 @@ void TitleScene::PlayerUpdate() {
 void TitleScene::BlackOutUpdate() {
 	blackOut_->Update();
 
-	if (blackOut_->IsEnd()) {
+	if (!arrangeTile_->IsOpen()) {
+		arrangeTile_->Update();
+	}
+
+	if (arrangeTile_->IsEnd()) {
 		//シーンの切り替えを依頼
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}

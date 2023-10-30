@@ -62,9 +62,10 @@ void Framework::Initialize(){
 	//描画基盤(スプライト)
 	SpriteBasis* spriteBas = SpriteBasis::GetInstance();
 	spriteBas->Initialize();
-	spriteBas->LoadTexture(0, "texture.png");
-	spriteBas->LoadTexture(1, "cursor.png");
-	spriteBas->LoadTexture(2, "HPgauge.png");
+	spriteBas->LoadTexture(kSampleTextureIndex_, "texture.png");
+	spriteBas->LoadTexture(kCursorTextureIndex_, "cursor.png");
+	spriteBas->LoadTexture(kGaugeTextureIndex_, "HPgauge.png");
+	spriteBas->LoadTexture(kBackgroundTextureIndex_, "remains_BG.png");
 
 	spriteBas->LoadTexture(kWhiteTextureIndex_, "white.png");
 	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");

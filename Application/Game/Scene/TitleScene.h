@@ -1,4 +1,4 @@
-/*タイトルシーン*/
+﻿/*タイトルシーン*/
 
 #pragma once
 #include "BaseScene.h"
@@ -18,7 +18,8 @@
 #include "LightGroup.h"
 
 #include "SceneManager.h"
-#include "SceneChange.h"
+#include "Fade.h"
+#include "ArrangeTile.h"
 
 #include "ImGuiManager.h"
 
@@ -84,5 +85,8 @@ private:
 	bool isRoop_ = false;
 
 	//画面の暗幕
-	SceneChange* blackOut_ = nullptr;
+	Fade* blackOut_ = nullptr;
+
+	//タイルならべのシーン遷移
+	ArrangeTile* arrangeTile_ = nullptr;
 };

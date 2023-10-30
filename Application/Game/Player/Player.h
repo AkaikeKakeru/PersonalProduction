@@ -1,4 +1,4 @@
-﻿/*プレイヤー*/
+/*プレイヤー*/
 
 #pragma once
 #include "Model.h"
@@ -8,6 +8,7 @@
 #include "SpriteBasis.h"
 #include <Input.h>
 
+#include "Ease.h"
 #include "Gauge.h"
 #include "Text.h"
 
@@ -43,6 +44,12 @@ public://メンバ関数
 
 	//発射攻撃
 	void Attack();
+
+	//開始時移動
+	void StartMove();
+
+	//脱落時移動
+	void OverMove();
 
 public: //定数
 	//自機のデフォルト体力
@@ -120,6 +127,26 @@ public: //アクセッサ
 	//隠れフラグのセット
 	void SetIsHide(bool isHide) {
 		isHide_ = isHide;
+	}
+
+	//スタートフラグの取得
+	bool IsStart() {
+		return isStart_;
+	}
+
+	//スタートフラグのセット
+	void SetIsStart(bool isStart) {
+		isStart_ = isStart;
+	}
+
+	//ゲームオーバーフラグの取得
+	bool IsOver() {
+		return isOver_;
+	}
+
+	//ゲームオーバーフラグのセット
+	void SetIsOver(bool isOver) {
+		isOver_ = isOver;
 	}
 
 	//HPゲージの取得
@@ -214,6 +241,25 @@ private: //メンバ変数
 
 	//シェイク
 	Shake shake_;
+
+	//スタートフラグ
+	bool isStart_ = false;
+	//ゲームオーバーフラグ
+	bool isOver_ = false;
+
+	//タイマー最大値
+	int timerMax_ = 60;
+	//タイマー現在値
+	int timerNow_ = 0;
+
+	//イーズ
+	Ease ease_;
+
+	//イーズ2
+	Ease ease_2;
+
+	//イーズ3
+	Ease ease_3;
 
 private: //ImGui用
 	//Vector3の要素数

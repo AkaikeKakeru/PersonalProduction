@@ -95,12 +95,6 @@ void GamePlayScene::Initialize3d() {
 
 #pragma region Enemy
 	LoadEnemyPopData("enemyPop");
-
-	UpdateEnemyPopCommands();
-	//フェーズ番号を進める
-	phaseIndex_++;
-	//レールカメラを前進させる
-	railCamera_->SetPhaseAdvance(true);
 #pragma endregion
 
 #pragma region Skydome
@@ -128,11 +122,36 @@ void GamePlayScene::Initialize3d() {
 
 void GamePlayScene::Initialize2d() {
 	//暗幕
-	blackOut_ = new SceneChange();
+	blackOut_ = new Fade();
 	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
-	blackOut_->SetPreset(SceneChange::preFade_);
 	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
-	blackOut_->SetColor({0,0,0,1});
+	blackOut_->SetColor({ 0,0,0,1 });
+
+	//タイルならべ
+
+	//タイルサイズ
+	float tileSize = WinApp::Win_Width / 8.0f;
+
+	//横に並べる枚数
+	float width = (WinApp::Win_Width / tileSize) + 1;
+	//縦に並べる枚数
+	float height = (WinApp::Win_Height / tileSize) + 1;
+
+	arrangeTile_ = new ArrangeTile();
+	arrangeTile_->Initialize(
+		Framework::kBackgroundTextureIndex_,
+		//開始位置
+		{
+			WinApp::Win_Width / 2,
+			-200.0f
+		},
+		0.0f,
+		{
+			tileSize,
+			tileSize
+		},
+		(int)(width * height)
+	);
 }
 
 void GamePlayScene::Update3d() {
@@ -140,101 +159,133 @@ void GamePlayScene::Update3d() {
 		static Vector3 lightDir = { 0,1,5 };
 		light_->SetDirLightDir(0, lightDir);
 	}
+	if (player_->IsStart()) {
 
-	//自機弾自壊フラグの立った弾を削除
-	playerBullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
-		return bullet->IsDead();
-		});
+		//自機弾自壊フラグの立った弾を削除
+		playerBullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+			return bullet->IsDead();
+			});
 
-	//敵機弾自壊フラグの立った弾を削除
-	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
-		return bullet->IsDead();
-		});
+		//敵機弾自壊フラグの立った弾を削除
+		enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
+			return bullet->IsDead();
+			});
 
-	//敵機が全滅したら(コンテナが空になったら)
-	if (enemys_.size() <= 0) {
-		//ファイナルフェイズに届いてなければ
-		if (phaseIndex_ < kFinalPhaseIndex_) {
-			//次の敵の湧き位置検索
-			isWait_ = false;
-			//フェーズ番号を進める
-			phaseIndex_++;
-			//レールカメラを前進させる
-			railCamera_->SetPhaseAdvance(true);
-		}
-		else {
-			blackOut_->SetIs(true);
-			blackOut_->SetIsOpen(false);
-			if (blackOut_->IsEnd()) {
-				//シーンの切り替えを依頼
-				SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		//敵機が全滅したら(コンテナが空になったら)
+		if (enemys_.size() <= 0) {
+			//ファイナルフェイズに届いてなければ
+			if (phaseIndex_ < kFinalPhaseIndex_) {
+				//次の敵の湧き位置検索
+				isWait_ = false;
+				//フェーズ番号を進める
+				phaseIndex_++;
+				//レールカメラを前進させる
+				railCamera_->SetPhaseAdvance(true);
+			}
+			else {
+				blackOut_->SetIs(true);
+				blackOut_->SetIsOpen(false);
+				if (blackOut_->IsEnd()) {
+					//シーンの切り替えを依頼
+					SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+				}
 			}
 		}
-	}
 
-	//敵機をデスフラグで削除
-	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
-		return enemy->IsDead();
-		});
+		//敵機をデスフラグで削除
+		enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
+			return enemy->IsDead();
+			});
 
-	railCamera_->Update();
+		railCamera_->Update();
 
 #ifdef _DEBUG
-	if (input_->ReleaseKey(DIK_Q)) {
-		isDebugCamera_ = !isDebugCamera_;
-	}
+		if (input_->ReleaseKey(DIK_Q)) {
+			isDebugCamera_ = !isDebugCamera_;
+		}
 #endif // _DEBUG
 
-	//デバッグカメラが起動中なら
-	if (isDebugCamera_) {
-		debugCamera_->Update();
+		//デバッグカメラが起動中なら
+		if (isDebugCamera_) {
+			debugCamera_->Update();
 
-		railCamera_->SetEye(debugCamera_->GetEye());
-		railCamera_->SetTarget(debugCamera_->GetTarget());
-		railCamera_->SetUp(debugCamera_->GetUp());
-	}
+			railCamera_->SetEye(debugCamera_->GetEye());
+			railCamera_->SetTarget(debugCamera_->GetTarget());
+			railCamera_->SetUp(debugCamera_->GetUp());
+		}
 
-	camera_->SetEye(railCamera_->GetEye());
-	camera_->SetTarget(railCamera_->GetTarget());
-	camera_->SetUp(railCamera_->GetUp());
+		camera_->SetEye(railCamera_->GetEye());
+		camera_->SetTarget(railCamera_->GetTarget());
+		camera_->SetUp(railCamera_->GetUp());
+		player_->SetWorldTransformRailCamera(railCamera_->GetWorldTransform());
+		//敵機のダメージ処理
+		for (std::unique_ptr<Enemy>& enemy : enemys_) {
+			enemy->Update();
+			//被ダメージ処理
+			if (enemy->IsDamage()) {
+				float life = enemy->GetLife();
 
-	camera_->Update();
+				life -= nowDamagePlayer_;
+				enemy->SetLife(life);
 
-	player_->SetWorldTransformRailCamera(railCamera_->GetWorldTransform());
+				enemy->SetIsDamage(false);
 
-	light_->Update();
+				pm_->Active(
+					particle_,
+					{
+						enemy->GetMatWorld().m[3][0],
+						enemy->GetMatWorld().m[3][1],
+						enemy->GetMatWorld().m[3][2] },
+					{ 2.0f ,2.0f,2.0f },
+					{ 5.0f,5.0f,5.0f },
+					{ 0.0f,0.001f,0.0f },
+					20,
+					3.0f,
+					0.0f,
+					10
+					);
+			}
+		}
 
-	skydome_->Update();
+		//自機の被ダメージ処理
+		if (player_->IsDamage()) {
+			bool hit = false;
 
-	player_->Update();
+			if (nowBulletTypeEnemy_ != EnemyBullet::Axe_BulletType) {
+				if (player_->IsHide()) {
+					hit = false;
+				}
+				else {
+					hit = true;
+				}
+			}
+			else {
+				hit = true;
+			}
 
-	//自機弾更新
-	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets_) {
-		bullet->Update();
-	}
+			if (hit) {
+				float life = player_->GetLife();
+				life -= nowDamageEnemy_;
+				player_->SetLife(life);
+			}
 
-	//敵機弾更新
-	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Update();
-	}
+			//ダメージ受けたらHPの変動を実行
+			player_->GetHPGauge()->
+				SetRest(player_->GetLife());
 
-	//敵機の更新
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		//被ダメージ処理
-		if (enemy->IsDamage()) {
-			float life = enemy->GetLife();
+			player_->GetHPGauge()->
+				DecisionFluctuation();
+			player_->GetHPGauge()->
+				SetIsFluct(true);
 
-			life -= nowDamagePlayer_;
-			enemy->SetLife(life);
-
-			enemy->SetIsDamage(false);
+			player_->SetIsDamage(false);
 
 			pm_->Active(
 				particle_,
 				{
-					enemy->GetMatWorld().m[3][0],
-					enemy->GetMatWorld().m[3][1],
-					enemy->GetMatWorld().m[3][2] },
+					player_->GetMatWorld().m[3][0],
+					player_->GetMatWorld().m[3][1],
+					player_->GetMatWorld().m[3][2] },
 				{ 2.0f ,2.0f,2.0f },
 				{ 5.0f,5.0f,5.0f },
 				{ 0.0f,0.001f,0.0f },
@@ -244,70 +295,58 @@ void GamePlayScene::Update3d() {
 				10
 				);
 		}
-		enemy->Update();
-	}
-	UpdateEnemyPopCommands();
 
-	//自機の被ダメージ処理
-	if (player_->IsDamage()) {
-		bool hit = false;
-
-		if (nowBulletTypeEnemy_ != EnemyBullet::Axe_BulletType) {
-			if (player_->IsHide()) {
-				hit = false;
-			}
-			else {
-				hit = true;
+		if (player_->IsOver()) {
+			blackOut_->SetIs(true);
+			blackOut_->SetIsOpen(false);
+			if (blackOut_->IsEnd()) {
+				//シーンの切り替えを依頼
+				SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 			}
 		}
-		else {
-			hit = true;
-		}
 
-		if (hit) {
-			float life = player_->GetLife();
-			life -= nowDamageEnemy_;
-			player_->SetLife(life);
-		}
-
-		//ダメージ受けたらHPの変動を実行
-		player_->GetHPGauge()->
-			SetRest(player_->GetLife());
-
-		player_->GetHPGauge()->
-			DecisionFluctuation();
-		player_->GetHPGauge()->
-			SetIsFluct(true);
-
-		player_->SetIsDamage(false);
-
-		pm_->Active(
-			particle_,
-			{
-				player_->GetMatWorld().m[3][0],
-				player_->GetMatWorld().m[3][1],
-				player_->GetMatWorld().m[3][2] },
-			{ 2.0f ,2.0f,2.0f },
-			{ 5.0f,5.0f,5.0f },
-			{ 0.0f,0.001f,0.0f },
-			20,
-			3.0f,
-			0.0f,
-			10
-		);
+		UpdateEnemyPopCommands();
 	}
+	else {
+		Vector3 startCameraMove = railCamera_->GetWorldTransform()->position_;
 
-	if (player_->IsDead()) {
-		blackOut_->SetIs(true);
-		blackOut_->SetIsOpen(false);
-		if (blackOut_->IsEnd()) {
-			//シーンの切り替えを依頼
-			SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+		startCameraMove += {0.0f, 0.0f, -0.2f};
+
+		railCamera_->GetWorldTransform()->position_ = startCameraMove;
+	}
+	camera_->SetEye(railCamera_->GetEye());
+	camera_->SetTarget(railCamera_->GetTarget());
+	camera_->SetUp(railCamera_->GetUp());
+	player_->SetWorldTransformRailCamera(railCamera_->GetWorldTransform());
+	camera_->Update();
+	light_->Update();
+
+	skydome_->Update();
+
+	player_->Update();
+
+	if (player_->IsStart()) {
+
+		//自機弾更新
+		for (std::unique_ptr<PlayerBullet>& bullet : playerBullets_) {
+			bullet->Update();
+		}
+
+		//敵機弾更新
+		for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+			bullet->Update();
+		}
+
+		//敵機の更新
+		for (std::unique_ptr<Enemy>& enemy : enemys_) {
+			enemy->Update();
 		}
 	}
 
 	pm_->Update();
 	blackOut_->Update();
+
+	BlackOutUpdate();
 }
 
 void GamePlayScene::Update2d() {
@@ -347,6 +386,7 @@ void GamePlayScene::Draw2d() {
 	player_->DrawUI();
 
 	blackOut_->Draw();
+	arrangeTile_->Draw();
 }
 
 void GamePlayScene::AddPlayerBullet(std::unique_ptr<PlayerBullet> playerBullet) {
@@ -534,7 +574,15 @@ void GamePlayScene::Finalize() {
 
 	blackOut_->Finalize();
 	SafeDelete(blackOut_);
+	SafeDelete(arrangeTile_);
 }
 
 void GamePlayScene::BlackOutUpdate() {
+	if (arrangeTile_->IsOpen()) {
+		arrangeTile_->Update();
+	}
+
+	if (arrangeTile_->IsEnd()) {
+		arrangeTile_->SetIs(false);
+	}
 }

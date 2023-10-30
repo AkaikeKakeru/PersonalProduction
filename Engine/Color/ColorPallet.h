@@ -1,4 +1,4 @@
-/*基本色のまとめ*/
+﻿/*基本色のまとめ*/
 
 #pragma once
 #include "Vector4.h"
