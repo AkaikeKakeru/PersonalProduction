@@ -16,6 +16,9 @@
 #include "LightGroup.h"
 
 #include "SceneManager.h"
+#include "Fade.h"
+#include "ArrangeTile.h"
+
 #include "ImGuiManager.h"
 
 /*ゲームオーバーシーン*/
@@ -27,6 +30,9 @@ public:
 	void Update() override;
 	void Draw() override;
 	void Finalize() override;
+
+	//暗幕の処理
+	void BlackOutUpdate();
 
 private:
 	static DirectXBasis* dxBas_;
@@ -55,4 +61,10 @@ private:
 	//ボタン
 	Button* buttonTitle_ = nullptr;
 	Button* buttonRetry_ = nullptr;
+
+	//画面の暗幕
+	Fade* blackOut_ = nullptr;
+
+	//タイルならべのシーン遷移
+	ArrangeTile* arrangeTile_ = nullptr;
 };

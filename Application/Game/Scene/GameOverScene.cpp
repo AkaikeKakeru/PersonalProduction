@@ -12,7 +12,8 @@ DirectXBasis* GameOverScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GameOverScene::input_ = Input::GetInstance();
 SpriteBasis* GameOverScene::spriteBas_ = SpriteBasis::GetInstance();
 
-void GameOverScene::Initialize(){
+void GameOverScene::Initialize() {
+
 	/// 描画初期化
 
 	//imGui
@@ -29,7 +30,7 @@ void GameOverScene::Initialize(){
 	planeModel_ = Model::LoadFromOBJ("planeEnemy", true);
 
 	skydomeModel_ = new Model();
-	skydomeModel_ = Model::LoadFromOBJ("skydome",false);
+	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
 
 	planeObj_ = new Object3d();
 	planeObj_ = Object3d::Create();
@@ -72,20 +73,52 @@ void GameOverScene::Initialize(){
 
 	buttonTitle_ = new Button();
 	buttonTitle_->Initialize(0);
-	buttonTitle_->SetTelop("Title" );
+	buttonTitle_->SetTelop("Title");
 	buttonTitle_->SetPosition({ 300.0f ,500.0f });
 	buttonTitle_->SetSize({ 400.0f,96.0f });
-	buttonTitle_->GetText()->SetSize({textSize,textSize});
+	buttonTitle_->GetText()->SetSize({ textSize,textSize });
 
 	buttonRetry_ = new Button();
 	buttonRetry_->Initialize(0);
 	buttonRetry_->SetTelop("Retry");
-	buttonRetry_->SetPosition({WinApp::Win_Width - 300.0f ,500.0f });
+	buttonRetry_->SetPosition({ WinApp::Win_Width - 300.0f ,500.0f });
 	buttonRetry_->SetSize({ 400.0f,96.0f });
-	buttonTitle_->GetText()->SetSize({textSize,textSize});
+	buttonTitle_->GetText()->SetSize({ textSize,textSize });
+
+	//暗幕
+	blackOut_ = new Fade();
+	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
+	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
+	blackOut_->SetColor({0,0,0,0});
+
+	//タイルならべ
+
+	//タイルサイズ
+	float tileSize = WinApp::Win_Width / 8.0f;
+
+	//横に並べる枚数
+	float width = (WinApp::Win_Width / tileSize) + 1;
+	//縦に並べる枚数
+	float height = (WinApp::Win_Height / tileSize) + 1;
+
+	arrangeTile_ = new ArrangeTile();
+	arrangeTile_->Initialize(
+		Framework::kBackgroundTextureIndex_,
+		//開始位置
+		{
+			WinApp::Win_Width / 2,
+			-200.0f
+		},
+		0.0f,
+		{
+			tileSize,
+			tileSize
+		},
+		(int)(width * height)
+	);
 }
 
-void GameOverScene::Update(){
+void GameOverScene::Update() {
 	input_->Update();
 
 	buttonTitle_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
@@ -94,17 +127,24 @@ void GameOverScene::Update(){
 	if (buttonTitle_->ChackClick(input_->PressMouse(0))) {
 		buttonTitle_->SetColor({ 0.4f,0.4f,0.4f,1.0f });
 	}
-	else if (buttonRetry_->ChackClick(input_->PressMouse(0))){
+	else if (buttonRetry_->ChackClick(input_->PressMouse(0))) {
 		buttonRetry_->SetColor({ 0.4f,0.4f,0.4f,1.0f });
 	}
 
 	if (buttonTitle_->ChackClick(input_->ReleaseMouse(0))) {
-		//シーンの切り替えを依頼
-		SceneManager::GetInstance()->ChangeScene("TITLE");
+		////シーンの切り替えを依頼
+		//SceneManager::GetInstance()->ChangeScene("TITLE");
+
+		blackOut_->SetIs(true);
+		blackOut_->SetIsOpen(false);
+
 	}
-	else if (buttonRetry_->ChackClick(input_->ReleaseMouse(0))){
-		//シーンの切り替えを依頼
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+	else if (buttonRetry_->ChackClick(input_->ReleaseMouse(0))) {
+		////シーンの切り替えを依頼
+		//SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+
+
+		arrangeTile_->Reset(true, false);
 	}
 
 	light_->Update();
@@ -116,9 +156,11 @@ void GameOverScene::Update(){
 	buttonTitle_->Update();
 
 	sprite_->Update();
+
+	BlackOutUpdate();
 }
 
-void GameOverScene::Draw(){
+void GameOverScene::Draw() {
 #ifdef _DEBUG
 	imGuiManager_->Begin();
 
@@ -145,10 +187,13 @@ void GameOverScene::Draw(){
 
 	text_->DrawAll();
 
+	blackOut_->Draw();
+	arrangeTile_->Draw();
+
 	SpriteBasis::GetInstance()->PostDraw();
 }
 
-void GameOverScene::Finalize(){
+void GameOverScene::Finalize() {
 	SafeDelete(planeObj_);
 	SafeDelete(skydomeObj_);
 	SafeDelete(planeModel_);
@@ -165,4 +210,31 @@ void GameOverScene::Finalize(){
 	SafeDelete(buttonTitle_);
 
 	SafeDelete(text_);
+
+	blackOut_->Finalize();
+	SafeDelete(blackOut_);
+	SafeDelete(arrangeTile_);
+}
+
+void GameOverScene::BlackOutUpdate() {
+	if (blackOut_->Is()) {
+		blackOut_->Update();
+	}
+
+	if (blackOut_->IsEnd()) {
+		if (!blackOut_->IsOpen()) {
+
+			//シーンの切り替えを依頼
+			SceneManager::GetInstance()->ChangeScene("TITLE");
+		}
+	}
+
+	if (!arrangeTile_->IsOpen()) {
+		arrangeTile_->Update();
+	}
+
+	if (arrangeTile_->IsEnd()) {
+		//シーンの切り替えを依頼
+		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+	}
 }
