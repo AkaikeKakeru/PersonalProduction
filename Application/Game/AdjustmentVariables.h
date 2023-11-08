@@ -3,6 +3,7 @@
 #include <Vector3.h>
 #include <variant>
 #include <map>
+#include <string>
 
 //調整項目変数のまとめ
 class AdjustmentVariables {
@@ -16,12 +17,19 @@ public: //構造
 	//グループの構造
 	struct Group {
 		//項目
-		std::map<std::strong_ordering, Item> items_;
+		std::map<std::string, Item> items_;
 	};
+
+public: //関数
+	/// <summary>
+	/// グループ作成
+	/// </summary>
+	/// <param name="groupName">グループ名</param>
+	void CreateGroup(const std::string& groupName);
 
 private: //変数
 	//全データ
-	std::map<std::strong_ordering, Group> datas_;
+	std::map<std::string, Group> datas_;
 
 private: //シングルトン化
 	AdjustmentVariables() = default;
