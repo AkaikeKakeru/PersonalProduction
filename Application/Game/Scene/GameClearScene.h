@@ -18,9 +18,17 @@
 #include "SceneManager.h"
 #include "ImGuiManager.h"
 
+#include "Fade.h"
+#include "ArrangeTile.h"
+
+#include "Ease.h"
+
 /*ゲームクリアシーン*/
 class GameClearScene : public BaseScene{
 public://構造体
+
+private://定数
+	int const cPlayerSpeed_ = 4;
 
 public:
 	void Initialize() override;
@@ -28,6 +36,15 @@ public:
 	void Draw() override;
 	void Finalize() override;
 
+	void Introduction();
+
+	float RoopFloat(float f, float speed, float min, float max);
+
+	void CameraEase();
+
+	void UIEase();
+
+	void BlackOutUpdate();
 private:
 	static DirectXBasis* dxBas_;
 	static Input* input_;
@@ -46,6 +63,15 @@ private:
 	Object3d* skydomeObj_ = nullptr;
 	Model* skydomeModel_ = nullptr;
 
+	//扉の位置
+	Vector3 doorPos_{};
+
+	Model* doorModel_ = nullptr;
+	//左扉
+	Object3d* doorL_ = nullptr;
+	//右扉
+	Object3d* doorR_ = nullptr;
+
 	// スプライト
 	Sprite* sprite_ = nullptr;
 
@@ -55,4 +81,30 @@ private:
 	//ボタン
 	Button* buttonTitle_ = nullptr;
 	Button* buttonRetry_ = nullptr;
+
+	//導入中かのフラグ
+	bool isIntro_ = true;
+
+	//イージング
+	Ease easeCameraPosition_;
+
+	Ease easeTextPosition_;
+
+	Ease easeButtonPosition_;
+
+#pragma region SceneChange
+
+	//タイトル行きまで
+	int32_t goTitleTimer_ = 60 * 8;
+
+	//自動タイトル行きフラグ
+	bool isGoTitle_ = false;
+
+	//画面の暗幕
+	Fade* blackOut_ = nullptr;
+
+	//タイルならべのシーン遷移
+	ArrangeTile* arrangeTile_ = nullptr;
+
+#pragma endregion
 };
