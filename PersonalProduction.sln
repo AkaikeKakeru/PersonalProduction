@@ -28,6 +28,11 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "doxygen", "External\doxygen
 		IORedirection = Auto
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "editorconfig", "editorconfig", "{95AC2AD7-8E9C-4C23-A939-6368C797785C}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
