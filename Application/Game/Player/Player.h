@@ -64,6 +64,12 @@ public: //定数
 	//デフォルトクールタイム
 	const int kDefaultBulletCooltime_ = 1;
 
+	//自機のデフォルトY座標
+	const float kDefaultPosY_ = -5.0f;
+
+	//自機のデフォルトZ座標
+	const float kDefaultPosZ_ = 30.0f;
+
 public: //アクセッサ
 	//ゲームシーンのセット
 	void SetGameScene(GamePlayScene* gameScene) {
@@ -263,6 +269,10 @@ private: //メンバ変数
 
 	//イーズ4
 	Ease ease_4;
+
+	//スピード
+	float speed_ = 0.5f;
+
 private: //ImGui用
 	//Vector3の要素数
 	static const int kVector3Count_ = 3;

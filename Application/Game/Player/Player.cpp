@@ -64,7 +64,7 @@ bool Player::Initialize() {
 	SetScale({ 1.0f, 1.0f, 1.0f });
 	SetRotation(CreateRotationVector(
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	SetPosition({ 0.0f,-5.0f,0.0f });
+	SetPosition({ 0.0f,kDefaultPosY_,0.0f });
 
 	spriteReticle_ = new Sprite();
 	spriteReticle_->Initialize(Framework::kCursorTextureIndex_);
@@ -101,9 +101,12 @@ bool Player::Initialize() {
 	text_ = new Text();
 	text_->Initialize(Framework::kTextTextureIndex_);
 	text_->SetString("AmmoIsEmpty");
+
+	float len = (float)text_->GetString().length() + 1.0f;
+
 	text_->SetPosition(
 		{
-			spriteReticle_->GetPosition().x - (text_->fontWidth_ * 12.0f),
+			spriteReticle_->GetPosition().x - (text_->fontWidth_ * len),
 			spriteReticle_->GetPosition().y
 		}
 	);
@@ -141,13 +144,13 @@ bool Player::Initialize() {
 		timerMax_,
 		{
 			0.0f,
-			-5.0f,
+			kDefaultPosY_,
 			0.0f
 		},
 		{
 			0.0f,
-			-5.0f,
-			30.0f
+			kDefaultPosY_,
+			kDefaultPosZ_
 		}
 		);
 
@@ -228,19 +231,21 @@ void Player::Update() {
 
 		//隠れフラグが立っている時
 		if (isHide_) {
+			const float hidePosY = -7.5f;
+
 			if (remainBulletCount_ < kBulletRimit_) {
 				remainBulletCount_++;
 			}
 
-			if (position.y >= -7.5f) {
-				moveVector += { 0, -0.5f, 0 };
+			if (position.y >= hidePosY) {
+				moveVector += { 0, -speed_, 0 };
 			}
 		}
 		else {
 			Attack();
 
-			if (position.y < -5.0f) {
-				moveVector += { 0, 0.5f, 0 };
+			if (position.y < kDefaultPosY_) {
+				moveVector += { 0, speed_, 0 };
 			}
 		}
 
@@ -281,7 +286,6 @@ void Player::Update() {
 		}
 	}
 
-
 	if (isStart_) {
 
 		//ライフ0でデスフラグ
@@ -315,7 +319,7 @@ void Player::Update() {
 
 		hpGauge_->SetRest(life_);
 		//通常は緑、ピンチで赤
-		if (life_ <= 5.0f) {
+		if (life_ < kDefaultPlayerLife_ / 2) {
 			hpGauge_->GetRestSprite()->
 				SetColor({ 0.7f,0.2f,0.2f,1.0f });
 		}
@@ -353,17 +357,14 @@ void Player::Update() {
 
 	hpGauge_->Update();
 
-	float textSize = 2.5f;
-
 	if (remainBulletCount_ <= 0) {
-		text_->SetString("AmmoIsEmpty");
+		float len = (float)text_->GetString().length() + 1.0f;
 		text_->SetPosition(
 			{
-				spriteReticle_->GetPosition().x - (text_->fontWidth_ * 12.0f),
+				spriteReticle_->GetPosition().x - (text_->fontWidth_ * len),
 				spriteReticle_->GetPosition().y
 			}
 		);
-		text_->SetSize({ textSize, textSize });
 		text_->Print();
 	}
 }
@@ -420,7 +421,10 @@ void Player::OnCollision(const CollisionInfo& info) {
 void Player::Reticle() {
 	Corsor cursor{};
 
-	cursor.SetDistance(70.0f + 30.0f);
+	//自機と敵機の距離(仮)
+	float distancePToE = 30.0f;
+
+	cursor.SetDistance(camera_->GetTarget().z + distancePToE);
 
 	//マウスカーソルから、3D照準座標を取得する
 	worldTransform3dReticle_.position_ =
@@ -521,7 +525,7 @@ void Player::StartMove() {
 	Object3d::Update();
 
 	if (ease_2.IsEnd()) {
-		Object3d::SetPosition({ 0.0f,-5.0f,30.0f });
+		Object3d::SetPosition({ 0.0f,kDefaultPosY_,kDefaultPosZ_ });
 
 		isStart_ = true;
 	}

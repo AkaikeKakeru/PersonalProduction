@@ -1,4 +1,4 @@
-﻿/*タイトルシーン*/
+/*タイトルシーン*/
 
 #include "TitleScene.h"
 #include "SafeDelete.h"
