@@ -288,7 +288,7 @@
     <ClCompile Include="Application\Function\System\Ease.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Application\AdjustmentVariables.cpp">
+    <ClCompile Include="Application\Game\AdjustmentVariables.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -488,7 +488,7 @@
     <ClInclude Include="Application\Function\System\Ease.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\AdjustmentVariables.h">
+    <ClInclude Include="Application\Game\AdjustmentVariables.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
