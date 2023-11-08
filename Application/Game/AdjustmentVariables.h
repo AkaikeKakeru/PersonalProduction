@@ -1,4 +1,4 @@
-﻿/*調整項目をひとまとめにしたい*/
+/*調整項目をひとまとめにしたい*/
 #pragma once
 #include <Vector3.h>
 #include <variant>
@@ -27,17 +27,16 @@ public: //関数
 	/// <param name="groupName">グループ名</param>
 	void CreateGroup(const std::string& groupName);
 
+	/// <summary>
+	/// 更新
+	/// </summary>
+	void Update();
+
 private: //変数
 	//全データ
 	std::map<std::string, Group> datas_;
 
 public: //アクセッサ
-	template<typename T>
-	T SetValueCommon(
-		const std::string& groupName,
-		const std::string& key,
-		const T value);
-
 	//値のセット(int)
 	void SetValue(const std::string& groupName, const std::string& key, int32_t value);
 
