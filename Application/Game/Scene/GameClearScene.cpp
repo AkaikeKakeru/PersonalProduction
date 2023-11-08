@@ -1,9 +1,12 @@
-﻿#include "GameClearScene.h"
+﻿/*ゲームクリアシーン*/
+
+#include "GameClearScene.h"
 #include "SafeDelete.h"
 
 #include "Framework.h"
 #include "SceneManager.h"
 #include <imgui.h>
+#include <Quaternion.h>
 
 DirectXBasis* GameClearScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GameClearScene::input_ = Input::GetInstance();
@@ -23,7 +26,7 @@ void GameClearScene::Initialize(){
 	camera_ = new Camera();
 
 	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("plane", false);
+	planeModel_ = Model::LoadFromOBJ("plane", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome",false);
@@ -31,6 +34,8 @@ void GameClearScene::Initialize(){
 	planeObj_ = new Object3d();
 	planeObj_ = Object3d::Create();
 	planeObj_->SetModel(planeModel_);
+	planeObj_->SetRotation(CreateRotationVector(
+		{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
 	planeObj_->SetCamera(camera_);
 
 	skydomeObj_ = new Object3d();
@@ -51,20 +56,33 @@ void GameClearScene::Initialize(){
 	sprite_->Initialize(0);
 
 	//テキスト
+	float textSize = 5.0f;
+
 	text_ = new Text();
 	text_->Initialize(Framework::kTextTextureIndex_);
+	text_->SetString("GAME CLEAR!");
+	text_->SetPosition({
+		WinApp::Win_Width / 2,
+		WinApp::Win_Height / 2,
+		});
+	text_->SetSize({ textSize,textSize });
 
 	//ボタン
+	textSize = 2.5f;
 
 	buttonTitle_ = new Button();
 	buttonTitle_->Initialize(0);
+	buttonTitle_->SetTelop("Title" );
 	buttonTitle_->SetPosition({ 300.0f ,500.0f });
 	buttonTitle_->SetSize({ 400.0f,96.0f });
+	buttonTitle_->GetText()->SetSize({textSize,textSize});
 
 	buttonRetry_ = new Button();
 	buttonRetry_->Initialize(0);
+	buttonRetry_->SetTelop("Retry");
 	buttonRetry_->SetPosition({WinApp::Win_Width - 300.0f ,500.0f });
 	buttonRetry_->SetSize({ 400.0f,96.0f });
+	buttonTitle_->GetText()->SetSize({textSize,textSize});
 }
 
 void GameClearScene::Update(){
@@ -98,23 +116,6 @@ void GameClearScene::Update(){
 	buttonTitle_->Update();
 
 	sprite_->Update();
-
-	float textSize = 5.0f;
-
-	text_->Print("Title",
-		buttonTitle_->GetPosition().x - (text_->fontWidth_ * 2.0f * 5.0f),
-		buttonTitle_->GetPosition().y,
-		textSize);
-
-	text_->Print("Retry",
-		buttonRetry_->GetPosition().x - (text_->fontWidth_ * 2.0f * 5.0f),
-		buttonRetry_->GetPosition().y,
-		textSize);
-
-	text_->Print("GAME CLEAR!",
-		WinApp::Win_Width / 2 - (text_->fontWidth_ * 2.0f * 11.0f),
-		WinApp::Win_Height / 2,
-		textSize);
 }
 
 void GameClearScene::Draw(){
@@ -127,7 +128,7 @@ void GameClearScene::Draw(){
 	//モデル本命処理
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
 
-	skydomeObj_->Draw();
+	//skydomeObj_->Draw();
 	planeObj_->Draw();
 
 	Object3d::PostDraw();
@@ -135,10 +136,12 @@ void GameClearScene::Draw(){
 	//スプライト本命処理
 	SpriteBasis::GetInstance()->PreDraw();
 
-	sprite_->Draw();
+	//sprite_->Draw();
 
 	buttonRetry_->Draw();
 	buttonTitle_->Draw();
+
+	text_->Print();
 
 	text_->DrawAll();
 

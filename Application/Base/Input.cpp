@@ -1,4 +1,6 @@
-﻿#include "Input.h"
+﻿/*入力装置で入力された情報を扱う*/
+
+#include "Input.h"
 #include <cassert>
 #include <WinApp.h>
 

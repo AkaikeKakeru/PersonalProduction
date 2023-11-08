@@ -1,7 +1,9 @@
-﻿#pragma once
+﻿/*二つのオブジェクトの衝突判定*/
 
+#pragma once
 #include "CollisionPrimitive.h"
 
+/*二つのオブジェクトの衝突判定*/
 class Collision {
 public:
 	/// <summary>

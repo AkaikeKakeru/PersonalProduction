@@ -1,8 +1,11 @@
-﻿#include "MyMath.h"
+﻿/*自作の数学関数まとめ*/
+
+#include "MyMath.h"
+
+//円周率
+const float PI = 3.1415926535f;
 
 float ConvertToRadian(float degree) {
-	const float PI = 3.14159265f;
-
 	float radian = 0.0f;
 	radian = degree * (PI / 180.0f);
 
@@ -29,4 +32,19 @@ float SquareRoot(float f) {
 	}
 
 	return x;
+}
+
+float Sin(float theta) {
+	float sin = 90 / theta;
+	return ConvertToRadian(sin);
+}
+
+float Cos(float theta) {
+	float cos = 90 / (90 - theta);
+	return ConvertToRadian(cos);
+}
+
+float Tan(float theta) {
+	float tan = (90 - theta) / theta;
+	return ConvertToRadian(tan);
 }

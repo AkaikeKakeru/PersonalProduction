@@ -1,4 +1,6 @@
-﻿#include "FixFPS.h"
+﻿/*FPSを60に固定させる*/
+
+#include "FixFPS.h"
 #include <thread>
 
 FixFPS* FixFPS::GetInstace() {

@@ -1,4 +1,6 @@
-﻿#include "WorldTransform.h"
+﻿/*ワールド変換*/
+
+#include "WorldTransform.h"
 #include "DirectXBasis.h"
 #include <cassert>
 

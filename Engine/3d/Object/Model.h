@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*OBJモデル*/
+
+#pragma once
 #include "Mesh.h"
 
 #include "Matrix4.h"
@@ -7,6 +9,7 @@
 #include "Vector4.h"
 #include <unordered_map>
 
+/*OBJモデル*/
 class Model {
 private://省略
 	template <class T>
@@ -31,11 +34,11 @@ private://メンバ関数
 		materials_.emplace(material->name_, material);
 	}
 
+	//OBJファイルの読込(内部)
 	void LoadFromOBJInternal(const std::string& modelname, bool smoothing = false);
 
 	//デスクリプタヒープの初期化
 	void InitializeDescriptorHeap();
-
 
 public://メンバ関数
 	   // デストラクタ

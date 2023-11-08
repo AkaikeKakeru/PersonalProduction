@@ -1,4 +1,6 @@
-﻿#include "Material.h"
+﻿/*マテリアル*/
+
+#include "Material.h"
 #include <DirectXTex.h>
 #include <cassert>
 
@@ -10,7 +12,9 @@ using namespace DirectX;
 //実体
 ComPtr<ID3D12Device> Material::device_ = nullptr;
 
-void Material::StaticInitialize(ID3D12Device* device) { Material::device_ = device; }
+void Material::StaticInitialize(ID3D12Device* device){
+	Material::device_ = device;
+}
 
 Material* Material::Create() {
 	Material* instance = new Material;

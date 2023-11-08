@@ -1,11 +1,19 @@
-﻿#pragma once
+﻿/*球形コライダーの座標更新*/
+
+#pragma once
 
 #include "BaseCollider.h"
 #include "CollisionPrimitive.h"
 
+/*球形コライダー*/
 class SphereCollider
 	: public BaseCollider, public Sphere {
 public: //メンバ関数
+	/// <summary>
+	/// 球形コライダー
+	/// </summary>
+	/// <param name="offset">オフセット</param>
+	/// <param name="radius">半径</param>
 	SphereCollider(Vector3 offset = { 0,0,0 },
 		float radius = 1.0f) :
 		offset_(offset),
@@ -16,7 +24,6 @@ public: //メンバ関数
 
 	//更新
 	void Update() override;
-
 
 public://アクセッサ
 	//半径取得

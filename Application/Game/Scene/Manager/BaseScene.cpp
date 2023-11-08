@@ -1,3 +1,5 @@
+﻿/*シーンの基礎*/
+
 #include "BaseScene.h"
 #include "Framework.h"
 

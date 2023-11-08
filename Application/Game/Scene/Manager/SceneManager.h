@@ -1,7 +1,10 @@
-﻿#pragma once
+﻿/*シーン管理*/
+
+#pragma once
 #include "BaseScene.h"
 #include "AbstractSceneFactory.h"
 
+//シーンマネージャー
 class SceneManager final{
 public:
 	void Update();
@@ -12,7 +15,8 @@ public:
 	void ChangeScene(const std::string& sceneName);
 
 	//シーンファクトリーのセット
-	void SetSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; }
+	void SetSceneFactory(AbstractSceneFactory* sceneFactory) {
+		sceneFactory_ = sceneFactory; }
 
 private:
 	//現在シーン

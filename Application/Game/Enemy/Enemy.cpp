@@ -1,4 +1,6 @@
-﻿#include "Enemy.h"
+﻿/*エネミー*/
+
+#include "Enemy.h"
 
 #include "CollisionManager.h"
 #include "CollisionAttribute.h"
@@ -55,19 +57,17 @@ bool Enemy::Initialize() {
 
 	worldTransform3dReticle_.Initialize();
 
-	//SetScale({ 1.0f, 1.0f, 1.0f });
-	//SetRotation(CreateRotationVector(
-	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f)));
-	//SetPosition({ -70.0f,0.0f,30.0f });
+#pragma region HPスプライト
+	hpGauge_ = new Gauge();
+	hpGauge_->Initialize();
 
+	hpGauge_->SetRestMax(life_);
+	hpGauge_->SetRest(life_);
+	hpGauge_->SetMaxTime(maxTimeHP_);
 
-	//drawBas_->LoadTexture(1, "texture.png");
-
-	//spriteReticle_ = new Sprite();
-	//spriteReticle_->Initialize(drawBas_, 1);
-
-	//spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
-	//spriteReticle_->SetSize({ 64,64 });
+	hpGauge_->SetPosition({ 64,64 });
+	hpGauge_->SetSize({ 1,0.25f });
+#pragma endregion
 
 #ifdef _DEBUG
 	{
@@ -124,28 +124,77 @@ void Enemy::Update() {
 	moveVector = { 0.0f,0.0f,kSpeed };
 	moveVector = Vector3CrossMatrix4(moveVector, worldTransform_.matWorld_);
 
-	//position += moveVector;
-
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);
 
 	// 座標の変更を反映
 	Object3d::SetPosition(position);
 
-	//Reticle();
-
-	//発射
-	//Fire();
+	//発射タイマーを減らしていき、0で発射処理
+	fireTimer_--;
+	if (fireTimer_ <= 0) {
+		//発射
+		Fire();
+		//発射タイマーを初期化
+		fireTimer_ = kFireInterval;
+	}
 
 	Object3d::Update();
 
-	//spriteReticle_->SetPosition(
-	//	{ worldTransform3dReticle_.position_.x ,
-	//	worldTransform3dReticle_.position_.y });
+	//ライフ0で落下フラグ
+	if (life_ <= 0.0f) {
+		isFall_ = true;
+	}
 
-	//spriteReticle_->SetPosition(input_->GetMousePosition());
+	//落下フラグで、撤退させる
+	if (isFall_) {
+		Fall();
+	}
 
-	//spriteReticle_->Update();
+	//HPゲージの変動
+	Vector3 posHpGauge3d = {
+		worldTransform_.matWorld_.m[3][0],
+		worldTransform_.matWorld_.m[3][1],
+		worldTransform_.matWorld_.m[3][2]
+	};
+
+	Matrix4 matViewPort = Matrix4Identity();
+	matViewPort.m[0][0] = static_cast<float>(WinApp::Win_Width) / 2;
+	matViewPort.m[1][1] = static_cast<float>(-(WinApp::Win_Height)) / 2;
+	matViewPort.m[3][0] = static_cast<float>(WinApp::Win_Width) / 2;
+	matViewPort.m[3][1] = static_cast<float>(WinApp::Win_Height) / 2;
+
+	Matrix4 matVPV = camera_->GetViewMatrix()
+		* camera_->GetProjectionMatrix()
+		* matViewPort;
+
+	posHpGauge3d = Vector3TransformCoord(posHpGauge3d, matVPV);
+
+	hpGauge_->GetRestSprite()->
+		SetColor({ 0.2f,0.7f,0.2f,5.0f });
+	hpGauge_->SetPosition({
+		posHpGauge3d.x - 64.0f+ 16.0f,
+		posHpGauge3d.y - 32.0f
+		});
+
+	hpGauge_->SetRest(
+		static_cast<float>(life_)
+	);
+
+	hpGauge_->DecisionFluctuation();
+	hpGauge_->SetIsFluct(true);
+
+	//通常は緑、ピンチで赤
+	if (life_ <= 5.0f) {
+		hpGauge_->GetRestSprite()->
+			SetColor({ 0.7f,0.2f,0.2f,1.0f });
+	}
+	else {
+		hpGauge_->GetRestSprite()->
+			SetColor({ 0.2f,0.7f,0.2f,1.0f });
+	}
+
+	hpGauge_->Update();
 }
 
 void Enemy::Draw() {
@@ -153,7 +202,7 @@ void Enemy::Draw() {
 }
 
 void Enemy::DrawUI() {
-	//spriteReticle_->Draw();
+	hpGauge_->Draw();
 }
 
 void Enemy::DrawImgui() {
@@ -176,59 +225,85 @@ void Enemy::DrawImgui() {
 }
 
 void Enemy::Finalize() {
-	//SafeDelete(spriteReticle_);
+	hpGauge_->Finalize();
 }
 
 void Enemy::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
 
-	isDead_ = true;
+	isDamage_ = true;
 }
 
 void Enemy::Fire() {
-	if (input_->TriggerMouse(0)) {
-		//弾スピード
-		const float kBulletSpeed = 2.0f;
-		//毎フレーム弾が前進する速度
-		Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
+	assert(player_);
 
-		//速度ベクトルを自機の向きに合わせて回転させる
-		bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
-		
-		//bulletVelocity =
-		//	Vector3{
-		//	worldTransform3dReticle_.matWorld_.m[3][0],
-		//	worldTransform3dReticle_.matWorld_.m[3][1],
-		//	worldTransform3dReticle_.matWorld_.m[3][2]
-		//} - Vector3{
-		//		worldTransform_.matWorld_.m[3][0],
-		//		worldTransform_.matWorld_.m[3][1],
-		//		worldTransform_.matWorld_.m[3][2]
-		//};
+	//弾スピード
+	const float kBulletSpeed = 6.0f;
 
-		bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
+	Vector3 worldPos = {
+		worldTransform_.matWorld_.m[3][0],
+		worldTransform_.matWorld_.m[3][1],
+		worldTransform_.matWorld_.m[3][2]
+	};
 
-		//弾の生成、初期化
-		std::unique_ptr<EnemyBullet> newBullet =
-			std::make_unique<EnemyBullet>();
+	Vector3 worldPosPlayer = {
+		player_->GetMatWorld().m[3][0],
+		player_->GetMatWorld().m[3][1],
+		player_->GetMatWorld().m[3][2],
+	};
 
-		newBullet->Initialize();
+	//毎フレーム弾が前進する速度
+	Vector3 bulletVelocity = worldPosPlayer - worldPos ;
 
-		newBullet->SetModel(bulletModel_);
+	bulletVelocity = Vector3Normalize(bulletVelocity);
 
-		newBullet->SetScale(worldTransform_.scale_);
-		newBullet->SetRotation(worldTransform_.rotation_);
-		newBullet->SetPosition(Vector3{
-			worldTransform_.matWorld_.m[3][0],
-			worldTransform_.matWorld_.m[3][1],
-			worldTransform_.matWorld_.m[3][2]
-			});
+	bulletVelocity *= kBulletSpeed;
 
-		newBullet->SetVelocity(bulletVelocity);
-		newBullet->SetCamera(camera_);
+	//弾の生成、初期化
+	std::unique_ptr<EnemyBullet> newBullet =
+		std::make_unique<EnemyBullet>();
 
-		newBullet->Update();
+	newBullet->Initialize();
 
-		gameScene_->AddEnemyBullet(std::move(newBullet));
+	newBullet->SetModel(bulletModel_);
+
+	newBullet->SetScale(worldTransform_.scale_);
+	newBullet->SetRotation(worldTransform_.rotation_);
+	newBullet->SetPosition(Vector3{
+		worldTransform_.matWorld_.m[3][0],
+		worldTransform_.matWorld_.m[3][1],
+		worldTransform_.matWorld_.m[3][2]
+		});
+
+	newBullet->SetVelocity(bulletVelocity);
+	newBullet->SetCamera(camera_);
+
+	newBullet->SetBulletType(bulletType_);
+
+	newBullet->SetGameScene(gameScene_);
+
+	newBullet->Update();
+
+	gameScene_->AddEnemyBullet(std::move(newBullet));
+}
+
+void Enemy::Fall() {
+	//移動ベクトル
+	Vector3 moveVector = { 0.0f,0.0f,0.0f };
+
+	moveVector = { 0.0f,-speedFall_,0.0f };
+
+	Vector3 pos = GetPosition();
+
+	pos += moveVector;
+
+	SetPosition(pos);
+
+	Object3d::Update();
+
+	if (GetPosition().y <= kDeadBorder_) {
+		isDead_ = true;
 	}
+
+	speedFall_ += 0.2f;
 }

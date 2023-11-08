@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*コライダーの形状*/
+
+#pragma once
 #include "Vector3.h"
 
 //球

@@ -1,7 +1,10 @@
-﻿#pragma once
+﻿/*クォータニオン*/
+
+#pragma once
 #include "Vector3.h"
 #include "Matrix4.h"
 
+/*クォータニオン*/
 struct Quaternion {
 	float x;
 	float y;

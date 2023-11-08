@@ -1,8 +1,11 @@
-﻿#pragma once
+﻿/*スプライト*/
+
+#pragma once
 #include "SpriteBasis.h"
 #include "Matrix4.h"
 #include "Vector3.h"
 
+/*スプライト*/
 class Sprite {
 private://省略
 	template <class T>
@@ -33,6 +36,7 @@ private://構造体
 		Vector2 uv;//uv座標
 	}Vertex;
 
+	//上下左右
 	typedef struct TopBottomLeftRight {
 		float left;//左
 		float right;//右

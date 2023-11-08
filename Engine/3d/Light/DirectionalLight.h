@@ -1,6 +1,9 @@
-﻿#pragma once
+﻿/*方向ライト型の光源*/
+
+#pragma once
 #include "Vector3.h"
 
+/*方向ライト型の光源*/
 class DirectionalLight {
 public://サブクラス
 	struct ConstBufferData{

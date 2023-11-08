@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*OBJ3Dオブジェクト*/
+
+#pragma once
 
 #include <Windows.h>
 #include <wrl.h>
@@ -19,9 +21,7 @@
 
 class BaseCollider;
 
-/// <summary>
-/// 3Dオブジェクト
-/// </summary>
+/*OBJ3Dオブジェクト*/
 class Object3d {
 private: // エイリアス
 		 // Microsoft::WRL::を省略

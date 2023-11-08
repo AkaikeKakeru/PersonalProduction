@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*オーディオ*/
+
+#pragma once
 
 #include <xaudio2.h>
 #include <wrl.h>
@@ -6,6 +8,7 @@
 
 #pragma comment(lib,"xaudio2.lib")
 
+/*オーディオ*/
 class Audio {
 	//省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;

@@ -1,16 +1,17 @@
-﻿#pragma once
+﻿/*マテリアル*/
+
+#pragma once
 
 #include <d3d12.h>
 #include <string>
 #include <wrl.h>
 #include "Vector3.h"
-//using namespace DirectX;
 
+/*マテリアル*/
 class Material {
 private: // エイリアス
 	//省略
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 
 public: //サブクラス
 		//マテリアル

@@ -129,16 +129,16 @@
     <ClCompile Include="Application\Base\WinApp.cpp">
       <Filter>ソース ファイル\Application\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Math\Vector2.cpp">
+    <ClCompile Include="Application\Math\Vector\Vector2.cpp">
       <Filter>ソース ファイル\Application\math</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Math\Vector3.cpp">
+    <ClCompile Include="Application\Math\Vector\Vector3.cpp">
       <Filter>ソース ファイル\Application\math</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Math\Vector4.cpp">
+    <ClCompile Include="Application\Math\Vector\Vector4.cpp">
       <Filter>ソース ファイル\Application\math</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Math\Matrix4.cpp">
+    <ClCompile Include="Application\Math\Matrix\Matrix4.cpp">
       <Filter>ソース ファイル\Application\math</Filter>
     </ClCompile>
     <ClCompile Include="Application\Base\Input.cpp">
@@ -156,10 +156,10 @@
     <ClCompile Include="Application\Game\GameMain.cpp">
       <Filter>ソース ファイル\Application\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Function\Cursor.cpp">
+    <ClCompile Include="Application\Function\UI\Cursor.cpp">
       <Filter>ソース ファイル\Application\Function</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Function\Random.cpp">
+    <ClCompile Include="Application\Function\System\Random.cpp">
       <Filter>ソース ファイル\Application\Function</Filter>
     </ClCompile>
     <ClCompile Include="Application\Base\Framework.cpp">
@@ -203,9 +203,6 @@
     </ClCompile>
     <ClCompile Include="Application\Game\Scene\Manager\BaseScene.cpp">
       <Filter>ソース ファイル\Application\Game\Scene\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\Math\Quaternion.cpp">
-      <Filter>ソース ファイル\Application\math</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Debugger\ImGuiManager.cpp">
       <Filter>ソース ファイル\Engine\Debugger</Filter>
@@ -252,7 +249,43 @@
     <ClCompile Include="Application\Game\Scene\GameClearScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Function\Button.cpp">
+    <ClCompile Include="Application\Function\UI\Button.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Math\Quaternion.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\Camera\DebugCamera.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Game\Background\Skydome.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Particle\ParticleManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Particle\Particle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Function\UI\Gauge.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\LevelEditer\LevelLoader.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\2d\PostEffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Function\System\Shake.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Function\System\Fade.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Function\System\ArrangeTile.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Function\System\Ease.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -263,16 +296,16 @@
     <ClInclude Include="Application\Base\WinApp.h">
       <Filter>ヘッダー ファイル\Application\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Math\Vector2.h">
+    <ClInclude Include="Application\Math\Vector\Vector2.h">
       <Filter>ヘッダー ファイル\Application\math</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Math\Vector3.h">
+    <ClInclude Include="Application\Math\Vector\Vector3.h">
       <Filter>ヘッダー ファイル\Application\math</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Math\Vector4.h">
+    <ClInclude Include="Application\Math\Vector\Vector4.h">
       <Filter>ヘッダー ファイル\Application\math</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Math\Matrix4.h">
+    <ClInclude Include="Application\Math\Matrix\Matrix4.h">
       <Filter>ヘッダー ファイル\Application\math</Filter>
     </ClInclude>
     <ClInclude Include="Application\Base\Input.h">
@@ -290,10 +323,10 @@
     <ClInclude Include="Application\Game\Scene\GamePlayScene.h">
       <Filter>ヘッダー ファイル\Application\Game\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\Cursor.h">
+    <ClInclude Include="Application\Function\UI\Cursor.h">
       <Filter>ヘッダー ファイル\Application\Function</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\Random.h">
+    <ClInclude Include="Application\Function\System\Random.h">
       <Filter>ヘッダー ファイル\Application\Function</Filter>
     </ClInclude>
     <ClInclude Include="Application\Base\Framework.h">
@@ -335,7 +368,7 @@
     <ClInclude Include="Application\Game\Scene\Manager\SceneManager.h">
       <Filter>ヘッダー ファイル\Application\Game\Scene\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\SafeDelete.h">
+    <ClInclude Include="Application\Function\System\SafeDelete.h">
       <Filter>ヘッダー ファイル\Application\Function</Filter>
     </ClInclude>
     <ClInclude Include="Application\Game\GameMain.h">
@@ -346,9 +379,6 @@
     </ClInclude>
     <ClInclude Include="Engine\Debugger\Text.h">
       <Filter>ヘッダー ファイル\Engine\Debugger</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\Math\Quaternion.h">
-      <Filter>ヘッダー ファイル\Application\math</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Debugger\ImGuiManager.h">
       <Filter>ヘッダー ファイル\Engine\Debugger</Filter>
@@ -410,7 +440,49 @@
     <ClInclude Include="Application\Game\Scene\GameClearScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Function\Button.h">
+    <ClInclude Include="Application\Function\UI\Button.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Math\Quaternion.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\Camera\DebugCamera.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Background\Skydome.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Particle\ParticleManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Particle\Particle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\UI\Gauge.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\LevelEditer\LevelLoader.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="External\nlohmann\json.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\2d\PostEffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\System\Shake.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\System\Fade.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Color\ColorPallet.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\System\ArrangeTile.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Function\System\Ease.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -427,6 +499,11 @@
     <FxCompile Include="Resource\shader\SpriteVS.hlsl">
       <Filter>シェーダ ファイル\Sprite</Filter>
     </FxCompile>
+    <FxCompile Include="Resource\shader\ParticleVS.hlsl" />
+    <FxCompile Include="Resource\shader\ParticlePS.hlsl" />
+    <FxCompile Include="Resource\shader\ParticleGS.hlsl" />
+    <FxCompile Include="Resource\shader\PostEffectVS.hlsl" />
+    <FxCompile Include="Resource\shader\PostEffectPS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\shader\Obj.hlsli">
@@ -435,5 +512,8 @@
     <None Include="Resource\shader\Sprite.hlsli">
       <Filter>シェーダ ファイル\Sprite</Filter>
     </None>
+    <None Include="Resource\shader\Particle.hlsli" />
+    <None Include="Resource\shader\PostEffect.hlsli" />
+    <None Include=".editorconfig" />
   </ItemGroup>
 </Project>

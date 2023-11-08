@@ -4,6 +4,8 @@
 #include "CollisionAttribute.h"
 #include "SphereCollider.h"
 #include <cassert>
+#include "MyMath.h"
+#include "GamePlayScene.h"
 
 CollisionManager* EnemyBullet::collisionManager_ = CollisionManager::GetInstance();
 
@@ -47,13 +49,38 @@ bool EnemyBullet::Initialize() {
 }
 
 void EnemyBullet::Update() {
+	//移動用の一時保存ベクトル
+	Vector3 move = velocity_;
+
 	// 現在の座標を取得
 	Vector3 position = Object3d::GetPosition();
 	// 現在の回転を取得
 	Vector3 rot = Object3d::GetRotation();
 
+	//もし斧なら、軌道設定
+	if (bulletType_ == Axe_BulletType) {
+		//タイマーが0になるまで減少
+		if (--heightTimer_ <= 0) {
+			//斧の高さを落とす
+			heightAxe_ -= kFallAxe_;
+
+			//タイマー復活
+			heightTimer_ = kHeightTime_;
+		}
+
+		float deceleration = 6.0f;
+
+		//斧のベクトル調整
+		move = {
+			velocity_.x / deceleration,
+			velocity_.y / deceleration +
+				kDefaultHeightAxe_ + heightAxe_,
+			velocity_.z / deceleration
+		};
+	}
+
 	//毎フレーム、ベロシティ分前進
-	position += velocity_;
+	position += move;
 
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);
@@ -77,5 +104,17 @@ void EnemyBullet::Finalize() {
 
 void EnemyBullet::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
+
+	//ダメージ量の設定
+	if (bulletType_ == Gun_BulletType) {
+		damage_ = kGunDamage_;
+	}
+	else {
+		damage_ = kAxeDamage_;
+	}
+
+	gameScene_->SetNowDamageEnemy(damage_);
+	gameScene_->SetNowBulletTypeEnemy(bulletType_);
+
 	isDead_ = true;
 }

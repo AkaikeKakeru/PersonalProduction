@@ -1,9 +1,12 @@
-﻿#pragma once
+﻿/*ライトグループ*/
+
+#pragma once
 #include "Vector3.h"
 #include <wrl.h>
 #include <d3d12.h>
 #include "DirectionalLight.h"
 
+/*ライトグループ*/
 class LightGroup {
 private: // エイリアス
 		 //省略
