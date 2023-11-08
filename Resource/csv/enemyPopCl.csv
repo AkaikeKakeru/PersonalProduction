@@ -1,0 +1,6 @@
+//コマンド, x,y,z,
+POSITION,0.10,0.0,270.0
+ROTATION,0,1.0,0,180
+SCALE,1.0,1.0,1.0
+POP,
+WAIT,
