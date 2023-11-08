@@ -31,6 +31,22 @@ private: //変数
 	//全データ
 	std::map<std::string, Group> datas_;
 
+public: //アクセッサ
+	template<typename T>
+	T SetValueCommon(
+		const std::string& groupName,
+		const std::string& key,
+		const T value);
+
+	//値のセット(int)
+	void SetValue(const std::string& groupName, const std::string& key, int32_t value);
+
+	//値のセット(float)
+	void SetValue(const std::string& groupName, const std::string& key, float value);
+
+	//値のセット(Vector3)
+	void SetValue(const std::string& groupName, const std::string& key, const Vector3& value);
+
 private: //シングルトン化
 	AdjustmentVariables() = default;
 	~AdjustmentVariables() = default;
