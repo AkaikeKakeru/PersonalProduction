@@ -1,4 +1,4 @@
-﻿/*プレイヤー*/
+/*プレイヤー*/
 
 #include "Player.h"
 
@@ -18,6 +18,8 @@
 #include "PlayerBullet.h"
 #include <Framework.h>
 #include <Ease.h>
+
+#include "AdjustmentVariables.h"
 
 Input* Player::input_ = Input::GetInstance();
 CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
@@ -48,6 +50,21 @@ bool Player::Initialize() {
 	if (!Object3d::Initialize()) {
 		return false;
 	}
+
+#pragma region 調整項目
+	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
+
+	const char* groupName_ = "Player";
+
+	//グループ追加
+	AdjustmentVariables::GetInstance()->CreateGroup(groupName_);
+
+	adjustmentVariables_->SetValue(groupName_, "Test", 90);
+
+	adjustmentVariables_->SetValue(groupName_, "Test", 90.0f);
+
+	adjustmentVariables_->SetValue(groupName_, "Test", Vector3({9.0f,90.0f,900.0f}));
+#pragma endregion
 
 	//コライダ－追加
 
@@ -391,6 +408,13 @@ void Player::DrawImgui() {
 	debugDir_[2] = { GetRotation().z };
 
 	float hide = isHide_;
+
+#pragma region 調整項目
+	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
+
+	//調整項目の更新
+	adjustmentVariables_->Update();
+#pragma endregion
 
 	ImGui::Begin("Player");
 	ImGui::SetWindowPos(ImVec2(0, 0));
