@@ -1,4 +1,4 @@
-/*レールカメラ*/
+﻿/*レールカメラ*/
 
 #include "RailCamera.h"
 #include "GamePlayScene.h"

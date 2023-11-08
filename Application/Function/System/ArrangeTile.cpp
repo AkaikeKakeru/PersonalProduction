@@ -15,8 +15,9 @@ void ArrangeTile::Initialize(
 	for (size_t i = 0; i < value; i++) {
 		AddSprite(texIndex, pos, rotation, size);
 	}
-
-	timerMax_ = 60 / 3;
+	
+	float framePerSecond  = 60;
+	timerMax_ = (int32_t)framePerSecond / 3;
 
 	posStart_ = pos;
 	sizeStart_ = {};

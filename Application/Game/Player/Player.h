@@ -1,4 +1,4 @@
-/*プレイヤー*/
+﻿/*プレイヤー*/
 
 #pragma once
 #include "Model.h"
@@ -63,6 +63,12 @@ public: //定数
 
 	//デフォルトクールタイム
 	const int kDefaultBulletCooltime_ = 1;
+
+	//自機のデフォルトY座標
+	const float kDefaultPosY_ = -5.0f;
+
+	//自機のデフォルトZ座標
+	const float kDefaultPosZ_ = 30.0f;
 
 public: //アクセッサ
 	//ゲームシーンのセット
@@ -260,6 +266,12 @@ private: //メンバ変数
 
 	//イーズ3
 	Ease ease_3;
+
+	//イーズ4
+	Ease ease_4;
+
+	//スピード
+	float speed_ = 0.5f;
 
 private: //ImGui用
 	//Vector3の要素数

@@ -1,4 +1,4 @@
-﻿/*エネミー弾*/
+/*エネミー弾*/
 
 #pragma once
 #include "Model.h"
