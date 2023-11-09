@@ -8,11 +8,15 @@
 
 //調整項目変数のまとめ
 class AdjustmentVariables {
-private:
+private: //省略
 	using json = nlohmann::json;
 
+public: //定数
+	//調整項目変数のパス
+	const std::string kDirectoryPath_ = "Resource/adjustmentVariable/";
+
 public: //構造
-	//項目 の構造
+	//項目の構造
 	struct Item {
 		//値
 		std::variant<int32_t, float, Vector3> value_;

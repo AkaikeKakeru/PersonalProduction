@@ -1,5 +1,7 @@
 ﻿#include "AdjustmentVariables.h"
 #include <imgui.h>
+#include <fstream>
+#include <Windows.h>
 
 void AdjustmentVariables::CreateGroup(const std::string& groupName) {
 	//指定名のオブジェクトが無ければ追加
@@ -79,7 +81,7 @@ void AdjustmentVariables::SaveFile(const std::string& groupName) {
 	//jsonオブジェクト登録
 	root[groupName] = json::object();
 
-	//各項目について
+#pragma region 保存
 	//各項目について
 	for (std::map<std::string, Item>::iterator itItem = itGroup->second.items_.begin();
 		itItem != itGroup->second.items_.end();
@@ -108,6 +110,36 @@ void AdjustmentVariables::SaveFile(const std::string& groupName) {
 			root[groupName][iteName] = json::array({ value.x,value.y,value.z });
 		}
 	}
+#pragma endregion
+
+#pragma region 書き出し
+	//ディレクトリパスのローカル変数
+	std::filesystem::path dir(kDirectoryPath_);
+	//ディレクトリがなければ作成
+	if (!std::filesystem::exists(dir)) {
+		std::filesystem::create_directory(dir);
+	}
+
+	//書き込むJsonファイルのフルパスを合成
+	std::string filePath = kDirectoryPath_ + groupName + ".json";
+
+	//書き込み用ファイルストリーム
+	std::ofstream ofs;
+	ofs.open(filePath);
+
+	//ファイルのオープンに失敗
+	if (ofs.fail()) {
+		std::string message = "Failed open data file write.";
+		MessageBoxA(nullptr, message.c_str(), "adjustmentVariable", 0);
+		assert(0);
+		return;
+	}
+
+	//ファイルにJson文字列を書き込む(インデント幅4)
+	ofs << std::setw(4) << root << std::endl;
+	//ファイルを閉じる
+	ofs.close();
+#pragma endregion
 }
 
 void AdjustmentVariables::SetValue(
