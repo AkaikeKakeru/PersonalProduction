@@ -1,4 +1,4 @@
-/*プレイヤー*/
+﻿/*プレイヤー*/
 
 #include "Player.h"
 
@@ -414,6 +414,11 @@ void Player::DrawImgui() {
 
 	//調整項目の更新
 	adjustmentVariables_->Update();
+	const char* groupName_ = "Player";
+
+	if (input_->PressKey(DIK_0)) {
+		adjustmentVariables_->SaveFile(groupName_);
+	}
 #pragma endregion
 
 	ImGui::Begin("Player");
