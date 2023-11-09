@@ -22,6 +22,7 @@ void AdjustmentVariables::Update() {
 
 		if (!ImGui::BeginMenu(groupName.c_str())) continue;
 
+#pragma region 項目内の値の表示
 		//各項目について
 		for (std::map<std::string, Item>::iterator itItem = group.items_.begin();
 			itItem != group.items_.end();
@@ -61,6 +62,16 @@ void AdjustmentVariables::Update() {
 					-10.0f,10.0f);
 			}
 		}
+#pragma endregion
+		//改行
+		ImGui::Text("\n");
+#pragma region セーブ
+		if (ImGui::Button("Save")) {
+			SaveFile(groupName);
+			std::string message = std::format("{}.json saved", groupName);
+			MessageBoxA(nullptr, message.c_str(), "adjustmentVariable", 0);
+		}
+#pragma endregion
 		ImGui::EndMenu();
 	}
 
