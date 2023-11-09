@@ -1,4 +1,4 @@
-#include "AdjustmentVariables.h"
+﻿#include "AdjustmentVariables.h"
 #include <imgui.h>
 
 void AdjustmentVariables::CreateGroup(const std::string& groupName) {
@@ -19,7 +19,7 @@ void AdjustmentVariables::Update() {
 		Group& group = itGroup->second;
 
 		if (!ImGui::BeginMenu(groupName.c_str())) continue;
-		
+
 		//各項目について
 		for (std::map<std::string, Item>::iterator itItem = group.items_.begin();
 			itItem != group.items_.end();
@@ -42,7 +42,7 @@ void AdjustmentVariables::Update() {
 			}
 
 			//float
-			if (std::holds_alternative<float>(item.value_)) {
+			else if (std::holds_alternative<float>(item.value_)) {
 				float* ptr = std::get_if<float>(&item.value_);
 				ImGui::SliderFloat(
 					iteName.c_str(), 
@@ -51,7 +51,7 @@ void AdjustmentVariables::Update() {
 			}
 
 			//Vector3
-			if (std::holds_alternative<Vector3>(item.value_)) {
+			else if (std::holds_alternative<Vector3>(item.value_)) {
 				Vector3* ptr = std::get_if<Vector3>(&item.value_);
 				ImGui::SliderFloat3(
 					iteName.c_str(),
@@ -64,6 +64,50 @@ void AdjustmentVariables::Update() {
 
 	ImGui::EndMenuBar();
 	ImGui::End();
+}
+
+void AdjustmentVariables::SaveFile(const std::string& groupName) {
+	//グループを検索
+	std::map<std::string, Group>::iterator itGroup = datas_.find(groupName);
+
+	//未登録チェック
+	assert(itGroup != datas_.end());
+
+	json root;
+	root = json::object();
+
+	//jsonオブジェクト登録
+	root[groupName] = json::object();
+
+	//各項目について
+	//各項目について
+	for (std::map<std::string, Item>::iterator itItem = itGroup->second.items_.begin();
+		itItem != itGroup->second.items_.end();
+		++itItem) {
+		//項目名を取得
+		const std::string& iteName = itItem->first;
+
+		//項目の参照を取得
+		Item& item = itItem->second;
+
+		/*保持している値の型で分岐*/
+
+		//int32_t
+		if (std::holds_alternative<int32_t>(item.value_)) {
+			root[groupName][iteName] = std::get<int32_t>(item.value_);
+		}
+
+		//float
+		else if (std::holds_alternative<float>(item.value_)) {
+			root[groupName][iteName] = std::get<float>(item.value_);
+		}
+
+		//Vector3
+		else if (std::holds_alternative<Vector3>(item.value_)) {
+			Vector3 value = std::get<Vector3>(item.value_);
+			root[groupName][iteName] = json::array({ value.x,value.y,value.z });
+		}
+	}
 }
 
 void AdjustmentVariables::SetValue(

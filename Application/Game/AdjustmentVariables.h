@@ -1,12 +1,16 @@
-/*調整項目をひとまとめにしたい*/
+﻿/*調整項目をひとまとめにしたい*/
 #pragma once
 #include <Vector3.h>
 #include <variant>
 #include <map>
 #include <string>
+#include <json.hpp>
 
 //調整項目変数のまとめ
 class AdjustmentVariables {
+private:
+	using json = nlohmann::json;
+
 public: //構造
 	//項目 の構造
 	struct Item {
@@ -31,6 +35,12 @@ public: //関数
 	/// 更新
 	/// </summary>
 	void Update();
+
+	/// <summary>
+	/// ファイルに保存(書き出す)
+	/// </summary>
+	/// <param name="groupName">グループ名</param>
+	void SaveFile(const std::string& groupName);
 
 private: //変数
 	//全データ
