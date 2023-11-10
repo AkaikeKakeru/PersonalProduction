@@ -1,4 +1,4 @@
-﻿#include "AdjustmentVariables.h"
+#include "AdjustmentVariables.h"
 #include <imgui.h>
 #include <fstream>
 #include <Windows.h>
@@ -12,7 +12,7 @@ void AdjustmentVariables::Update() {
 	if (!ImGui::Begin("Adjustment Variables", nullptr, ImGuiWindowFlags_MenuBar)) return;
 	if (!ImGui::BeginMenuBar()) return;
 
-	for (std::map<std::string,Group>::iterator itGroup = datas_.begin();
+	for (std::map<std::string, Group>::iterator itGroup = datas_.begin();
 		itGroup != datas_.end();
 		++itGroup) {
 		//グループ名を取得
@@ -39,7 +39,7 @@ void AdjustmentVariables::Update() {
 			if (std::holds_alternative<int32_t>(item.value_)) {
 				int32_t* ptr = std::get_if<int32_t>(&item.value_);
 				ImGui::SliderInt(
-					iteName.c_str(), 
+					iteName.c_str(),
 					ptr,
 					0, 100);
 			}
@@ -48,7 +48,7 @@ void AdjustmentVariables::Update() {
 			else if (std::holds_alternative<float>(item.value_)) {
 				float* ptr = std::get_if<float>(&item.value_);
 				ImGui::SliderFloat(
-					iteName.c_str(), 
+					iteName.c_str(),
 					ptr,
 					0, 100);
 			}
@@ -59,7 +59,7 @@ void AdjustmentVariables::Update() {
 				ImGui::SliderFloat3(
 					iteName.c_str(),
 					reinterpret_cast<float*>(ptr),
-					-10.0f,10.0f);
+					-10.0f, 10.0f);
 			}
 		}
 #pragma endregion
@@ -153,6 +153,95 @@ void AdjustmentVariables::SaveFile(const std::string& groupName) {
 #pragma endregion
 }
 
+void AdjustmentVariables::LoadFiles() {
+	//ディレクトリパスのローカル変数
+	std::filesystem::path dir(kDirectoryPath_);
+	//ディレクトリがなければスキップ
+	if (!std::filesystem::exists(dir)) {
+		return;
+	}
+
+	std::filesystem::directory_iterator dir_it(dir);
+	for (const std::filesystem::directory_entry& entry : dir_it) {
+		//ファイルパスを取得
+		const std::filesystem::path& filePath = entry.path();
+
+		//ファイル拡張子を取得
+		std::string extension = filePath.extension().string();
+
+		//.jsonファイル以外はスキップ
+		if (extension.compare(".json") != 0) {
+			continue;
+		}
+
+		//ファイル読み込み
+		LoadFile(filePath.stem().string());
+	}
+}
+
+void AdjustmentVariables::LoadFile(const std::string& groupName) {
+	//読み込むJsonファイルのフルパスを合成
+	std::string filePath = kDirectoryPath_ + groupName + ".json";
+
+	//読み込み用ファイルストリーム
+	std::ifstream ifs;
+	ifs.open(filePath);
+
+	//ファイルのオープンに失敗
+	if (ifs.fail()) {
+		std::string message = "Failed open data file load.";
+		MessageBoxA(nullptr, message.c_str(), "adjustmentVariable", 0);
+		assert(0);
+		return;
+	}
+
+	json root;
+	//Json文字列からJsonデータ構造に展開
+	ifs >> root;
+	//ファイルを閉じる
+	ifs.close();
+
+	//グループを検索
+	json::iterator itGroup = root.find(groupName);
+
+	//未登録チェック
+	assert(itGroup != root.end());
+
+	//各アイテムについて
+	for (json::iterator itItem = itGroup->begin();
+		itItem != itGroup->end();
+		++itItem) {
+		//アイテム名を取得
+		const std::string& iteName = itItem.key();
+
+		/*保持している値の型で分岐*/
+
+		//int32_t
+		if (itItem->is_number_integer()) {
+			int32_t value = itItem->get<int32_t>();
+			SetValue(groupName, iteName, value);
+		}
+
+		//float
+		else if (itItem->is_number_float()) {
+			//double型で取得し、float型に変換
+			double value = itItem->get<double>();
+			SetValue(groupName, iteName, static_cast<float>(value));
+		}
+
+		//要素数3つの配列 (Vector3)
+		else if (itItem->is_array()
+			&& itItem->size() == 3) {
+			Vector3 value = {
+				itItem->at(0),
+				itItem->at(1),
+				itItem->at(2)
+			};
+			SetValue(groupName, iteName, value);
+		}
+	}
+}
+
 void AdjustmentVariables::SetValue(
 	const std::string& groupName,
 	const std::string& key,
@@ -169,7 +258,7 @@ void AdjustmentVariables::SetValue(
 }
 
 void AdjustmentVariables::SetValue(
-	const std::string& groupName, 
+	const std::string& groupName,
 	const std::string& key,
 	float value) {
 	//グループの参照を取得
@@ -196,6 +285,33 @@ void AdjustmentVariables::SetValue(
 
 	//設定した項目をstd::mapに追加
 	group.items_[key] = newItem;
+}
+
+void AdjustmentVariables::AddItem(const std::string& groupName, const std::string& key, int32_t value) {
+	//グループの参照を取得
+	Group& group = datas_[groupName];
+
+	if (group.items_.count(key) == 0) {
+		SetValue(groupName, key, value);
+	}
+}
+
+void AdjustmentVariables::AddItem(const std::string& groupName, const std::string& key, float value) {
+	//グループの参照を取得
+	Group& group = datas_[groupName];
+
+	if (group.items_.count(key) == 0) {
+		SetValue(groupName, key, value);
+	}
+}
+
+void AdjustmentVariables::AddItem(const std::string& groupName, const std::string& key, const Vector3& value) {
+	//グループの参照を取得
+	Group& group = datas_[groupName];
+
+	if (group.items_.count(key) == 0) {
+		SetValue(groupName, key, value);
+	}
 }
 
 AdjustmentVariables* AdjustmentVariables::GetInstance() {
