@@ -1,4 +1,4 @@
-﻿/*ゲームオーバーシーン*/
+/*ゲームオーバーシーン*/
 
 #pragma once
 #include "BaseScene.h"
@@ -19,7 +19,9 @@
 #include "Fade.h"
 #include "ArrangeTile.h"
 
+#ifdef _DEBUG
 #include "ImGuiManager.h"
+#endif
 
 /*ゲームオーバーシーン*/
 class GameOverScene : public BaseScene{
@@ -42,8 +44,10 @@ private:
 	Camera* camera_ = nullptr;
 	LightGroup* light_ = nullptr;
 
+#ifdef _DEBUG
 	//ImGuiマネージャー
 	ImGuiManager* imGuiManager_ = nullptr;
+#endif
 
 	// オブジェクト
 	Object3d* planeObj_ = nullptr;

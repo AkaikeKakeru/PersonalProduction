@@ -1,12 +1,15 @@
-﻿/*ゲームクリアシーン*/
+/*ゲームクリアシーン*/
 
 #include "GameClearScene.h"
 #include "SafeDelete.h"
 
 #include "Framework.h"
 #include "SceneManager.h"
-#include <imgui.h>
 #include <Quaternion.h>
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif
 
 DirectXBasis* GameClearScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GameClearScene::input_ = Input::GetInstance();
@@ -14,9 +17,10 @@ SpriteBasis* GameClearScene::spriteBas_ = SpriteBasis::GetInstance();
 
 void GameClearScene::Initialize() {
 	/// 描画初期化
-
+#ifdef _DEBUG
 	//imGui
 	imGuiManager_ = ImGuiManager::GetInstance();
+#endif
 
 	//オブジェクト基盤
 

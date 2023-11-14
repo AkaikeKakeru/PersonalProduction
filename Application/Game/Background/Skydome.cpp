@@ -1,4 +1,4 @@
-﻿/*天球*/
+/*天球*/
 
 #include "Skydome.h"
 
@@ -6,7 +6,10 @@
 #include <Quaternion.h>
 
 #include <SafeDelete.h>
+
+#ifdef _DEBUG
 #include <imgui.h>
+#endif
 
 Skydome* Skydome::Create(Model* model) {
 	//オブジェクトのインスタンスを生成
@@ -119,6 +122,7 @@ void Skydome::DrawImgui() {
 	debugDir_[1] = { GetRotation().y };
 	debugDir_[2] = { GetRotation().z };
 
+#ifdef _DEBUG
 	ImGui::Begin("Skydome");
 	ImGui::SetWindowPos(ImVec2(0, 0));
 	ImGui::SetWindowSize(ImVec2(500, 100));
@@ -127,6 +131,7 @@ void Skydome::DrawImgui() {
 	ImGui::SliderFloat3(
 		"SkydomeDir", debugDir_, 0, DirRange_);
 	ImGui::End();
+#endif
 }
 
 void Skydome::Finalize() {

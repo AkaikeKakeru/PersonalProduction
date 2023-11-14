@@ -8,17 +8,19 @@
 #include "SpriteBasis.h"
 #include <Input.h>
 
+#include "Cursor.h"
 #include "Ease.h"
 #include "Gauge.h"
 #include "Text.h"
 
 #include "Shake.h"
 
-#include <list>
+#include <List>
 #include <memory>
 
 class GamePlayScene;
 class PlayerBullet;
+class Enemy;
 class CollisionManager;
 
 //プレイヤー
@@ -75,6 +77,11 @@ public: //アクセッサ
 	void SetGameScene(GamePlayScene* gameScene) {
 		gameScene_ = gameScene;
 	}
+
+	//敵インスタンスリストのセット
+	//void SetEnemys(std::list<Enemy> enemys) {
+	//	enemys_ = enemys_;
+	//}
 
 	//位置の取得
 	const Vector3& GetPosition() const {
@@ -175,8 +182,14 @@ private: //メンバ変数
 	//ゲームシーン
 	GamePlayScene* gameScene_ = nullptr;
 
+	//エネミー
+	//std::list<std::unique_ptr<Enemy>> enemys_;
+
 	//半径
 	float radius_ = 1.0f;
+
+	//カーソル
+	Corsor cursor{};
 
 	//3dレティクルのワールド変換
 	WorldTransform worldTransform3dReticle_;

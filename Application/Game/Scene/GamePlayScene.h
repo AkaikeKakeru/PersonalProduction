@@ -1,4 +1,4 @@
-﻿/*ゲームプレイシーン*/
+/*ゲームプレイシーン*/
 
 #pragma once
 #include "BaseScene.h"
@@ -16,7 +16,10 @@
 #include "DebugCamera.h"
 
 #include "LightGroup.h"
+
+#ifdef _DEBUG
 #include "ImGuiManager.h"
+#endif
 
 #include <memory>
 #include <List>
@@ -128,8 +131,12 @@ private: //静的メンバ変数
 	static DirectXBasis* dxBas_;
 	static Input* input_;
 	static SpriteBasis* spriteBas_;
+
+#ifdef _DEBUG
 	//ImGuiマネージャー
 	static ImGuiManager* imGuiManager_;
+#endif _
+
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
 
@@ -155,6 +162,15 @@ public: //メンバ変数
 	Model* skydomeModel_ = nullptr;
 
 	Model* bulletModel_ = nullptr;
+
+	//扉の位置
+	Vector3 doorPos_{};
+
+	Model* doorModel_ = nullptr;
+	//左扉
+	Object3d* doorL_ = nullptr;
+	//右扉
+	Object3d* doorR_ = nullptr;
 
 	/// <summary>
 	/// パーティクル
