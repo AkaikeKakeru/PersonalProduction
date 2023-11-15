@@ -1,4 +1,4 @@
-﻿/*カーソルの2D座標を求める*/
+/*カーソルの2D座標を求める*/
 
 #include "Cursor.h"
 #include "Input.h"
@@ -7,54 +7,121 @@
 
 Camera* Corsor::camera_ = nullptr;
 
-Vector3 Corsor::Get3DRethiclePosition(Camera* camera) {
+Vector3& Corsor::Get3DReticlePosition(Camera* camera, const Vector3 targetWorldPos) {
 	camera_ = camera;
 
-	CreateMatrixInverseViewPort();
-	CheckRayDirection();
+	CreateMatrixVPV();
+	CreateMatrixInverseVPV();
 
-	return rayDirection_;
+	CheckRayDirection();
+	LockOn(targetWorldPos);
+
+	return reticlePos_;
 }
 
-void Corsor::CreateMatrixInverseViewPort() {
+void Corsor::LockOn(const Vector3& targetWorldPos) {
+	//最終結果保存用
+	Vector3 result{};
+
+	//標的ワールド位置を、スクリーン座標に変換
+	Vector2 screenOfTargetWorldPos = TransFromWorldToScreen(targetWorldPos);
+	//レティクル位置を、スクリーン座標に変換
+	Vector2 screenPosOfReticle = TransFromWorldToScreen(reticlePos_);
+
+	//スクリーン座標における、二者の位置関係を確認する
+	//※このifにおけるレティクル位置は、ロックオン範囲分を画面外側にずらして考えるものとする
+	//全て通るなら、ロックオンを行う
+	if (/*標的がレティクルより左にいるかどうか*/
+		screenOfTargetWorldPos.x <= screenPosOfReticle.x + kLockOnRange_
+		/*標的がレティクルより右にいるかどうか*/
+		&& screenOfTargetWorldPos.x >= screenPosOfReticle.x - kLockOnRange_
+		/*標的がレティクルより上にいるかどうか*/
+		&& screenOfTargetWorldPos.y <= screenPosOfReticle.y + kLockOnRange_
+		/*標的がレティクルより下にいるかどうか*/
+		&& screenOfTargetWorldPos.y >= screenPosOfReticle.y - kLockOnRange_) {
+
+		//レティクルのスクリーン座標を、標的スクリーン座標の位置に移動させる
+		result = {
+			screenOfTargetWorldPos.x,
+			screenOfTargetWorldPos.y,
+			0.0f };
+
+		//レティクルのスクリーン座標を、ワールド座標に変換しなおす
+		reticlePos_ = TransFromScreenToWorld({
+			result.x,
+			result.y
+			}
+		);
+	}
+}
+
+Vector3& Corsor::TransFromScreenToWorld(const Vector2& screenPos) {
+	//最終結果保存用
+	static Vector3 result{};
+
+	assert(distance_);
+
+	//ニア
+	Vector3 posNear_ = Vector3(
+		screenPos.x,
+		screenPos.y,
+		0);
+	posNear_ = Vector3TransformCoord(posNear_, matInverseVPV_);
+	//ファー
+	Vector3 posFar_ = Vector3(
+		screenPos.x,
+		screenPos.y,
+		1);
+	posFar_ = Vector3TransformCoord(posFar_, matInverseVPV_);
+
+	//レイ
+	result = posNear_ - posFar_;
+	result = Vector3Normalize(result);
+
+	//ニア→レイ
+	result = posNear_ - (result * distance_);
+
+	return result;
+}
+
+Vector2& Corsor::TransFromWorldToScreen(const Vector3& worldPos) {
+	//最終結果保存用
+	static Vector2 result;
+	//途中過程保存用
+	Vector3 process = Vector3TransformCoord(worldPos, matVPV_);
+
+	result = { process.x,process.y };
+
+	return result;
+}
+
+void Corsor::CreateMatrixVPV() {
+	//ビューポート行列
 	Matrix4 matViewPort = Matrix4Identity();
 	matViewPort.m[0][0] = static_cast<float>(WinApp::Win_Width) / 2;
 	matViewPort.m[1][1] = static_cast<float>(-(WinApp::Win_Height)) / 2;
 	matViewPort.m[3][0] = static_cast<float>(WinApp::Win_Width) / 2;
 	matViewPort.m[3][1] = static_cast<float>(WinApp::Win_Height) / 2;
 
-	Matrix4 matVPV = camera_->GetViewMatrix()
+	//ビュープロジェクションビューポート行列の更新
+	matVPV_ = camera_->GetViewMatrix()
 		* camera_->GetProjectionMatrix()
 		* matViewPort;
+}
 
+void Corsor::CreateMatrixInverseVPV() {
 	//上を逆行列化
-	matInverseVPV_ = Matrix4Inverse(matVPV);
+	matInverseVPV_ = Matrix4Inverse(matVPV_);
 }
 
 void Corsor::CheckRayDirection() {
-	assert(distance_);
-	
+	//レイ方向
+	Vector3 rayDirection;
+
 	//マウスの座標を取得
-	Vector2 mousePosition_ = 
+	Vector2 mousePosition_ =
 		Input::GetInstance()->GetMousePosition();
 
-	//ニア
-	posNear_ = Vector3(
-		mousePosition_.x,
-		mousePosition_.y,
-		0);
-	posNear_ = Vector3TransformCoord(posNear_, matInverseVPV_);
-	//ファー
-	posFar_ = Vector3(
-		mousePosition_.x,
-		mousePosition_.y,
-		1);
-	posFar_ = Vector3TransformCoord(posFar_, matInverseVPV_);
-
-	//レイ
-	rayDirection_ = posNear_ - posFar_;
-	rayDirection_ = Vector3Normalize(rayDirection_);
-
-	//ニア→レイ
-	rayDirection_ = posNear_ - (rayDirection_ * distance_);
+	//照準位置を書き換え
+	reticlePos_ = TransFromScreenToWorld(mousePosition_);
 }
