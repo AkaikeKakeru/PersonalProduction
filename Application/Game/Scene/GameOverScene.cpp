@@ -1,12 +1,16 @@
-﻿/*ゲームオーバーシーン*/
+/*ゲームオーバーシーン*/
 
 #include "GameOverScene.h"
-#include "SafeDelete.h"
 
 #include "Framework.h"
 #include "SceneManager.h"
-#include <imgui.h>
+
 #include <Quaternion.h>
+#include "SafeDelete.h"
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif
 
 DirectXBasis* GameOverScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GameOverScene::input_ = Input::GetInstance();
@@ -15,9 +19,10 @@ SpriteBasis* GameOverScene::spriteBas_ = SpriteBasis::GetInstance();
 void GameOverScene::Initialize() {
 
 	/// 描画初期化
-
+#ifdef _DEBUG
 	//imGui
 	imGuiManager_ = ImGuiManager::GetInstance();
+#endif
 
 	//オブジェクト基盤
 

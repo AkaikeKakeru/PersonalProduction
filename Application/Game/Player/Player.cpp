@@ -1,4 +1,4 @@
-﻿/*プレイヤー*/
+/*プレイヤー*/
 
 #include "Player.h"
 
@@ -6,18 +6,19 @@
 #include "CollisionAttribute.h"
 #include "SphereCollider.h"
 
-#include <cassert>
-
-#include <Quaternion.h>
-
-#include "Cursor.h"
-#include <SafeDelete.h>
-#include <imgui.h>
-
 #include "GamePlayScene.h"
 #include "PlayerBullet.h"
 #include <Framework.h>
+
+#include <Quaternion.h>
 #include <Ease.h>
+
+#include <cassert>
+#include <SafeDelete.h>
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif
 
 Input* Player::input_ = Input::GetInstance();
 CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
@@ -391,7 +392,7 @@ void Player::DrawImgui() {
 	debugDir_[2] = { GetRotation().z };
 
 	float hide = isHide_;
-
+#ifdef _DEBUG
 	ImGui::Begin("Player");
 	ImGui::SetWindowPos(ImVec2(0, 0));
 	ImGui::SetWindowSize(ImVec2(500, 100));
@@ -403,6 +404,7 @@ void Player::DrawImgui() {
 	ImGui::InputFloat("IsHide", &hide);
 	ImGui::InputInt("PlayerRemainBullet", &remainBulletCount_);
 	ImGui::End();
+#endif
 }
 
 void Player::Finalize() {
@@ -419,16 +421,23 @@ void Player::OnCollision(const CollisionInfo& info) {
 }
 
 void Player::Reticle() {
-	Corsor cursor{};
 
 	//自機と敵機の距離(仮)
 	float distancePToE = 30.0f;
 
 	cursor.SetDistance(camera_->GetTarget().z + distancePToE);
 
+	Matrix4 eneWorldMat = Object3d::GetMatWorld();
+
 	//マウスカーソルから、3D照準座標を取得する
 	worldTransform3dReticle_.position_ =
-		cursor.Get3DRethiclePosition(camera_);
+		cursor.Get3DRethiclePosition(camera_,eneWorldMat);
+
+	//for (std::unique_ptr<Enemy>& enemy : enemys_) {
+	//	Matrix4 eneWorldMat = enemy->GetMatWorld();
+
+	//	worldTransform3dReticle_.position_ = cursor.GetLockOnPos(eneWorldMat);
+	//}
 
 	worldTransform3dReticle_.UpdateMatrix();
 }

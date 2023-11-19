@@ -1,4 +1,4 @@
-﻿/*コードの全体の処理を、
+/*コードの全体の処理を、
 初期化　更新　描画のグループとして三つに独立させる*/
 
 /*プロジェクト内の、ウィンドウ作成や基盤の初期化等の枠組みを行う*/
@@ -8,7 +8,10 @@
 #include "SpriteBasis.h"
 #include "ParticleManager.h"
 #include "TitleScene.h"
+
+#ifdef _DEBUG
 #include <imgui.h>
+#endif
 
 SceneManager* Framework::sceneManager_ = SceneManager::GetInstance();
 

@@ -90,6 +90,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer;$(ProjectDir)Application\Function\System;$(ProjectDir)Application\Function\UI;$(ProjectDir)Engine\Color</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -277,7 +278,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include=".editorconfig" />
     <None Include="Resource\shader\Obj.hlsli" />
     <None Include="Resource\shader\Particle.hlsli" />
     <None Include="Resource\shader\PostEffect.hlsli" />

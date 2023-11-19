@@ -1,4 +1,4 @@
-﻿/*コードの全体の処理を、
+/*コードの全体の処理を、
 初期化　更新　描画のグループとして三つに独立させる*/
 
 /*プロジェクト内の、ウィンドウ作成や基盤の初期化等の枠組みを行う*/
@@ -8,10 +8,14 @@
 #include "DirectXBasis.h"
 #include "Input.h"
 #include "Audio.h"
-#include "ImGuiManager.h"
+
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
 #include "PostEffect.h"
+
+#ifdef _DEBUG
+#include "ImGuiManager.h"
+#endif
 
 //枠組み
 class Framework {
@@ -82,8 +86,10 @@ private:
 	//シーンマネージャー
 	static SceneManager* sceneManager_;
 
+#ifdef _DEBUG
 	//ImGuiマネージャー
 	ImGuiManager* imGuiManager_ = nullptr;
+#endif
 
 	//ポストエフェクト
 	PostEffect* postEffect_ = nullptr;

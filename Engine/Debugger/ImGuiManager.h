@@ -1,5 +1,6 @@
-﻿/*ImGuiマネージャー*/
+/*ImGuiマネージャー*/
 
+#ifdef _DEBUG
 #pragma once
 #include "DirectXBasis.h"
 
@@ -39,3 +40,5 @@ private:
 public://static
 	static ImGuiManager* GetInstance();
 };
+#endif
+

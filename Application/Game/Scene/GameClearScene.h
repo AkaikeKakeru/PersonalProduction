@@ -1,4 +1,4 @@
-﻿/*ゲームクリアシーン*/
+/*ゲームクリアシーン*/
 
 #pragma once
 #include "BaseScene.h"
@@ -16,12 +16,14 @@
 #include "LightGroup.h"
 
 #include "SceneManager.h"
-#include "ImGuiManager.h"
 
 #include "Fade.h"
 #include "ArrangeTile.h"
-
 #include "Ease.h"
+
+#ifdef _DEBUG
+#include "ImGuiManager.h"
+#endif
 
 /*ゲームクリアシーン*/
 class GameClearScene : public BaseScene{
@@ -53,8 +55,10 @@ private:
 	Camera* camera_ = nullptr;
 	LightGroup* light_ = nullptr;
 
+#ifdef _DEBUG
 	//ImGuiマネージャー
 	ImGuiManager* imGuiManager_ = nullptr;
+#endif
 
 	// オブジェクト
 	Object3d* planeObj_ = nullptr;
