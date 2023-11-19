@@ -16,6 +16,10 @@ Vector3& Corsor::Get3DReticlePosition(Camera* camera, const Vector3 targetWorldP
 	CheckRayDirection();
 	LockOn(targetWorldPos);
 
+	EasePosition();
+
+	reticlePos_ = reticleMove_;
+
 	return reticlePos_;
 }
 
@@ -28,26 +32,89 @@ void Corsor::LockOn(const Vector3& targetWorldPos) {
 	//レティクル位置を、スクリーン座標に変換
 	Vector2 screenPosOfReticle = TransFromWorldToScreen(reticlePos_);
 
-	//スクリーン座標における、二者の位置関係を確認する
-	//※このifにおけるレティクル位置は、ロックオン範囲分を画面外側にずらして考えるものとする
-	//全て通るなら、ロックオンを行う
-	if (/*標的がレティクルより左にいるかどうか*/
-		screenOfTargetWorldPos.x <= screenPosOfReticle.x + kLockOnRange_
-		/*標的がレティクルより右にいるかどうか*/
-		&& screenOfTargetWorldPos.x >= screenPosOfReticle.x - kLockOnRange_
-		/*標的がレティクルより上にいるかどうか*/
-		&& screenOfTargetWorldPos.y <= screenPosOfReticle.y + kLockOnRange_
-		/*標的がレティクルより下にいるかどうか*/
-		&& screenOfTargetWorldPos.y >= screenPosOfReticle.y - kLockOnRange_) {
+	//ロックオン中なら、リリースするタイミングをうかがう
+	if (isLockOn_) {
+		if (isStand_) {
+			//スクリーン座標における、二者の位置関係を確認する
+			//※このifにおけるレティクル位置は、ロックオン範囲分を画面外側にずらして考えるものとする
+			//全て通るなら、リリースを行う
+			if (/*レティクルが標的より外側にいるかどうか*/
+				screenOfTargetWorldPos.x > screenPosOfReticle.x + kLockOnRange_
+				|| screenOfTargetWorldPos.x < screenPosOfReticle.x - kLockOnRange_
+				|| screenOfTargetWorldPos.y > screenPosOfReticle.y + kLockOnRange_
+				|| screenOfTargetWorldPos.y < screenPosOfReticle.y - kLockOnRange_) {
+				isLockOn_ = false;
+				isStand_ = false;
+
+				{
+					//イージングの開始位置を、標的のスクリーン座標に設定
+					//※標的のスクリーン座標をワールド座標に変換しなおす
+					easeStartPos_ = TransFromScreenToWorld({
+						screenOfTargetWorldPos.x,
+						screenOfTargetWorldPos.y });
+
+					//イージングの終了位置を、レティクルのスクリーン座標に設定
+					//※レティクルのスクリーン座標を、ワールド座標に変換しなおす
+					easeEndPos_ = TransFromScreenToWorld({
+						screenPosOfReticle.x,
+						screenPosOfReticle.y
+						}
+					);
+
+					//イージングをリセット
+					ease_.Reset(Ease::InOut_, kEaseTimerRelease_, easeStartPos_, easeEndPos_);
+					ease_.SetIs(true);
+				}
+			}
+		}
+	}
+	//ちがうなら、ロックオンのタイミングをうかがう
+	else {
+		if (isStand_) {
+			//スクリーン座標における、二者の位置関係を確認する
+			//※このifにおけるレティクル位置は、ロックオン範囲分を画面外側にずらして考えるものとする
+			//全て通るなら、ロックオンを行う
+			if (/*標的がレティクルより左にいるかどうか*/
+				screenOfTargetWorldPos.x <= screenPosOfReticle.x + kLockOnRange_
+				/*標的がレティクルより右にいるかどうか*/
+				&& screenOfTargetWorldPos.x >= screenPosOfReticle.x - kLockOnRange_
+				/*標的がレティクルより上にいるかどうか*/
+				&& screenOfTargetWorldPos.y <= screenPosOfReticle.y + kLockOnRange_
+				/*標的がレティクルより下にいるかどうか*/
+				&& screenOfTargetWorldPos.y >= screenPosOfReticle.y - kLockOnRange_) {
+				isLockOn_ = true;
+				isStand_ = false;
+
+				{
+					//イージングの開始位置を、レティクルのスクリーン座標に設定
+					//※レティクルのスクリーン座標をワールド座標に変換しなおす
+					easeStartPos_ = TransFromScreenToWorld({
+						screenPosOfReticle.x,
+						screenPosOfReticle.y });
+
+					//イージングの終了位置を、標的のスクリーン座標に設定
+					//※標的のスクリーン座標を、ワールド座標に変換しなおす
+					easeEndPos_ = TransFromScreenToWorld({
+						screenOfTargetWorldPos.x,
+						screenOfTargetWorldPos.y
+						}
+					);
+
+					//イージングをリセット
+					ease_.Reset(Ease::InOut_, kEaseTimerLockOn_, easeStartPos_, easeEndPos_);
+					ease_.SetIs(true);
+				}
+			}
+		}
 
 		//レティクルのスクリーン座標を、標的スクリーン座標の位置に移動させる
 		result = {
-			screenOfTargetWorldPos.x,
-			screenOfTargetWorldPos.y,
+			screenPosOfReticle.x,
+			screenPosOfReticle.y,
 			0.0f };
 
 		//レティクルのスクリーン座標を、ワールド座標に変換しなおす
-		reticlePos_ = TransFromScreenToWorld({
+		reticleMove_ = TransFromScreenToWorld({
 			result.x,
 			result.y
 			}
@@ -115,13 +182,23 @@ void Corsor::CreateMatrixInverseVPV() {
 }
 
 void Corsor::CheckRayDirection() {
-	//レイ方向
-	Vector3 rayDirection;
-
 	//マウスの座標を取得
 	Vector2 mousePosition_ =
 		Input::GetInstance()->GetMousePosition();
 
 	//照準位置を書き換え
 	reticlePos_ = TransFromScreenToWorld(mousePosition_);
+}
+
+void Corsor::EasePosition() {
+	//イーズ終わりで、待機中にする
+	if (ease_.IsEnd()) {
+		isStand_ = true;
+	}
+
+	//待機中でなければイージングでレティクルの座標を更新
+	if (!isStand_) {
+		ease_.Update();
+		reticleMove_ = ease_.GetReturn();
+	}
 }

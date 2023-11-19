@@ -1,4 +1,5 @@
 /*カーソルやレティクルの座標を求める*/
+/*カーソルやレティクルの座標を求める*/
 
 #pragma once
 #include "Vector2.h"
@@ -6,14 +7,18 @@
 
 #include "Object3d.h"
 #include "Camera.h"
+#include "Ease.h"
 
 /*カーソルやレティクルの座標を求める*/
 class Corsor {
 public://定数
 	//ロックオンの範囲
 	const float kLockOnRange_ = 80.0f;
-	//イージングタイマーの最大値
-	const int32_t kEaseTimer_ = 60 / 2;
+
+	//ロックオン時、イージングタイマーの最大値
+	const int32_t kEaseTimerLockOn_ = 4;
+	//リリース時、イージングタイマーの最大値
+	const int32_t kEaseTimerRelease_ = 2;
 
 public: //アクセッサ
 	/// <summary>
@@ -22,7 +27,7 @@ public: //アクセッサ
 	/// <param name="camera">カメラ</param>
 	/// <param name="targetWorldPos">標的のワールド座標(MatWorld.m[3][0]～m.[3][2])</param>
 	/// <returns>レティクルのワールド座標</returns>
-	Vector3& Get3DReticlePosition(Camera* camera, const Vector3 targetWorldPos);
+	Vector3& Get3DReticlePosition(Camera* camera,const Vector3 targetWorldPos);
 
 	/// <summary>
 	///スクリーン座標から、ワールド座標へ変換 
@@ -60,6 +65,11 @@ private: //固有関数
 	/// <param name="targetWorldPos">標的のワールド座標(MatWorld.m[3][0]～m.[3][2])</param>
 	void LockOn(const Vector3& targetWorldPos);
 
+	/// <summary>
+	/// イージングで位置を移動させる
+	/// </summary>
+	void EasePosition();
+
 private: //メンバ変数
 	//カメラ
 	static Camera* camera_;
@@ -72,7 +82,23 @@ private: //メンバ変数
 	//レティクル位置
 	Vector3 reticlePos_ = {};
 
+	//レティクルの移動先保管用
+	Vector3 reticleMove_ = {};
+
 	//カメラからの距離
 	float distance_ = 50.0f;
 
+	//イージング
+	Ease ease_;
+
+	//イージング開始地点
+	Vector3 easeStartPos_{};
+	//イージング終了地点
+	Vector3 easeEndPos_{};
+
+	//ロックオンフラグ
+	bool isLockOn_ = false;
+
+	//イージング待機中かどうか
+	bool isStand_ = true;
 };
