@@ -6,6 +6,7 @@
 #include "CollisionManager.h"
 #include "SceneManager.h"
 #include "Random.h"
+#include "Cursor.h"
 
 #pragma region popLoader
 #include <fstream>
@@ -363,10 +364,10 @@ void GamePlayScene::Update3d() {
 	doorL_->Update();
 	doorR_->Update();
 
-	player_->Update();
+	//マウス座標
+	Vector2 mousePos = input_->GetMousePosition();
 
 	if (player_->IsStart()) {
-
 		//自機弾更新
 		for (std::unique_ptr<PlayerBullet>& bullet : playerBullets_) {
 			bullet->Update();
@@ -380,8 +381,31 @@ void GamePlayScene::Update3d() {
 		//敵機の更新
 		for (std::unique_ptr<Enemy>& enemy : enemys_) {
 			enemy->Update();
+
+			if (!cursor_.IsLockOn()) {
+				enemyWorldPos_ = {
+					enemy->GetMatWorld().m[3][0],
+					enemy->GetMatWorld().m[3][1] - 1.0f,
+					enemy->GetMatWorld().m[3][2]
+				};
+
+			}
+			//自機と敵機の距離(仮)
+			float distancePToE = 30.0f;
+
+			//カーソルから3Dレティクルまでの距離を設定
+			cursor_.SetDistance(70.0f + distancePToE);
+
+			//マウスカーソルから、3D照準座標を取得する
+			LockOnTargetPos_ =
+				cursor_.Get3DReticlePosition(camera_, enemyWorldPos_);
 		}
+
+		//自機のレティクル更新
+		player_->UpdateReticle(LockOnTargetPos_);
 	}
+
+	player_->Update();
 
 	pm_->Update();
 	blackOut_->Update();

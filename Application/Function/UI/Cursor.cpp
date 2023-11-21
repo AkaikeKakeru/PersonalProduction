@@ -5,9 +5,9 @@
 #include <WinApp.h>
 #include <cassert>
 
-Camera* Corsor::camera_ = nullptr;
+Camera* Cursor::camera_ = nullptr;
 
-Vector3& Corsor::Get3DReticlePosition(Camera* camera, const Vector3 targetWorldPos) {
+Vector3& Cursor::Get3DReticlePosition(Camera* camera, const Vector3 targetWorldPos) {
 	camera_ = camera;
 
 	CreateMatrixVPV();
@@ -23,7 +23,7 @@ Vector3& Corsor::Get3DReticlePosition(Camera* camera, const Vector3 targetWorldP
 	return reticlePos_;
 }
 
-void Corsor::LockOn(const Vector3& targetWorldPos) {
+void Cursor::LockOn(const Vector3& targetWorldPos) {
 	//最終結果保存用
 	Vector3 result{};
 
@@ -122,7 +122,7 @@ void Corsor::LockOn(const Vector3& targetWorldPos) {
 	}
 }
 
-Vector3& Corsor::TransFromScreenToWorld(const Vector2& screenPos) {
+Vector3& Cursor::TransFromScreenToWorld(const Vector2& screenPos) {
 	//最終結果保存用
 	static Vector3 result{};
 
@@ -151,7 +151,7 @@ Vector3& Corsor::TransFromScreenToWorld(const Vector2& screenPos) {
 	return result;
 }
 
-Vector2& Corsor::TransFromWorldToScreen(const Vector3& worldPos) {
+Vector2& Cursor::TransFromWorldToScreen(const Vector3& worldPos) {
 	//最終結果保存用
 	static Vector2 result;
 	//途中過程保存用
@@ -162,7 +162,7 @@ Vector2& Corsor::TransFromWorldToScreen(const Vector3& worldPos) {
 	return result;
 }
 
-void Corsor::CreateMatrixVPV() {
+void Cursor::CreateMatrixVPV() {
 	//ビューポート行列
 	Matrix4 matViewPort = Matrix4Identity();
 	matViewPort.m[0][0] = static_cast<float>(WinApp::Win_Width) / 2;
@@ -176,12 +176,12 @@ void Corsor::CreateMatrixVPV() {
 		* matViewPort;
 }
 
-void Corsor::CreateMatrixInverseVPV() {
+void Cursor::CreateMatrixInverseVPV() {
 	//上を逆行列化
 	matInverseVPV_ = Matrix4Inverse(matVPV_);
 }
 
-void Corsor::CheckRayDirection() {
+void Cursor::CheckRayDirection() {
 	//マウスの座標を取得
 	Vector2 mousePosition_ =
 		Input::GetInstance()->GetMousePosition();
@@ -190,7 +190,7 @@ void Corsor::CheckRayDirection() {
 	reticlePos_ = TransFromScreenToWorld(mousePosition_);
 }
 
-void Corsor::EasePosition() {
+void Cursor::EasePosition() {
 	//イーズ終わりで、待機中にする
 	if (ease_.IsEnd()) {
 		isStand_ = true;

@@ -10,15 +10,15 @@
 #include "Ease.h"
 
 /*カーソルやレティクルの座標を求める*/
-class Corsor {
+class Cursor {
 public://定数
 	//ロックオンの範囲
-	const float kLockOnRange_ = 80.0f;
+	const float kLockOnRange_ = 50.0f;
 
 	//ロックオン時、イージングタイマーの最大値
-	const int32_t kEaseTimerLockOn_ = 4;
+	const int32_t kEaseTimerLockOn_ = 6;
 	//リリース時、イージングタイマーの最大値
-	const int32_t kEaseTimerRelease_ = 2;
+	const int32_t kEaseTimerRelease_ = 3;
 
 public: //アクセッサ
 	/// <summary>
@@ -49,6 +49,11 @@ public: //アクセッサ
 	/// <param name="distance">距離</param>
 	void SetDistance(float distance) {
 		distance_ = distance;
+	}
+
+	//ロックオン中かどうか
+	bool IsLockOn() {
+		return isLockOn_;
 	}
 
 private: //固有関数

@@ -228,8 +228,6 @@ void Player::Update() {
 			isHide_ = false;
 		}
 
-		Reticle();
-
 		//隠れフラグが立っている時
 		if (isHide_) {
 			const float hidePosY = -7.5f;
@@ -335,14 +333,6 @@ void Player::Update() {
 		OverMove();
 	}
 
-	spriteReticle_->SetPosition({
-		worldTransform3dReticle_.position_.x ,
-		worldTransform3dReticle_.position_.y
-		});
-
-	spriteReticle_->SetPosition(input_->GetMousePosition());
-	spriteReticle_->Update();
-
 	//残弾数ゲージの変動
 	bulletGauge_->GetRestSprite()->
 		SetColor({ 0.2f,0.7f,0.2f,5.0f });
@@ -420,26 +410,28 @@ void Player::OnCollision(const CollisionInfo& info) {
 	isDamage_ = true;
 }
 
-void Player::Reticle() {
+void Player::UpdateReticle(const Vector3& targetWorldPos) {
 
-	//自機と敵機の距離(仮)
-	float distancePToE = 30.0f;
+	//ゲームシーンからカーソルを借りる
 
-	cursor.SetDistance(camera_->GetTarget().z + distancePToE);
-
-	Matrix4 eneWorldMat = Object3d::GetMatWorld();
-
-	//マウスカーソルから、3D照準座標を取得する
-	worldTransform3dReticle_.position_ =
-		cursor.Get3DRethiclePosition(camera_,eneWorldMat);
-
-	//for (std::unique_ptr<Enemy>& enemy : enemys_) {
-	//	Matrix4 eneWorldMat = enemy->GetMatWorld();
-
-	//	worldTransform3dReticle_.position_ = cursor.GetLockOnPos(eneWorldMat);
-	//}
-
+	//3Dレティクル座標を更新
+	worldTransform3dReticle_.position_ = targetWorldPos;
 	worldTransform3dReticle_.UpdateMatrix();
+
+	//レティクルスプライトの位置
+	// エネミーのワールド座標をスクリーン座標に変換して設定
+	spriteReticle_->SetPosition(
+		gameScene_->GetCursor()->TransFromWorldToScreen(targetWorldPos)
+	);
+	//ロックオン中か否かでスプライトのサイズを変える
+	if (gameScene_->GetCursor()->IsLockOn()) {
+		spriteReticle_->SetSize({96,96});
+	}
+	else {
+		spriteReticle_->SetSize({64,64});
+	}
+
+	spriteReticle_->Update();
 }
 
 void Player::Attack() {
