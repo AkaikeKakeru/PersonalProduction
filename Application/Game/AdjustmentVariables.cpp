@@ -291,6 +291,7 @@ void AdjustmentVariables::AddItem(const std::string& groupName, const std::strin
 	//グループの参照を取得
 	Group& group = datas_[groupName];
 
+	//項目が未登録なら
 	if (group.items_.count(key) == 0) {
 		SetValue(groupName, key, value);
 	}
@@ -300,6 +301,7 @@ void AdjustmentVariables::AddItem(const std::string& groupName, const std::strin
 	//グループの参照を取得
 	Group& group = datas_[groupName];
 
+	//項目が未登録なら
 	if (group.items_.count(key) == 0) {
 		SetValue(groupName, key, value);
 	}
@@ -309,6 +311,7 @@ void AdjustmentVariables::AddItem(const std::string& groupName, const std::strin
 	//グループの参照を取得
 	Group& group = datas_[groupName];
 
+	//項目が未登録なら
 	if (group.items_.count(key) == 0) {
 		SetValue(groupName, key, value);
 	}
