@@ -17,6 +17,8 @@
 
 #include "LightGroup.h"
 
+#include "Cursor.h"
+
 #ifdef _DEBUG
 #include "ImGuiManager.h"
 #endif
@@ -126,6 +128,11 @@ public:
 		nowBulletTypeEnemy_ = bulletType;
 	}
 
+	//カーソルの取得
+	Cursor* GetCursor() {
+		return &cursor_;
+	}
+
 private: //静的メンバ変数
 	//基盤
 	static DirectXBasis* dxBas_;
@@ -228,4 +235,12 @@ public: //メンバ変数
 	int timerMax_ = 60;
 	//タイマー現在値
 	int timerNow_ = 0;
+
+	/*カーソル用の変数*/
+	//カーソル
+	Cursor cursor_;
+	//エネミーのワールド座標
+	Vector3 enemyWorldPos_{0.0f,0.0f,30.0f};
+	//ロックオン時の標的座標
+	Vector3 LockOnTargetPos_{0.0f,0.0f,30.0f};
 };
