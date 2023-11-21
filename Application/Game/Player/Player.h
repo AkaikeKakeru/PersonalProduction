@@ -41,8 +41,8 @@ public://メンバ関数
 	//衝突時コールバック関数
 	void OnCollision(const CollisionInfo& info) override;
 
-	//照準
-	void Reticle();
+	//照準更新
+	void UpdateReticle(const Vector3& targetWorldPos);
 
 	//発射攻撃
 	void Attack();
@@ -77,11 +77,6 @@ public: //アクセッサ
 	void SetGameScene(GamePlayScene* gameScene) {
 		gameScene_ = gameScene;
 	}
-
-	//敵インスタンスリストのセット
-	//void SetEnemys(std::list<Enemy> enemys) {
-	//	enemys_ = enemys_;
-	//}
 
 	//位置の取得
 	const Vector3& GetPosition() const {
@@ -182,14 +177,11 @@ private: //メンバ変数
 	//ゲームシーン
 	GamePlayScene* gameScene_ = nullptr;
 
-	//エネミー
-	//std::list<std::unique_ptr<Enemy>> enemys_;
-
 	//半径
 	float radius_ = 1.0f;
 
 	//カーソル
-	Corsor cursor{};
+	Cursor* cursor{};
 
 	//3dレティクルのワールド変換
 	WorldTransform worldTransform3dReticle_;
