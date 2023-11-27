@@ -11,8 +11,8 @@
 
 #ifdef _DEBUG
 #include <imgui.h>
-#include <AdjustmentVariables.h>
 #endif
+#include <AdjustmentVariables.h>
 
 SceneManager* Framework::sceneManager_ = SceneManager::GetInstance();
 
