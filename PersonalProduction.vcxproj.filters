@@ -288,6 +288,9 @@
     <ClCompile Include="Application\Function\System\Ease.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Application\Game\AdjustmentVariables.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Base\DirectXBasis.h">
@@ -485,6 +488,9 @@
     <ClInclude Include="Application\Function\System\Ease.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Application\Game\AdjustmentVariables.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\shader\ObjPS.hlsl">
@@ -514,5 +520,6 @@
     </None>
     <None Include="Resource\shader\Particle.hlsli" />
     <None Include="Resource\shader\PostEffect.hlsli" />
+    <None Include="Resource\adjustmentVariable\Player.json" />
   </ItemGroup>
 </Project>

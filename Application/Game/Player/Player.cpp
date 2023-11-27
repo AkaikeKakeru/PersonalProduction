@@ -20,6 +20,8 @@
 #include <imgui.h>
 #endif
 
+#include "AdjustmentVariables.h"
+
 Input* Player::input_ = Input::GetInstance();
 CollisionManager* Player::collisionManager_ = CollisionManager::GetInstance();
 SpriteBasis* Player::spriteBas_ = SpriteBasis::GetInstance();
@@ -49,29 +51,53 @@ bool Player::Initialize() {
 	if (!Object3d::Initialize()) {
 		return false;
 	}
-
 	//コライダ－追加
 
 	//半径分だけ足元から浮いた座標を球の中心にする
 	SetCollider(new SphereCollider(
-		Vector3{ 0.0f,radius_,0.0f },
-		radius_)
+		Vector3{ 0.0f,radiusCollider_,0.0f },
+		radiusCollider_)
 	);
 
 	collider_->SetAttribute(COLLISION_ATTR_PLAYER);
 
 	worldTransform3dReticle_.Initialize();
 
-	SetScale({ 1.0f, 1.0f, 1.0f });
-	SetRotation(CreateRotationVector(
-		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	SetPosition({ 0.0f,kDefaultPosY_,0.0f });
+	//SetScale({ 1.0f, 1.0f, 1.0f });
+	//SetRotation(CreateRotationVector(
+	//	{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
+	//SetPosition({ 0.0f,kDefaultPosY_,0.0f });
 
 	spriteReticle_ = new Sprite();
 	spriteReticle_->Initialize(Framework::kCursorTextureIndex_);
 
 	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
 	spriteReticle_->SetSize({ 64,64 });
+
+#pragma region 調整項目
+	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
+
+	//グループ追加
+	AdjustmentVariables::GetInstance()->CreateGroup(groupName_);
+
+	adjustmentVariables_->AddItem(
+		groupName_,"Position",
+		worldTransform_.position_);
+
+	adjustmentVariables_->AddItem(
+		groupName_, "Rotation", 
+		worldTransform_.rotation_);
+
+	adjustmentVariables_->AddItem(
+		groupName_, "Scale", 
+		worldTransform_.scale_);
+
+	adjustmentVariables_->AddItem(
+		groupName_, "RadiusCollider", 
+		radiusCollider_);
+
+	ApplyAdjustmentVariables();
+#pragma endregion
 
 #pragma region HPスプライト
 	hpGauge_ = new Gauge();
@@ -382,6 +408,15 @@ void Player::DrawImgui() {
 	debugDir_[2] = { GetRotation().z };
 
 	float hide = isHide_;
+  
+#pragma region 調整項目
+	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
+
+	//調整項目の更新
+	adjustmentVariables_->Update();
+	ApplyAdjustmentVariables();
+#pragma endregion
+
 #ifdef _DEBUG
 	ImGui::Begin("Player");
 	ImGui::SetWindowPos(ImVec2(0, 0));
@@ -402,6 +437,34 @@ void Player::Finalize() {
 	bulletGauge_->Finalize();
 	hpGauge_->Finalize();
 	SafeDelete(text_);
+}
+
+void Player::ApplyAdjustmentVariables() {
+	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
+
+	worldTransform_.position_ = 
+		adjustmentVariables_->GetVector3Value(
+			groupName_, "Position"
+		);
+
+	Vector3 rota = 
+		adjustmentVariables_->GetVector3Value(
+			groupName_, "Rotation"
+		);
+
+	worldTransform_.rotation_ = CreateRotationVector(
+		rota, ConvertToRadian(0.0f)
+	);
+
+	worldTransform_.scale_ = 
+		adjustmentVariables_->GetVector3Value(
+			groupName_, "Scale"
+		);
+
+	radiusCollider_ =
+		adjustmentVariables_->GetFloatValue(
+			groupName_, "RadiusCollider"
+		);
 }
 
 void Player::OnCollision(const CollisionInfo& info) {

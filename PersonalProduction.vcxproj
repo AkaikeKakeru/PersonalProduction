@@ -120,6 +120,7 @@
     <ClCompile Include="Application\Game\Scene\GameOverScene.cpp" />
     <ClCompile Include="Application\Game\Scene\GamePlayScene.cpp" />
     <ClCompile Include="Application\Game\Scene\Manager\BaseScene.cpp" />
+    <ClCompile Include="Application\Game\AdjustmentVariables.cpp" />
     <ClCompile Include="Application\Math\MyMath.cpp" />
     <ClCompile Include="Application\Math\Quaternion.cpp" />
     <ClCompile Include="Engine\2d\PostEffect.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Application\Game\Scene\Manager\AbstractSceneFactory.h" />
     <ClInclude Include="Application\Game\Scene\Manager\BaseScene.h" />
     <ClInclude Include="Application\Game\Scene\GameOverScene.h" />
+    <ClInclude Include="Application\Game\AdjustmentVariables.h" />
     <ClInclude Include="Application\Math\MyMath.h" />
     <ClInclude Include="Application\Math\Quaternion.h" />
     <ClInclude Include="Engine\2d\PostEffect.h" />
@@ -278,6 +280,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resource\adjustmentVariable\Player.json" />
     <None Include="Resource\shader\Obj.hlsli" />
     <None Include="Resource\shader\Particle.hlsli" />
     <None Include="Resource\shader\PostEffect.hlsli" />
