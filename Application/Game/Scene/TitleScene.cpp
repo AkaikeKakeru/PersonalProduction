@@ -5,8 +5,11 @@
 
 #include "Framework.h"
 #include "SceneManager.h"
-#include <imgui.h>
 #include "ColorPallet.h"
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif
 
 using namespace ColorPallet;
 
@@ -16,9 +19,10 @@ SpriteBasis* TitleScene::spriteBas_ = SpriteBasis::GetInstance();
 
 void TitleScene::Initialize() {
 	/// 描画初期化
-
+#ifdef _DEBUG
 	//imGui
 	imGuiManager_ = ImGuiManager::GetInstance();
+#endif
 
 	//オブジェクト基盤
 

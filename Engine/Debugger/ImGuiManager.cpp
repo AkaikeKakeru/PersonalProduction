@@ -1,6 +1,8 @@
-﻿/*ImGuiマネージャー*/
+/*ImGuiマネージャー*/
 
+#ifdef _DEBUG
 #include "ImGuiManager.h"
+
 #include <imgui_impl_win32.h>
 #include <imGui_impl_DX12.h>
 #include "WinApp.h"
@@ -124,3 +126,5 @@ void ImGuiManager::Draw() {
 	//描画コマンド発行
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), cmdList);
 }
+
+#endif

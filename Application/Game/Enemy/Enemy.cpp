@@ -1,4 +1,4 @@
-﻿/*エネミー*/
+/*エネミー*/
 
 #include "Enemy.h"
 
@@ -6,14 +6,16 @@
 #include "CollisionAttribute.h"
 #include "SphereCollider.h"
 
-#include <cassert>
-#include <Quaternion.h>
-
-#include <SafeDelete.h>
-#include <imgui.h>
-
 #include "EnemyBullet.h"
 #include "GamePlayScene.h"
+
+#include <cassert>
+#include <Quaternion.h>
+#include <SafeDelete.h>
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif
 
 Input* Enemy::input_ = Input::GetInstance();
 CollisionManager* Enemy::collisionManager_ = CollisionManager::GetInstance();
@@ -214,6 +216,7 @@ void Enemy::DrawImgui() {
 	debugDir_[1] = { GetRotation().y };
 	debugDir_[2] = { GetRotation().z };
 
+#ifdef _DEBUG
 	ImGui::Begin("Enemy");
 	ImGui::SetWindowPos(ImVec2(700, 0));
 	ImGui::SetWindowSize(ImVec2(500, 100));
@@ -222,6 +225,7 @@ void Enemy::DrawImgui() {
 	ImGui::SliderFloat3(
 		"EnemyDir", debugDir_, 0, DirRange_);
 	ImGui::End();
+#endif
 }
 
 void Enemy::Finalize() {

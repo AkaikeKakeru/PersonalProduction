@@ -1,23 +1,32 @@
-﻿/*ゲームプレイシーン*/
+/*ゲームプレイシーン*/
 
 #include "GamePlayScene.h"
 #include "SafeDelete.h"
 #include "Quaternion.h"
-#include <imgui.h>
 #include "CollisionManager.h"
 #include "SceneManager.h"
 #include "Random.h"
+#include "Cursor.h"
 
 #pragma region popLoader
 #include <fstream>
 #include <Framework.h>
 #pragma endregion
 
+#include <cassert>
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif
+
 DirectXBasis* GamePlayScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GamePlayScene::input_ = Input::GetInstance();
 SpriteBasis* GamePlayScene::spriteBas_ = SpriteBasis::GetInstance();
-ImGuiManager* GamePlayScene::imGuiManager_ = ImGuiManager::GetInstance();
 CollisionManager* GamePlayScene::collisionManager_ = CollisionManager::GetInstance();
+
+#ifdef _DEBUG
+ImGuiManager* GamePlayScene::imGuiManager_ = ImGuiManager::GetInstance();
+#endif
 
 void GamePlayScene::Initialize() {
 	Initialize2d();
@@ -90,7 +99,7 @@ void GamePlayScene::Initialize3d() {
 	player_->SetGameScene(this);
 	player_->SetBulletModel(bulletModel_);
 	player_->SetCamera(camera_);
-	player_->Update();
+	//player_->Update();
 #pragma endregion
 
 #pragma region Enemy
@@ -100,10 +109,36 @@ void GamePlayScene::Initialize3d() {
 #pragma region Skydome
 	skydome_ = Skydome::Create();
 	skydome_->SetModel(skydomeModel_);
-	skydome_->SetScale({ 512.0f, 126.0f, 512.0f });
+	skydome_->SetScale({ 1024.0f, 256.0f, 1024.0f });
 	skydome_->SetPosition({ 0,0,0 });
 	skydome_->SetCamera(camera_);
-	skydome_->Update();
+#pragma endregion
+
+#pragma region 扉
+	doorL_ = new Object3d();
+	doorR_ = new Object3d();
+
+	doorPos_ = { 0,0,800 };
+
+	doorL_ = Object3d::Create();
+	doorL_->SetScale({ 50,400,10 });
+	Vector3 scaDoorL = doorL_->GetScale();
+
+	doorL_->SetPosition({ -scaDoorL.x, scaDoorL.y / 2,doorPos_.z });
+	doorL_->SetRotation(CreateRotationVector(
+		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
+	doorL_->SetModel(doorModel_);
+	doorL_->SetCamera(camera_);
+
+	doorR_ = Object3d::Create();
+	doorR_->SetScale({ 50,400,10 });
+	Vector3 scaDoorR = doorR_->GetScale();
+
+	doorR_->SetPosition({ scaDoorR.x, scaDoorR.y / 2, doorPos_.z });
+	doorR_->SetRotation(CreateRotationVector(
+		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
+	doorR_->SetModel(doorModel_);
+	doorR_->SetCamera(camera_);
 #pragma endregion
 
 	//ライト生成
@@ -183,12 +218,15 @@ void GamePlayScene::Update3d() {
 				railCamera_->SetPhaseAdvance(true);
 			}
 			else {
-				blackOut_->SetIs(true);
-				blackOut_->SetIsOpen(false);
-				if (blackOut_->IsEnd()) {
-					//シーンの切り替えを依頼
-					SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-				}
+				//blackOut_->SetIs(true);
+				//blackOut_->SetIsOpen(false);
+				//if (blackOut_->IsEnd()) {
+				//	//シーンの切り替えを依頼
+				//	SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+				//}
+
+				//シーンの切り替えを依頼
+				SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
 			}
 		}
 
@@ -323,10 +361,13 @@ void GamePlayScene::Update3d() {
 
 	skydome_->Update();
 
-	player_->Update();
+	doorL_->Update();
+	doorR_->Update();
+
+	//マウス座標
+	Vector2 mousePos = input_->GetMousePosition();
 
 	if (player_->IsStart()) {
-
 		//自機弾更新
 		for (std::unique_ptr<PlayerBullet>& bullet : playerBullets_) {
 			bullet->Update();
@@ -340,8 +381,31 @@ void GamePlayScene::Update3d() {
 		//敵機の更新
 		for (std::unique_ptr<Enemy>& enemy : enemys_) {
 			enemy->Update();
+
+			if (!cursor_.IsLockOn()) {
+				enemyWorldPos_ = {
+					enemy->GetMatWorld().m[3][0],
+					enemy->GetMatWorld().m[3][1] - 1.0f,
+					enemy->GetMatWorld().m[3][2]
+				};
+
+			}
+			//自機と敵機の距離(仮)
+			float distancePToE = 30.0f;
+
+			//カーソルから3Dレティクルまでの距離を設定
+			cursor_.SetDistance(70.0f + distancePToE);
+
+			//マウスカーソルから、3D照準座標を取得する
+			LockOnTargetPos_ =
+				cursor_.Get3DReticlePosition(camera_, enemyWorldPos_);
 		}
+
+		//自機のレティクル更新
+		player_->UpdateReticle(LockOnTargetPos_);
 	}
+
+	player_->Update();
 
 	pm_->Update();
 	blackOut_->Update();
@@ -355,6 +419,9 @@ void GamePlayScene::Update2d() {
 void GamePlayScene::Draw3d() {
 	//天球描画
 	skydome_->Draw();
+
+	doorL_->Draw();
+	doorR_->Draw();
 
 	//敵機描画
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
@@ -575,6 +642,10 @@ void GamePlayScene::Finalize() {
 	blackOut_->Finalize();
 	SafeDelete(blackOut_);
 	SafeDelete(arrangeTile_);
+
+	SafeDelete(doorModel_);
+	SafeDelete(doorL_);
+	SafeDelete(doorR_);
 }
 
 void GamePlayScene::BlackOutUpdate() {

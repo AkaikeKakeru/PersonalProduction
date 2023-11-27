@@ -1,4 +1,4 @@
-﻿/*ゲームプレイシーン*/
+/*ゲームプレイシーン*/
 
 #pragma once
 #include "BaseScene.h"
@@ -16,7 +16,12 @@
 #include "DebugCamera.h"
 
 #include "LightGroup.h"
+
+#include "Cursor.h"
+
+#ifdef _DEBUG
 #include "ImGuiManager.h"
+#endif
 
 #include <memory>
 #include <List>
@@ -123,13 +128,22 @@ public:
 		nowBulletTypeEnemy_ = bulletType;
 	}
 
+	//カーソルの取得
+	Cursor* GetCursor() {
+		return &cursor_;
+	}
+
 private: //静的メンバ変数
 	//基盤
 	static DirectXBasis* dxBas_;
 	static Input* input_;
 	static SpriteBasis* spriteBas_;
+
+#ifdef _DEBUG
 	//ImGuiマネージャー
 	static ImGuiManager* imGuiManager_;
+#endif _
+
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
 
@@ -155,6 +169,15 @@ public: //メンバ変数
 	Model* skydomeModel_ = nullptr;
 
 	Model* bulletModel_ = nullptr;
+
+	//扉の位置
+	Vector3 doorPos_{};
+
+	Model* doorModel_ = nullptr;
+	//左扉
+	Object3d* doorL_ = nullptr;
+	//右扉
+	Object3d* doorR_ = nullptr;
 
 	/// <summary>
 	/// パーティクル
@@ -212,4 +235,12 @@ public: //メンバ変数
 	int timerMax_ = 60;
 	//タイマー現在値
 	int timerNow_ = 0;
+
+	/*カーソル用の変数*/
+	//カーソル
+	Cursor cursor_;
+	//エネミーのワールド座標
+	Vector3 enemyWorldPos_{0.0f,0.0f,30.0f};
+	//ロックオン時の標的座標
+	Vector3 LockOnTargetPos_{0.0f,0.0f,30.0f};
 };

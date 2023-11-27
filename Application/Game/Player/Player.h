@@ -8,17 +8,19 @@
 #include "SpriteBasis.h"
 #include <Input.h>
 
+#include "Cursor.h"
 #include "Ease.h"
 #include "Gauge.h"
 #include "Text.h"
 
 #include "Shake.h"
 
-#include <list>
+#include <List>
 #include <memory>
 
 class GamePlayScene;
 class PlayerBullet;
+class Enemy;
 class CollisionManager;
 
 //プレイヤー
@@ -42,8 +44,8 @@ public://メンバ関数
 	//衝突時コールバック関数
 	void OnCollision(const CollisionInfo& info) override;
 
-	//照準
-	void Reticle();
+	//照準更新
+	void UpdateReticle(const Vector3& targetWorldPos);
 
 	//発射攻撃
 	void Attack();
@@ -183,6 +185,9 @@ private: //メンバ変数
 
 	//半径
 	float radiusCollider_ = 1.0f;
+
+	//カーソル
+	Cursor* cursor{};
 
 	//3dレティクルのワールド変換
 	WorldTransform worldTransform3dReticle_;

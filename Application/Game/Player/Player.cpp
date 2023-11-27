@@ -1,4 +1,4 @@
-﻿/*プレイヤー*/
+/*プレイヤー*/
 
 #include "Player.h"
 
@@ -6,18 +6,19 @@
 #include "CollisionAttribute.h"
 #include "SphereCollider.h"
 
-#include <cassert>
-
-#include <Quaternion.h>
-
-#include "Cursor.h"
-#include <SafeDelete.h>
-#include <imgui.h>
-
 #include "GamePlayScene.h"
 #include "PlayerBullet.h"
 #include <Framework.h>
+
+#include <Quaternion.h>
 #include <Ease.h>
+
+#include <cassert>
+#include <SafeDelete.h>
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif
 
 #include "AdjustmentVariables.h"
 
@@ -253,8 +254,6 @@ void Player::Update() {
 			isHide_ = false;
 		}
 
-		Reticle();
-
 		//隠れフラグが立っている時
 		if (isHide_) {
 			const float hidePosY = -7.5f;
@@ -360,14 +359,6 @@ void Player::Update() {
 		OverMove();
 	}
 
-	spriteReticle_->SetPosition({
-		worldTransform3dReticle_.position_.x ,
-		worldTransform3dReticle_.position_.y
-		});
-
-	spriteReticle_->SetPosition(input_->GetMousePosition());
-	spriteReticle_->Update();
-
 	//残弾数ゲージの変動
 	bulletGauge_->GetRestSprite()->
 		SetColor({ 0.2f,0.7f,0.2f,5.0f });
@@ -417,17 +408,16 @@ void Player::DrawImgui() {
 	debugDir_[2] = { GetRotation().z };
 
 	float hide = isHide_;
-
+  
 #pragma region 調整項目
-
 	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
 
 	//調整項目の更新
 	adjustmentVariables_->Update();
 	ApplyAdjustmentVariables();
-
 #pragma endregion
 
+#ifdef _DEBUG
 	ImGui::Begin("Player");
 	ImGui::SetWindowPos(ImVec2(0, 0));
 	ImGui::SetWindowSize(ImVec2(500, 100));
@@ -439,6 +429,7 @@ void Player::DrawImgui() {
 	ImGui::InputFloat("IsHide", &hide);
 	ImGui::InputInt("PlayerRemainBullet", &remainBulletCount_);
 	ImGui::End();
+#endif
 }
 
 void Player::Finalize() {
@@ -482,19 +473,28 @@ void Player::OnCollision(const CollisionInfo& info) {
 	isDamage_ = true;
 }
 
-void Player::Reticle() {
-	Corsor cursor{};
+void Player::UpdateReticle(const Vector3& targetWorldPos) {
 
-	//自機と敵機の距離(仮)
-	float distancePToE = 30.0f;
+	//ゲームシーンからカーソルを借りる
 
-	cursor.SetDistance(camera_->GetTarget().z + distancePToE);
-
-	//マウスカーソルから、3D照準座標を取得する
-	worldTransform3dReticle_.position_ =
-		cursor.Get3DRethiclePosition(camera_);
-
+	//3Dレティクル座標を更新
+	worldTransform3dReticle_.position_ = targetWorldPos;
 	worldTransform3dReticle_.UpdateMatrix();
+
+	//レティクルスプライトの位置
+	// エネミーのワールド座標をスクリーン座標に変換して設定
+	spriteReticle_->SetPosition(
+		gameScene_->GetCursor()->TransFromWorldToScreen(targetWorldPos)
+	);
+	//ロックオン中か否かでスプライトのサイズを変える
+	if (gameScene_->GetCursor()->IsLockOn()) {
+		spriteReticle_->SetSize({96,96});
+	}
+	else {
+		spriteReticle_->SetSize({64,64});
+	}
+
+	spriteReticle_->Update();
 }
 
 void Player::Attack() {

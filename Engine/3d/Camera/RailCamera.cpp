@@ -1,9 +1,12 @@
-﻿/*レールカメラ*/
+/*レールカメラ*/
 
 #include "RailCamera.h"
 #include "GamePlayScene.h"
 #include "Ease.h"
+
+#ifdef _DEBUG
 #include <imgui.h>
+#endif
 
 Input* RailCamera::input_ = Input::GetInstance();
 
@@ -181,6 +184,7 @@ void RailCamera::DrawImGui() {
 	debugDir_[1] = { worldTransform_.rotation_.y };
 	debugDir_[2] = { worldTransform_.rotation_.z };
 
+#ifdef _DEBUG
 	ImGui::Begin("RailCamera");
 	ImGui::SetWindowPos(ImVec2(0, 150));
 	ImGui::SetWindowSize(ImVec2(500, 100));
@@ -189,6 +193,7 @@ void RailCamera::DrawImGui() {
 	ImGui::SliderFloat3(
 		"RailCameraDir", debugDir_, 0, DirRange_);
 	ImGui::End();
+#endif
 }
 
 Vector3 RailCamera::SplinePosition(

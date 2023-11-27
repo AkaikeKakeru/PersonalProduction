@@ -23,6 +23,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "doxygen", "External\doxygen
 		IORedirection = Auto
 	EndProjectSection
 EndProject
+
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{12797FCA-51DD-4778-BDCB-4FABF7F57C24}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
