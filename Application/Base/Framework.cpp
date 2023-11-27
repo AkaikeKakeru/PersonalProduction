@@ -9,6 +9,7 @@
 #include "ParticleManager.h"
 #include "TitleScene.h"
 #include <imgui.h>
+#include <AdjustmentVariables.h>
 
 SceneManager* Framework::sceneManager_ = SceneManager::GetInstance();
 
@@ -79,6 +80,9 @@ void Framework::Initialize(){
 	//ポストエフェクトの初期化
 	postEffect_ = new PostEffect();
 	postEffect_->Initialize();
+
+	//調整項目の読込
+	AdjustmentVariables::GetInstance()->LoadFiles();
 }
 
 void Framework::Update(){
