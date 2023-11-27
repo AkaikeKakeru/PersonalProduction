@@ -425,10 +425,12 @@ void Player::UpdateReticle(const Vector3& targetWorldPos) {
 	);
 	//ロックオン中か否かでスプライトのサイズを変える
 	if (gameScene_->GetCursor()->IsLockOn()) {
-		spriteReticle_->SetSize({96,96});
+		spriteReticle_->SetSize({80,80});
+		spriteReticle_->SetColor({ 0.7f,0.2f,0.2f,0.8f });
 	}
 	else {
 		spriteReticle_->SetSize({64,64});
+		spriteReticle_->SetColor({ 1,1,1,1 });
 	}
 
 	spriteReticle_->Update();
@@ -438,10 +440,10 @@ void Player::Attack() {
 	//残弾数が切れていなければ発射可能
 	if (remainBulletCount_ > 0) {
 		//発射操作を確認
-		if (input_->PressMouse(0)) {
+		if (input_->TriggerMouse(0)) {
 			if (bulletCooltime_ <= 0) {
 				//弾スピード
-				const float kBulletSpeed = 10.0f;
+				const float kBulletSpeed = 17.5f;
 				//毎フレーム弾が前進する速度
 				Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
 
