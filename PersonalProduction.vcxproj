@@ -279,6 +279,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resource\adjustmentVariable\Player.json" />
     <None Include="Resource\shader\Obj.hlsli" />
     <None Include="Resource\shader\Particle.hlsli" />
     <None Include="Resource\shader\PostEffect.hlsli" />

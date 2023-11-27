@@ -520,5 +520,6 @@
     </None>
     <None Include="Resource\shader\Particle.hlsli" />
     <None Include="Resource\shader\PostEffect.hlsli" />
+    <None Include="Resource\adjustmentVariable\Player.json" />
   </ItemGroup>
 </Project>
