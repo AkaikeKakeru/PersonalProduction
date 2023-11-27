@@ -36,6 +36,9 @@ public://メンバ関数
 	void DrawImgui();
 	void Finalize();
 
+	//調整項目の適用
+	void ApplyAdjustmentVariables();
+
 	//衝突時コールバック関数
 	void OnCollision(const CollisionInfo& info) override;
 
@@ -52,6 +55,9 @@ public://メンバ関数
 	void OverMove();
 
 public: //定数
+	//調整変数グループ名
+	const char* groupName_ = "Player";
+
 	//自機のデフォルト体力
 	const float kDefaultPlayerLife_ = 10.0f;
 
@@ -82,7 +88,7 @@ public: //アクセッサ
 	}
 	//半径の取得
 	float GetRadius() const {
-		return radius_;
+		return radiusCollider_;
 	}
 
 	//レールカメラのワールド変換取得
@@ -176,7 +182,7 @@ private: //メンバ変数
 	GamePlayScene* gameScene_ = nullptr;
 
 	//半径
-	float radius_ = 1.0f;
+	float radiusCollider_ = 1.0f;
 
 	//3dレティクルのワールド変換
 	WorldTransform worldTransform3dReticle_;
