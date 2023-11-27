@@ -1,4 +1,4 @@
-/*調整項目をひとまとめにしたい*/
+﻿/*調整項目をひとまとめにしたい*/
 #pragma once
 #include <Vector3.h>
 #include <variant>
@@ -67,10 +67,6 @@ private: //固有の関数
 	//値のセット(Vector3)
 	void SetValue(const std::string& groupName, const std::string& key, const Vector3& value);
 
-private: //変数
-	//全データ
-	std::map<std::string, Group> datas_;
-
 public: //アクセッサ
 	//項目の追加(int)
 	void AddItem(const std::string& groupName, const std::string& key, int32_t value);
@@ -80,6 +76,17 @@ public: //アクセッサ
 
 	//項目の追加(Vector3)
 	void AddItem(const std::string& groupName, const std::string& key, const Vector3& value);
+
+	//値の取得(int)
+	int32_t GetIntValue(const std::string& groupName, const std::string& key) const;
+	//値の取得(float)
+	float GetFloatValue(const std::string& groupName, const std::string& key) const;
+	//値の取得(Vector3)
+	Vector3 GetVector3Value(const std::string& groupName, const std::string& key) const;
+
+private: //変数
+	//全データ
+	std::map<std::string, Group> datas_;
 
 private: //シングルトン化
 	AdjustmentVariables() = default;

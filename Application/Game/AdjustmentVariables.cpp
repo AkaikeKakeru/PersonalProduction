@@ -1,4 +1,4 @@
-#include "AdjustmentVariables.h"
+﻿#include "AdjustmentVariables.h"
 #include <imgui.h>
 #include <fstream>
 #include <Windows.h>
@@ -315,6 +315,48 @@ void AdjustmentVariables::AddItem(const std::string& groupName, const std::strin
 	if (group.items_.count(key) == 0) {
 		SetValue(groupName, key, value);
 	}
+}
+
+int32_t AdjustmentVariables::GetIntValue(
+	const std::string& groupName,
+	const std::string& key) const {
+
+	//未登録チェック
+	assert(datas_.count(groupName));
+
+	const Group& group = datas_.at(groupName);
+
+	assert(group.items_.count(key));
+
+	return std::get<int32_t>(group.items_.at(key).value_);
+}
+
+float AdjustmentVariables::GetFloatValue(
+	const std::string& groupName,
+	const std::string& key) const {
+
+	//未登録チェック
+	assert(datas_.count(groupName));
+
+	const Group& group = datas_.at(groupName);
+
+	assert(group.items_.count(key));
+
+	return	std::get<float>(group.items_.at(key).value_);
+}
+
+Vector3 AdjustmentVariables::GetVector3Value(
+	const std::string& groupName,
+	const std::string& key) const {
+
+	//未登録チェック
+	assert(datas_.count(groupName));
+
+	const Group& group = datas_.at(groupName);
+
+	assert(group.items_.count(key));
+
+	return	std::get<Vector3>(group.items_.at(key).value_);
 }
 
 AdjustmentVariables* AdjustmentVariables::GetInstance() {
