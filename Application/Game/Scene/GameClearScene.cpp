@@ -32,7 +32,7 @@ void GameClearScene::Initialize() {
 	camera_->SetTarget({ 0, 0, 0 });
 
 	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("plane", true);
+	planeModel_ = Model::LoadFromOBJ("human", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome", false);

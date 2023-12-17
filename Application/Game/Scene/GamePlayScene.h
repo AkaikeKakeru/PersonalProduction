@@ -10,6 +10,7 @@
 #include "Object3d.h"
 #include "Particle.h"
 #include "ParticleManager.h"
+#include "TubeManager.h"
 
 #include "Camera.h"
 #include "RailCamera.h"
@@ -31,6 +32,7 @@
 #include "Enemy.h"
 #include "EnemyBullet.h"
 #include "Skydome.h"
+#include "Cart.h"
 
 #include "Fade.h"
 #include "ArrangeTile.h"
@@ -133,6 +135,11 @@ public:
 		return &cursor_;
 	}
 
+	//噴きあがりフラグのセット
+	void SetIsGushing(bool isGushing) {
+		isGushing_ = isGushing;
+	}
+
 private: //静的メンバ変数
 	//基盤
 	static DirectXBasis* dxBas_;
@@ -146,6 +153,7 @@ private: //静的メンバ変数
 
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
+
 
 public: //メンバ変数
 	Camera* camera_ = nullptr;
@@ -169,6 +177,7 @@ public: //メンバ変数
 	Model* skydomeModel_ = nullptr;
 
 	Model* bulletModel_ = nullptr;
+	Model* tubeModel_ = nullptr;
 
 	//扉の位置
 	Vector3 doorPos_{};
@@ -243,4 +252,10 @@ public: //メンバ変数
 	Vector3 enemyWorldPos_{0.0f,0.0f,30.0f};
 	//ロックオン時の標的座標
 	Vector3 LockOnTargetPos_{0.0f,0.0f,30.0f};
+
+	//噴きあがりフラグ
+	bool isGushing_ = false;
+
+	//背景筒マネージャー
+	TubeManager* tubeManager_;
 };
