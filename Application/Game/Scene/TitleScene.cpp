@@ -31,9 +31,10 @@ void TitleScene::Initialize() {
 	//カメラ生成
 	camera_ = new Camera();
 	camera_->SetTarget({ 0,ConvertToRadian(-90.0f),0 });
+	camera_->SetEye( { 20,-10,30 } );
 
 	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("plane", true);
+	planeModel_ = Model::LoadFromOBJ("human", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome", false);

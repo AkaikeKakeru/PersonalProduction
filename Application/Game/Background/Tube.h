@@ -1,16 +1,15 @@
-/*天球*/
+/*背景筒*/
 
 #pragma once
 #include "Model.h"
 #include "Object3d.h"
-#include <Input.h>
 
-//天球
-class Skydome
+//背景筒
+class TubeBG
 	: public Object3d {
 public: //静的メンバ関数
 	//オブジェクト生成
-	static Skydome* Create(Model* model = nullptr);
+	static TubeBG* Create(Model* model = nullptr);
 
 public://メンバ関数
 	bool Initialize() override;
@@ -40,11 +39,19 @@ public: //アクセッサ
 		isDead_ = isDead;
 	}
 
+	//スピードセット
+	void SetSpeed(float speed) {
+		speed_ = speed;
+	}
+
 private: //静的メンバ変数
 
 private: //メンバ変数
 	//デスフラグ
 	bool isDead_ = false;
+
+	//スピード
+	float speed_ = 0.0f;
 
 private: //ImGui用
 	//Vector3の要素数
@@ -63,6 +70,6 @@ private: //ImGui用
 	float debugDir_[kVector3Count_] = {};
 
 public:
-	Skydome() = default;
-	~Skydome() = default;
+	TubeBG() = default;
+	~TubeBG() = default;
 };

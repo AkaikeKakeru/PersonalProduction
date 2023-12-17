@@ -85,7 +85,7 @@ void GamePlayScene::Initialize3d() {
 	debugCamera_->Initialize({ 0,20,-50 }, { ConvertToRadian(10),0,0 });
 
 	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("plane", true);
+	planeModel_ = Model::LoadFromOBJ("human", true);
 	planeEnemyModel_ = Model::LoadFromOBJ("planeEnemy", true);
 
 	skydomeModel_ = new Model();
@@ -94,12 +94,16 @@ void GamePlayScene::Initialize3d() {
 	bulletModel_ = new Model();
 	bulletModel_ = Model::LoadFromOBJ("missile", true);
 
+	tubeModel_ = new Model();
+	tubeModel_ = Model::LoadFromOBJ("BG_Tube", true);
+
 #pragma region Player
 	player_ = Player::Create(planeModel_);
 	player_->SetGameScene(this);
 	player_->SetBulletModel(bulletModel_);
 	player_->SetCamera(camera_);
 	//player_->Update();
+
 #pragma endregion
 
 #pragma region Enemy
@@ -112,6 +116,21 @@ void GamePlayScene::Initialize3d() {
 	skydome_->SetScale({ 1024.0f, 256.0f, 1024.0f });
 	skydome_->SetPosition({ 0,0,0 });
 	skydome_->SetCamera(camera_);
+#pragma endregion
+
+#pragma region Tube
+	tubeManager_ = new TubeManager();
+
+	tubeManager_->SetSpeed(16.0f);
+
+	tubeManager_->SetScale({ 100,100,100 });
+
+	tubeManager_->SetCamera(camera_);
+
+	tubeManager_->SetTubeModel(tubeModel_);
+
+	tubeManager_->Initialize();
+
 #pragma endregion
 
 #pragma region 扉
@@ -230,6 +249,31 @@ void GamePlayScene::Update3d() {
 			}
 		}
 
+		//敵機のダメージ処理
+		for (std::unique_ptr<Enemy>& enemy : enemys_) {
+
+			if (isGushing_) {
+				pm_->Active(
+					{
+						enemy->GetMatWorld().m[3][0],
+						enemy->GetMatWorld().m[3][1],
+						enemy->GetMatWorld().m[3][2] },
+					{2.0f,0.0f,2.0f },
+					{-2.0f,0.0f,-2.0f },
+
+					{ 3.0f,10.0f,3.0f },
+					{ -3.0f,0.0f,-3.0f },
+					{ 0.0f,0.001f,0.0f },
+					1000,
+					5.0f,
+					0.0f,
+					20
+					);
+			}
+
+			isGushing_ = false;
+		}
+
 		//敵機をデスフラグで削除
 		enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
 			return enemy->IsDead();
@@ -269,16 +313,19 @@ void GamePlayScene::Update3d() {
 				enemy->SetIsDamage(false);
 
 				pm_->Active(
-					particle_,
 					{
 						enemy->GetMatWorld().m[3][0],
 						enemy->GetMatWorld().m[3][1],
 						enemy->GetMatWorld().m[3][2] },
 					{ 2.0f ,2.0f,2.0f },
+					{ 2.0f ,2.0f,2.0f },
+
 					{ 5.0f,5.0f,5.0f },
+					{ 5.0f,5.0f,5.0f },
+
 					{ 0.0f,0.001f,0.0f },
-					20,
-					3.0f,
+					100,
+					2.0f,
 					0.0f,
 					10
 					);
@@ -319,15 +366,18 @@ void GamePlayScene::Update3d() {
 			player_->SetIsDamage(false);
 
 			pm_->Active(
-				particle_,
 				{
 					player_->GetMatWorld().m[3][0],
 					player_->GetMatWorld().m[3][1],
 					player_->GetMatWorld().m[3][2] },
 				{ 2.0f ,2.0f,2.0f },
+				{ 2.0f ,2.0f,2.0f },
+
 				{ 5.0f,5.0f,5.0f },
+				{ 5.0f,5.0f,5.0f },
+
 				{ 0.0f,0.001f,0.0f },
-				20,
+				100,
 				3.0f,
 				0.0f,
 				10
@@ -405,9 +455,15 @@ void GamePlayScene::Update3d() {
 		player_->UpdateReticle(LockOnTargetPos_);
 	}
 
+
+#pragma region Tube
+	tubeManager_->Update();
+#pragma endregion
+
 	player_->Update();
 
 	pm_->Update();
+
 	blackOut_->Update();
 
 	BlackOutUpdate();
@@ -419,6 +475,10 @@ void GamePlayScene::Update2d() {
 void GamePlayScene::Draw3d() {
 	//天球描画
 	skydome_->Draw();
+
+#pragma region Tube
+	tubeManager_->Draw();
+#pragma endregion
 
 	doorL_->Draw();
 	doorR_->Draw();
@@ -618,6 +678,13 @@ Vector3 GamePlayScene::LoadCommandsVector3(
 
 void GamePlayScene::Finalize() {
 	SafeDelete(skydome_);
+
+#pragma region Tube
+	tubeManager_->Finalize();
+	SafeDelete(tubeManager_);
+	SafeDelete(tubeModel_);
+#pragma endregion
+
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Finalize();
 	}

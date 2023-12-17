@@ -306,6 +306,7 @@ void Enemy::Fall() {
 	Object3d::Update();
 
 	if (GetPosition().y <= kDeadBorder_) {
+		gameScene_->SetIsGushing(true);
 		isDead_ = true;
 	}
 

@@ -1,4 +1,4 @@
-﻿/*プレイヤー*/
+/*プレイヤー*/
 
 #pragma once
 #include "Model.h"
@@ -17,6 +17,7 @@
 
 #include <List>
 #include <memory>
+#include <Cart/Cart.h>
 
 class GamePlayScene;
 class PlayerBullet;
@@ -284,6 +285,8 @@ private: //メンバ変数
 	//スピード
 	float speed_ = 0.5f;
 
+	//カート
+	Cart* cart_ = nullptr;
 private: //ImGui用
 	//Vector3の要素数
 	static const int kVector3Count_ = 3;

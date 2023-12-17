@@ -122,6 +122,10 @@ bool Player::Initialize() {
 
 	bulletGauge_->SetPosition({ 64,64 });
 	bulletGauge_->SetSize({ 0.5f,0.5f });
+
+	bulletGauge_->GetAmountSprite()->SetColor({ 0.7f,0.7f,0.2f,0.5f });
+
+	bulletGauge_->Update();
 #pragma endregion
 
 	//テキスト
@@ -324,7 +328,7 @@ void Player::Update() {
 					{
 						Object3d::GetPosition().x,
 						Object3d::GetPosition().y - 100.0f,
-						Object3d::GetPosition().z - 5.0f
+						Object3d::GetPosition().z - 20.0f
 					}
 				);
 
