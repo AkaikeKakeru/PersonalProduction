@@ -1,4 +1,4 @@
-﻿/*パーティクルマネージャー*/
+/*パーティクルマネージャー*/
 
 #pragma once
 
@@ -112,20 +112,22 @@ public: // メンバ関数
 	/// <summary>
 	/// パーティクル発射
 	/// </summary>
-	/// <param name="p">パーティクル</param>
 	/// <param name="setMove">初期位置</param>
-	/// <param name="setPos">位置</param>
-	/// <param name="setVel">速度</param>
+	/// <param name="setPosP">位置+</param>
+	/// <param name="setPosM">位置-</param>
+	/// <param name="setVelP">速度+</param>
+	/// <param name="setVelM">速度-</param>
 	/// <param name="setAcc">加速度(重力など)</param>
 	/// <param name="setQua">個数</param>
 	///  <param name="scaleStart">開始スケール</param>
 	///  <param name="scaleEnd">終了スケール</param>
 	///  <param name="life">持続</param>
 	void Active(
-		Particle* p,
 		const Vector3& setmove,
-		const Vector3& setpos,
-		const Vector3& setvel,
+		const Vector3& setposP,
+		const Vector3& setposM,
+		const Vector3& setvelP,
+		const Vector3& setvelM,
 		const Vector3& setacc,
 		const int& setQua,
 		const float& scaleStart,
