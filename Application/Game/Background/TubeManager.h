@@ -45,6 +45,10 @@ public://メンバ関数
 		speed_ = speed;
 	}
 
+	void SetRotation(const Vector3& rotation) {
+		rotation_ = rotation;
+	}
+
 	void SetScale(const Vector3& scale) {
 		scale_ = scale;
 	}
@@ -68,6 +72,9 @@ private: //メンバ変数
 
 	//スケール
 	Vector3 scale_ = { 0,0,0 };
+
+	//回転
+	Vector3 rotation_ = { 0,0,0 };
 
 private: //ImGui用
 	//Vector3の要素数

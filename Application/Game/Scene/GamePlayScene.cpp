@@ -123,6 +123,9 @@ void GamePlayScene::Initialize3d() {
 
 	tubeManager_->SetSpeed(16.0f);
 
+	tubeManager_->SetRotation(CreateRotationVector(
+		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
+
 	tubeManager_->SetScale({ 100,100,100 });
 
 	tubeManager_->SetCamera(camera_);
