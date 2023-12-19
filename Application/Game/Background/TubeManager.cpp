@@ -3,26 +3,13 @@
 void TubeManager::Initialize() {
 	float popPos = -scale_.z * 2;
 
-	AddTube(
-		{0,0,kTubePopPosZ_},
-		{0,0,0},
-		scale_
-	);
-	AddTube(
-		{0,0,kTubePopPosZ_ + popPos},
-		{0,0,0},
-		scale_
-	);
-	AddTube(
-		{0,0,kTubePopPosZ_ + (popPos * 2)},
-		{0,0,0},
-		scale_
-	);
-	AddTube(
-		{0,0,kTubePopPosZ_ + (popPos * 3)},
-		{0,0,0},
-		scale_
-	);
+	for (int i = 0; i < 5; i++) {
+		AddTube(
+			{0,0,kTubePopPosZ_ + (popPos * i)},
+			rotation_,
+			scale_
+		);
+	}
 }
 
 void TubeManager::Update() {
@@ -32,7 +19,7 @@ void TubeManager::Update() {
 	if (timerRePop_ >= kRePopTime_) {
 		AddTube(
 			{0,0,kTubePopPosZ_},
-			{0,0,0},
+			rotation_,
 			scale_
 		);
 
