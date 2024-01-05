@@ -1,23 +1,10 @@
 /*プレイヤー*/
 
 #pragma once
-#include "Model.h"
-#include "Object3d.h"
+
+#include "Character.h"
 #include "RailCamera.h"
-#include "Sprite.h"
-#include "SpriteBasis.h"
-#include <Input.h>
-
-#include "Cursor.h"
-#include "Ease.h"
-#include "Gauge.h"
-#include "Text.h"
-
 #include "Shake.h"
-
-#include <List>
-#include <memory>
-#include <Cart/Cart.h>
 
 class GamePlayScene;
 class PlayerBullet;
@@ -26,7 +13,7 @@ class CollisionManager;
 
 //プレイヤー
 class Player
-	: public Object3d {
+	: public Character {
 public: //静的メンバ関数
 	//オブジェクト生成
 	static Player* Create(Model* model = nullptr);
@@ -62,7 +49,10 @@ public: //定数
 	const char* groupName_ = "Player";
 
 	//自機のデフォルト体力
-	const float kDefaultPlayerLife_ = 10.0f;
+	const float kDefaultLife_ = 10.0f;
+
+	//HP用イージング最大時間
+	const float kMaxTimeHP_ = 30.0f;
 
 	//銃ダメージ量
 	const float kGunDamage_ = 3.0f;
@@ -73,65 +63,17 @@ public: //定数
 	//デフォルトクールタイム
 	const int kDefaultBulletCooltime_ = 1;
 
-	//自機のデフォルトY座標
+	//デフォルトX座標
+	const float kDefaultPosX_ = 0.0f;
+	//デフォルトY座標
 	const float kDefaultPosY_ = -5.0f;
-
-	//自機のデフォルトZ座標
+	//デフォルトZ座標
 	const float kDefaultPosZ_ = 30.0f;
 
 public: //アクセッサ
-	//ゲームシーンのセット
-	void SetGameScene(GamePlayScene* gameScene) {
-		gameScene_ = gameScene;
-	}
-
-	//位置の取得
-	const Vector3& GetPosition() const {
-		return worldTransform_.position_;
-	}
-	//半径の取得
-	float GetRadius() const {
-		return radiusCollider_;
-	}
-
 	//レールカメラのワールド変換取得
 	void SetWorldTransformRailCamera(WorldTransform* worldTransformRailCamera) {
 		worldTransform_.parent_ = worldTransformRailCamera;
-	}
-
-	//弾モデルのセット
-	void SetBulletModel(Model* bulletModel) {
-		bulletModel_ = bulletModel;
-	}
-
-	//体力取得
-	float GetLife() {
-		return life_;
-	}
-
-	//体力のセット
-	void SetLife(float life) {
-		life_ = life;
-	}
-
-	//デスフラグの取得
-	bool IsDead() {
-		return isDead_;
-	}
-
-	//デスフラグのセット
-	void SetIsDead(bool isDead) {
-		isDead_ = isDead;
-	}
-
-	//ダメージフラグの取得
-	bool IsDamage() {
-		return isDamage_;
-	}
-
-	//ダメージフラグのセット
-	void SetIsDamage(bool isDamage) {
-		isDamage_ = isDamage;
 	}
 
 	//隠れフラグの取得
@@ -144,31 +86,6 @@ public: //アクセッサ
 		isHide_ = isHide;
 	}
 
-	//スタートフラグの取得
-	bool IsStart() {
-		return isStart_;
-	}
-
-	//スタートフラグのセット
-	void SetIsStart(bool isStart) {
-		isStart_ = isStart;
-	}
-
-	//ゲームオーバーフラグの取得
-	bool IsOver() {
-		return isOver_;
-	}
-
-	//ゲームオーバーフラグのセット
-	void SetIsOver(bool isOver) {
-		isOver_ = isOver;
-	}
-
-	//HPゲージの取得
-	Gauge* GetHPGauge() const {
-		return hpGauge_;
-	}
-
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -179,31 +96,13 @@ private: //静的メンバ変数
 
 private: //メンバ変数
 	//テキスト
-	Text* text_ = nullptr;
-
-	//ゲームシーン
-	GamePlayScene* gameScene_ = nullptr;
-
-	//半径
-	float radiusCollider_ = 1.0f;
+	Text* textEmpty_ = nullptr;
 
 	//カーソル
 	Cursor* cursor{};
 
 	//3dレティクルのワールド変換
 	WorldTransform worldTransform3dReticle_;
-
-	//弾モデル
-	Model* bulletModel_ = nullptr;
-
-	//体力
-	float life_ = kDefaultPlayerLife_;
-
-	//デスフラグ
-	bool isDead_ = false;
-
-	//ダメージフラグ
-	bool isDamage_ = false;
 
 	//隠れフラグ
 	bool isHide_ = false;
@@ -216,26 +115,6 @@ private: //メンバ変数
 
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
-
-	/// <summary>
-	/// HP
-	/// </summary>
-	Gauge* hpGauge_ = {};
-
-	//HPゲージの位置(左上角)
-	Vector2 positionHPGauge_ = {
-		0,
-		0
-	};
-
-	//HPゲージ位置のオフセット
-	Vector2 positionHPGaugeOffset_ = {
-		0,
-		0
-	};
-
-	//HP用イージング最大時間
-	float maxTimeHP_ = 30.0f;
 
 	/// <summary>
 	/// 残弾
@@ -260,33 +139,6 @@ private: //メンバ変数
 	//シェイク
 	Shake shake_;
 
-	//スタートフラグ
-	bool isStart_ = false;
-	//ゲームオーバーフラグ
-	bool isOver_ = false;
-
-	//タイマー最大値
-	int timerMax_ = 60;
-	//タイマー現在値
-	int timerNow_ = 0;
-
-	//イーズ
-	Ease ease_;
-
-	//イーズ2
-	Ease ease_2;
-
-	//イーズ3
-	Ease ease_3;
-
-	//イーズ4
-	Ease ease_4;
-
-	//スピード
-	float speed_ = 0.5f;
-
-	//カート
-	Cart* cart_ = nullptr;
 private: //ImGui用
 	//Vector3の要素数
 	static const int kVector3Count_ = 3;
