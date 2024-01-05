@@ -99,7 +99,7 @@ void GamePlayScene::Initialize3d() {
 
 #pragma region Player
 	player_ = Player::Create(planeModel_);
-	player_->SetGameScene(this);
+	player_->SetGamePlayScene(this);
 	player_->SetBulletModel(bulletModel_);
 	player_->SetCamera(camera_);
 	//player_->Update();
