@@ -115,6 +115,7 @@
     <ClCompile Include="Application\Game\Background\Tube.cpp" />
     <ClCompile Include="Application\Game\Background\TubeManager.cpp" />
     <ClCompile Include="Application\Game\Cart\Cart.cpp" />
+    <ClCompile Include="Application\Game\Character.cpp" />
     <ClCompile Include="Application\Game\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\Game\Enemy\EnemyBullet.cpp" />
     <ClCompile Include="Application\Game\Player\Player.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Application\Game\Background\Tube.h" />
     <ClInclude Include="Application\Game\Background\TubeManager.h" />
     <ClInclude Include="Application\Game\Cart\Cart.h" />
+    <ClInclude Include="Application\Game\Character.h" />
     <ClInclude Include="Application\Game\Enemy\Enemy.h" />
     <ClInclude Include="Application\Game\Enemy\EnemyBullet.h" />
     <ClInclude Include="Application\Game\GameMain.h" />
