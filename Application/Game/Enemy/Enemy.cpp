@@ -136,6 +136,13 @@ void Enemy::Update() {
 	Character::GetHPGauge()->DecisionFluctuation();
 	Character::GetHPGauge()->SetIsFluct(true);
 
+	Character::GetCart()->SetPosition(Vector3{
+		worldTransform_.matWorld_.m[3][0],
+		worldTransform_.matWorld_.m[3][1] + kConfigCartPosY_,
+		worldTransform_.matWorld_.m[3][2]
+		}
+	);
+
 	Character::Update();
 }
 

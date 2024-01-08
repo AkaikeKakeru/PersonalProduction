@@ -21,6 +21,7 @@
 Input* Character::input_ = Input::GetInstance();
 CollisionManager* Character::collisionManager_ = CollisionManager::GetInstance();
 SpriteBasis* Character::spriteBas_ = SpriteBasis::GetInstance();
+Model* Character::cartModel_ = nullptr;
 
 Character* Character::Create() {
 	//オブジェクトのインスタンスを生成
@@ -33,9 +34,6 @@ Character* Character::Create() {
 }
 
 bool Character::Initialize() {
-	if (camera_) {
-		camera_->Update();
-	}
 
 	if (!Object3d::Initialize()) {
 		return false;
@@ -61,6 +59,11 @@ bool Character::Initialize() {
 	hpGauge_->SetPosition({ 64,64 });
 	hpGauge_->SetSize({ 1,1 });
 #pragma endregion
+
+	cart_ = new Cart();
+	cart_->Initialize();
+	cart_->SetModel(cartModel_);
+	cart_->SetCamera(camera_);
 
 	return true;
 }
@@ -120,10 +123,13 @@ void Character::Update() {
 	}
 
 	hpGauge_->Update();
+
+	cart_->Update();
 }
 
 void Character::Draw() {
 	Object3d::Draw(worldTransform_);
+	cart_->Draw();
 }
 
 void Character::DrawUI() {
@@ -156,6 +162,9 @@ void Character::DrawImgui() {
 
 void Character::Finalize() {
 	hpGauge_->Finalize();
+	cart_->Finalize();
+	SafeDelete(cart_);
+	//SafeDelete(cartModel_);
 }
 
 void Character::OnCollision(const CollisionInfo& info) {
@@ -211,6 +220,8 @@ void Character::OverMove() {
 	Object3d::SetRotation(move);
 
 	Object3d::Update();
+
+	cart_->SetRotation(Object3d::GetRotation());
 
 	if (endPositionEase_.IsEnd()) {
 		SetIsOver(true);

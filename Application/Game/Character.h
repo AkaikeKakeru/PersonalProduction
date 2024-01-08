@@ -22,9 +22,17 @@ class CollisionManager;
 //キャラクター
 class Character
 	: public Object3d {
+public: // 定数
+	//カートの高さのコンフィグ
+	const float kConfigCartPosY_ = -2.5f;
+
 public: //静的メンバ関数
 	//キャラクター生成
 	static Character* Create();
+
+	static void SetCartModel(Model* cartModel) {
+		cartModel_ = cartModel;
+	}
 
 public://メンバ関数
 	virtual bool Initialize() override;
@@ -119,6 +127,10 @@ public: //アクセッサ
 		return hpGauge_;
 	}
 
+	Cart* GetCart() const {
+		return cart_;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -126,6 +138,9 @@ private: //静的メンバ変数
 	static Input* input_;
 	//スプライト基盤
 	static SpriteBasis* spriteBas_;
+
+	//カートモデル
+	static Model* cartModel_;
 
 public:
 	//ゲームプレイシーンの取得

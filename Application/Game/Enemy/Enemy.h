@@ -45,7 +45,7 @@ public://定数
 	static const int kFireInterval = 60 * 5;
 
 	//デスボーダー
-	const float kDeadBorder_ = -30.0f;
+	const float kDeadBorder_ = -80.0f;
 
 //public: //定数
 	//調整変数グループ名
