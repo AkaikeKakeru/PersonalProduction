@@ -102,8 +102,6 @@ void GamePlayScene::Initialize3d() {
 	player_->SetGamePlayScene(this);
 	player_->SetBulletModel(bulletModel_);
 	player_->SetCamera(camera_);
-	//player_->Update();
-
 #pragma endregion
 
 #pragma region Enemy
@@ -240,15 +238,17 @@ void GamePlayScene::Update3d() {
 				railCamera_->SetPhaseAdvance(true);
 			}
 			else {
-				//blackOut_->SetIs(true);
-				//blackOut_->SetIsOpen(false);
-				//if (blackOut_->IsEnd()) {
-				//	//シーンの切り替えを依頼
-				//	SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-				//}
+				if (!arrangeTile_->IsOpen()) {
+					arrangeTile_->Update();
+				}
+				else {
+					arrangeTile_->Reset(true, false);
+				}
 
-				//シーンの切り替えを依頼
-				SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+				if (arrangeTile_->IsEnd()) {
+					//シーンの切り替えを依頼
+					SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+				}
 			}
 		}
 
@@ -261,8 +261,8 @@ void GamePlayScene::Update3d() {
 						enemy->GetMatWorld().m[3][0],
 						enemy->GetMatWorld().m[3][1],
 						enemy->GetMatWorld().m[3][2] },
-					{2.0f,0.0f,2.0f },
-					{-2.0f,0.0f,-2.0f },
+					{ 2.0f,0.0f,2.0f },
+					{ -2.0f,0.0f,-2.0f },
 
 					{ 3.0f,10.0f,3.0f },
 					{ -3.0f,0.0f,-3.0f },
@@ -397,7 +397,7 @@ void GamePlayScene::Update3d() {
 		}
 
 		UpdateEnemyPopCommands();
-	}
+		}
 	else {
 		Vector3 startCameraMove = railCamera_->GetWorldTransform()->position_;
 
@@ -470,7 +470,7 @@ void GamePlayScene::Update3d() {
 	blackOut_->Update();
 
 	BlackOutUpdate();
-}
+	}
 
 void GamePlayScene::Update2d() {
 }
@@ -537,12 +537,14 @@ void GamePlayScene::AddEnemy(
 	std::unique_ptr<Enemy> newEnemy =
 		std::make_unique<Enemy>();
 	newEnemy->Initialize();
-	newEnemy->SetGameScene(this);
+	newEnemy->SetGamePlayScene(this);
 	newEnemy->SetPlayer(player_);
 
 	newEnemy->SetScale(scale);
 	newEnemy->SetRotation(rota);
 	newEnemy->SetPosition(pos);
+
+	newEnemy->ReSetEasePos();
 
 	newEnemy->SetModel(planeEnemyModel_);
 	newEnemy->SetBulletModel(bulletModel_);
