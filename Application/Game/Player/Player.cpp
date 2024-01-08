@@ -58,6 +58,9 @@ bool Player::Initialize() {
 
 	Character::Initialize();
 
+	modelActive_ = model_;
+	modelHide_ = model_;
+
 	collider_->SetAttribute(COLLISION_ATTR_PLAYER);
 
 	worldTransform3dReticle_.Initialize();
@@ -232,15 +235,21 @@ void Player::Update() {
 	if (Character::IsStart()) {
 		//入力で隠れフラグ操作
 		if (input_->PressMouse(1)) {
+			Object3d::SetModel(modelHide_);
 			isHide_ = true;
 		}
 		else {
+			Object3d::SetModel(modelActive_);
 			isHide_ = false;
 		}
 
 		//隠れフラグが立っている時
 		if (isHide_) {
-			const float hidePosY = -7.5f;
+			if (isHideOld_ == false) {
+				cartPosYLock_ = worldTransform_.matWorld_.m[3][1] + kConfigCartPosY_;
+			}
+			const float hidePosY = cartPosYLock_ + 2.0f;
+
 
 			if (remainBulletCount_ < kBulletRimit_) {
 				remainBulletCount_++;
@@ -355,7 +364,33 @@ void Player::Update() {
 	}
 #endif // _DEBUG
 
+	if (IsHide()) {
+
+	Character::GetCart()->SetPosition(
+		Vector3{
+			worldTransform_.matWorld_.m[3][0],
+			cartPosYLock_,
+			worldTransform_.matWorld_.m[3][2]
+		}
+	);
+	}
+	else {
+		Character::GetCart()->SetPosition(
+			Vector3{
+				worldTransform_.matWorld_.m[3][0],
+				worldTransform_.matWorld_.m[3][1] + kConfigCartPosY_,
+				worldTransform_.matWorld_.m[3][2]
+			}
+		);
+	}
+
 	Character::Update();
+	if (IsHide()) {
+		isHideOld_ = true;
+	}
+	else {
+		isHideOld_ = false;
+	}
 }
 
 void Player::Draw() {

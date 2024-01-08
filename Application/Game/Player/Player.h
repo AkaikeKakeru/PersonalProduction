@@ -86,6 +86,12 @@ public: //アクセッサ
 		isHide_ = isHide;
 	}
 
+	//ポージングモデルのセット
+	void SetModelPauses(Model* active, Model* hyde) {
+		modelActive_ = active;
+		modelHide_ = hyde;
+	};
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -144,6 +150,12 @@ private: //メンバ変数
 
 	//オーバー位置用イーズを、セットアップしたかのフラグ
 	bool isSetupOverPositionEase_ = false;
+
+	Model* modelActive_ = nullptr;
+	Model* modelHide_ = nullptr;
+
+	float cartPosYLock_ = {};
+	bool isHideOld_ = false;
 
 public:
 	Player() = default;
