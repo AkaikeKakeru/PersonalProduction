@@ -10,6 +10,7 @@
 #ifdef _DEBUG
 #include <imgui.h>
 #endif
+#include <Character.h>
 
 using namespace ColorPallet;
 
@@ -33,19 +34,37 @@ void TitleScene::Initialize() {
 	camera_->SetTarget({ 0,ConvertToRadian(-90.0f),0 });
 	camera_->SetEye( { 20,-10,30 } );
 
-	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("human", true);
+	playerModel_ = new Model();
+	playerModel_ = Model::LoadFromOBJ("human", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
+
+	cartModel_ = new Model();
+	cartModel_ = Model::LoadFromOBJ("cart",true);
+
 #pragma region Player
-	player_ = new Object3d();
-	player_ = Object3d::Create();
+	playerObj_ = new Object3d();
+	playerObj_ = Object3d::Create();
 
-	player_->SetPosition({ 0,0,-50.0f });
+	playerObj_->SetPosition({ 0,0,-50.0f });
 
-	player_->SetModel(planeModel_);
-	player_->SetCamera(camera_);
+	playerObj_->SetModel(playerModel_);
+	playerObj_->SetCamera(camera_);
+#pragma endregion
+
+#pragma region cart
+	cart_ = new Object3d();
+	cart_ = Object3d::Create();
+
+	cart_->SetPosition({
+		playerObj_->GetPosition().x,
+		playerObj_->GetPosition().y -2.5f,
+		playerObj_->GetPosition().z}
+	);
+
+	cart_->SetModel(cartModel_);
+	cart_->SetCamera(camera_);
 #pragma endregion
 
 #pragma region Skydome
@@ -188,7 +207,8 @@ void TitleScene::Draw() {
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
 	//天球描画
 	skydome_->Draw();
-	player_->Draw();
+	playerObj_->Draw();
+	cart_->Draw();
 
 	Object3d::PostDraw();
 
@@ -210,8 +230,11 @@ void TitleScene::Draw() {
 void TitleScene::Finalize() {
 	SafeDelete(skydome_);
 
-	SafeDelete(player_);
-	SafeDelete(planeModel_);
+	SafeDelete(cart_);
+	SafeDelete(cartModel_);
+
+	SafeDelete(playerObj_);
+	SafeDelete(playerModel_);
 	SafeDelete(skydomeModel_);
 	SafeDelete(sprite_);
 
@@ -247,10 +270,10 @@ void TitleScene::CameraUpdate() {
 }
 
 void TitleScene::PlayerUpdate() {
-	Vector3 pos = player_->GetPosition();
+	Vector3 pos = playerObj_->GetPosition();
 	Vector3 move{ 0,0,0 };
 
-	if (player_->GetPosition().z >= 0.0f) {
+	if (playerObj_->GetPosition().z >= 0.0f) {
 		move = { 0,0,0 };
 	}
 	else {
@@ -261,9 +284,17 @@ void TitleScene::PlayerUpdate() {
 
 	pos += move;
 
-	player_->SetPosition(pos);
+	playerObj_->SetPosition(pos);
 
-	player_->Update();
+	playerObj_->Update();
+
+	cart_->SetPosition({
+		playerObj_->GetPosition().x,
+		-15.0f,
+		playerObj_->GetPosition().z}
+	);
+
+	cart_->Update();
 }
 
 void TitleScene::BlackOutUpdate() {

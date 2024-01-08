@@ -66,11 +66,16 @@ private:
 #endif
 
 	// オブジェクト
-	Object3d* player_ = nullptr;
-	Model* planeModel_ = nullptr;
+	Object3d* playerObj_ = nullptr;
+	Model* playerModel_ = nullptr;
 
 	Skydome* skydome_ = nullptr;
 	Model* skydomeModel_ = nullptr;
+
+	//カートモデル
+	Object3d* cart_ = nullptr;
+	Model* cartModel_ = nullptr;
+
 	/// スプライト
 	/// </summary>
 	Sprite* sprite_ = nullptr;
