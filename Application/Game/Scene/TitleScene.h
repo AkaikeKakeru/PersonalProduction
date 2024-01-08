@@ -20,6 +20,7 @@
 #include "SceneManager.h"
 #include "Fade.h"
 #include "ArrangeTile.h"
+#include "TubeManager.h"
 
 #ifdef _DEBUG
 #include "ImGuiManager.h"
@@ -72,6 +73,8 @@ private:
 	Skydome* skydome_ = nullptr;
 	Model* skydomeModel_ = nullptr;
 
+	Model* tubeModel_ = nullptr;
+
 	//カートモデル
 	Object3d* cart_ = nullptr;
 	Model* cartModel_ = nullptr;
@@ -98,4 +101,7 @@ private:
 
 	//タイルならべのシーン遷移
 	ArrangeTile* arrangeTile_ = nullptr;
+
+	//背景筒マネージャー
+	TubeManager* tubeManager_;
 };

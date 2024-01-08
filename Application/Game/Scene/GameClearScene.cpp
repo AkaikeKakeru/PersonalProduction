@@ -41,7 +41,10 @@ void GameClearScene::Initialize() {
 	doorModel_ = Model::LoadFromOBJ("cube", true);
 
 	cartModel_ = new Model();
-	cartModel_ = Model::LoadFromOBJ("cart",true);
+	cartModel_ = Model::LoadFromOBJ("cart", true);
+
+	tubeModel_ = new Model();
+	tubeModel_ = Model::LoadFromOBJ("BG_Tube", true);
 
 	playerObj_ = new Object3d();
 	playerObj_ = Object3d::Create();
@@ -59,8 +62,8 @@ void GameClearScene::Initialize() {
 
 	cart_->SetPosition({
 		playerObj_->GetPosition().x,
-		playerObj_->GetPosition().y -2.5f,
-		playerObj_->GetPosition().z}
+		playerObj_->GetPosition().y - 2.5f,
+		playerObj_->GetPosition().z }
 	);
 
 	cart_->SetModel(cartModel_);
@@ -70,10 +73,20 @@ void GameClearScene::Initialize() {
 	skydomeObj_ = new Object3d();
 	skydomeObj_ = Object3d::Create();
 	skydomeObj_->SetModel(skydomeModel_);
-	skydomeObj_->SetScale({ 1024.0f, 256.0f, 1024.0f });
+	skydomeObj_->SetScale({ 1100.0f, 256.0f, 1100.0f });
 	skydomeObj_->SetPosition({ 0,0,0 });
 	skydomeObj_->SetCamera(camera_);
 
+#pragma region Tube
+	tubeManager_ = new TubeManager();
+	tubeManager_->SetCamera(camera_);
+	tubeManager_->SetSpeed(16.0f);
+	tubeManager_->SetRotation(CreateRotationVector(
+		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
+	tubeManager_->SetScale({ 100,100,100 });
+	tubeManager_->SetTubeModel(tubeModel_);
+	tubeManager_->Initialize();
+#pragma endregion
 
 	doorL_ = new Object3d();
 	doorR_ = new Object3d();
@@ -178,7 +191,7 @@ void GameClearScene::Initialize() {
 	const int timeMax = 60;
 	Vector2 start =
 		buttonTitle_->GetPosition();
-	Vector2 end = {300.0f,buttonTitle_->GetPosition().y};
+	Vector2 end = { 300.0f,buttonTitle_->GetPosition().y };
 
 	easeButtonPosition_.Reset(
 		Ease::In_,
@@ -187,11 +200,11 @@ void GameClearScene::Initialize() {
 		ConvertVector2ToVector3(end)
 	);
 
-	start = 
+	start =
 		text_->GetPosition();
 
-	end = {text_->GetPosition().x,WinApp::Win_Height/2};
-	
+	end = { text_->GetPosition().x,WinApp::Win_Height / 2 };
+
 	easeTextPosition_.Reset(
 		Ease::In_,
 		timeMax,
@@ -207,6 +220,8 @@ void GameClearScene::Update() {
 		Introduction();
 	}
 	else {
+		tubeManager_->SetIsStop(true);
+
 		buttonTitle_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
 		buttonRetry_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
 
@@ -254,6 +269,10 @@ void GameClearScene::Update() {
 
 	skydomeObj_->Update();
 
+#pragma region Tube
+	tubeManager_->Update();
+#pragma endregion
+
 	doorL_->Update();
 	doorR_->Update();
 
@@ -280,10 +299,17 @@ void GameClearScene::Draw() {
 
 	//モデル本命処理
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
-
-	doorL_->Draw();
-	doorR_->Draw();
 	skydomeObj_->Draw();
+	if (isIntro_) {
+
+		doorL_->Draw();
+		doorR_->Draw();
+
+#pragma region Tube
+		tubeManager_->Draw();
+#pragma endregion
+	}
+
 	playerObj_->Draw();
 	cart_->Draw();
 
@@ -312,6 +338,12 @@ void GameClearScene::Draw() {
 void GameClearScene::Finalize() {
 	SafeDelete(cart_);
 	SafeDelete(cartModel_);
+
+#pragma region Tube
+	tubeManager_->Finalize();
+	SafeDelete(tubeManager_);
+	SafeDelete(tubeModel_);
+#pragma endregion
 
 	SafeDelete(playerObj_);
 	SafeDelete(skydomeObj_);
@@ -424,12 +456,12 @@ void GameClearScene::UIEase() {
 
 	if (easeTextPosition_.IsEnd()) {
 
-	easeButtonPosition_.Update();
-	move = easeButtonPosition_.GetReturn();
+		easeButtonPosition_.Update();
+		move = easeButtonPosition_.GetReturn();
 
-	buttonTitle_->SetPosition(
-		ConvertVector3ToVector2(move)
-	);
+		buttonTitle_->SetPosition(
+			ConvertVector3ToVector2(move)
+		);
 	}
 
 	buttonTitle_->Update();
@@ -488,8 +520,8 @@ void GameClearScene::PlayerUpdate() {
 
 	cart_->SetPosition({
 		playerObj_->GetPosition().x,
-		playerObj_->GetPosition().y-15.0f,
-		playerObj_->GetPosition().z}
+		playerObj_->GetPosition().y - 15.0f,
+		playerObj_->GetPosition().z }
 	);
 
 	cart_->Update();

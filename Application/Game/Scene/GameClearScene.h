@@ -21,6 +21,8 @@
 #include "ArrangeTile.h"
 #include "Ease.h"
 
+#include "TubeManager.h"
+
 #ifdef _DEBUG
 #include "ImGuiManager.h"
 #endif
@@ -70,6 +72,8 @@ private:
 	Object3d* skydomeObj_ = nullptr;
 	Model* skydomeModel_ = nullptr;
 
+	Model* tubeModel_ = nullptr;
+
 	//カートモデル
 	Object3d* cart_ = nullptr;
 	Model* cartModel_ = nullptr;
@@ -118,4 +122,7 @@ private:
 	ArrangeTile* arrangeTile_ = nullptr;
 
 #pragma endregion
+
+	//背景筒マネージャー
+	TubeManager* tubeManager_;
 };
