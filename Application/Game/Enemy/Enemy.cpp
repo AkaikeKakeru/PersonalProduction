@@ -39,98 +39,52 @@ Enemy* Enemy::Create(Model* model) {
 		instance->SetModel(model);
 	}
 
+	Character::Create();
+
 	return instance;
 }
 
 bool Enemy::Initialize() {
-	if (!Object3d::Initialize()) {
-		return false;
-	}
+	Character::SetGroupName(groupName_);
+	Character::SetDefaultLife(kDefaultLife_);
 
-	//コライダ－追加
+	Character::SetSpeed(0.2f);
 
-	//半径分だけ足元から浮いた座標を球の中心にする
-	SetCollider(new SphereCollider(
-		Vector3{ 0.0f,radius_,0.0f },
-		radius_)
-	);
+	Character::Initialize();
 
 	collider_->SetAttribute(COLLISION_ATTR_ENEMYS);
 
 	worldTransform3dReticle_.Initialize();
 
 #pragma region HPスプライト
-	hpGauge_ = new Gauge();
-	hpGauge_->Initialize();
+	Character::GetHPGauge()->SetRestMax(kDefaultLife_);
+	Character::GetHPGauge()->SetRest(kDefaultLife_);
+	Character::GetHPGauge()->SetMaxTime(kMaxTimeHP_);
 
-	hpGauge_->SetRestMax(life_);
-	hpGauge_->SetRest(life_);
-	hpGauge_->SetMaxTime(maxTimeHP_);
-
-	hpGauge_->SetPosition({ 64,64 });
-	hpGauge_->SetSize({ 1,0.25f });
+	Character::GetHPGauge()->SetPosition({ 64,64 });
+	Character::GetHPGauge()->SetSize({ 1,0.25f });
 #pragma endregion
-
-#ifdef _DEBUG
-	{
-		debugPos_[0] = { GetPosition().x };
-		debugPos_[1] = { GetPosition().y };
-		debugPos_[2] = { GetPosition().z };
-
-		debugDir_[0] = { GetRotation().x };
-		debugDir_[1] = { GetRotation().y };
-		debugDir_[2] = { GetRotation().z };
-	}
-#endif // _DEBUG
 
 	return true;
 }
 
 void Enemy::Update() {
-	camera_->Update();
-
-	Vector2 mousePosition_ =
-		input_->GetMousePosition();
 
 	// 現在の座標を取得
 	Vector3 position = Object3d::GetPosition();
 	// 現在の回転を取得
 	Vector3 rot = Object3d::GetRotation();
 
-#ifdef _DEBUG
-	//{
-	//	position = Vector3 {
-	//		debugPos_[0],
-	//		debugPos_[1],
-	//		debugPos_[2], };
-
-	//	rot = Vector3 {
-	//		debugDir_[0],
-	//		debugDir_[1],
-	//		debugDir_[2], };
-	//}
-#endif // _DEBUG
-
-
-	Vector3 angleX = { 1.0f,0.0f,0.0f };
-	Vector3 angleY = { 0.0f,1.0f,0.0f };
-	Vector3 angleZ = { 0.0f,0.0f,1.0f };
-
-	const float kSpeed = 0.2f;
-
 	//移動ベクトル
 	Vector3 moveVector = { 0.0f,0.0f,0.0f };
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
-	moveVector = { 0.0f,0.0f,kSpeed };
+	moveVector = { 0.0f,0.0f,Character::GetSpeed()};
 	moveVector = Vector3CrossMatrix4(moveVector, worldTransform_.matWorld_);
 
-	// 座標の回転を反映
-	Object3d::SetRotation(rot);
-
-	// 座標の変更を反映
-	Object3d::SetPosition(position);
+	Character::SetMovePos(position);
+	Character::SetMoveRota(rot);
 
 	//発射タイマーを減らしていき、0で発射処理
 	fireTimer_--;
@@ -144,7 +98,7 @@ void Enemy::Update() {
 	Object3d::Update();
 
 	//ライフ0で落下フラグ
-	if (life_ <= 0.0f) {
+	if (Character::GetLife() <= 0.0f) {
 		isFall_ = true;
 	}
 
@@ -171,71 +125,45 @@ void Enemy::Update() {
 		* matViewPort;
 
 	posHpGauge3d = Vector3TransformCoord(posHpGauge3d, matVPV);
-
-	hpGauge_->GetRestSprite()->
+	
+	Character::GetHPGauge()->GetRestSprite()->
 		SetColor({ 0.2f,0.7f,0.2f,5.0f });
-	hpGauge_->SetPosition({
+	Character::GetHPGauge()->SetPosition({
 		posHpGauge3d.x - 64.0f+ 16.0f,
 		posHpGauge3d.y - 32.0f
 		});
 
-	hpGauge_->SetRest(
-		static_cast<float>(life_)
+	Character::GetHPGauge()->DecisionFluctuation();
+	Character::GetHPGauge()->SetIsFluct(true);
+
+	Character::GetCart()->SetPosition(Vector3{
+		worldTransform_.matWorld_.m[3][0],
+		worldTransform_.matWorld_.m[3][1] + kConfigCartPosY_,
+		worldTransform_.matWorld_.m[3][2]
+		}
 	);
 
-	hpGauge_->DecisionFluctuation();
-	hpGauge_->SetIsFluct(true);
-
-	//通常は緑、ピンチで赤
-	if (life_ <= 5.0f) {
-		hpGauge_->GetRestSprite()->
-			SetColor({ 0.7f,0.2f,0.2f,1.0f });
-	}
-	else {
-		hpGauge_->GetRestSprite()->
-			SetColor({ 0.2f,0.7f,0.2f,1.0f });
-	}
-
-	hpGauge_->Update();
+	Character::Update();
 }
 
 void Enemy::Draw() {
-	Object3d::Draw(worldTransform_);
+	Character::Draw();
 }
 
 void Enemy::DrawUI() {
-	hpGauge_->Draw();
+	Character::DrawUI();
 }
 
 void Enemy::DrawImgui() {
-	debugPos_[0] = { GetPosition().x };
-	debugPos_[1] = { GetPosition().y };
-	debugPos_[2] = { GetPosition().z };
-
-	debugDir_[0] = { GetRotation().x };
-	debugDir_[1] = { GetRotation().y };
-	debugDir_[2] = { GetRotation().z };
-
-#ifdef _DEBUG
-	ImGui::Begin("Enemy");
-	ImGui::SetWindowPos(ImVec2(700, 0));
-	ImGui::SetWindowSize(ImVec2(500, 100));
-	ImGui::SliderFloat3(
-		"EnemyPos", debugPos_, -PosRange_, PosRange_);
-	ImGui::SliderFloat3(
-		"EnemyDir", debugDir_, 0, DirRange_);
-	ImGui::End();
-#endif
+	//Character::DrawImgui();
 }
 
 void Enemy::Finalize() {
-	hpGauge_->Finalize();
+	Character::Finalize();
 }
 
 void Enemy::OnCollision(const CollisionInfo& info) {
-	CollisionInfo colInfo = info;
-
-	isDamage_ = true;
+	Character::OnCollision(info);
 }
 
 void Enemy::Fire() {
@@ -269,7 +197,7 @@ void Enemy::Fire() {
 
 	newBullet->Initialize();
 
-	newBullet->SetModel(bulletModel_);
+	newBullet->SetModel(Character::GetBulletModel());
 
 	newBullet->SetScale(worldTransform_.scale_);
 	newBullet->SetRotation(worldTransform_.rotation_);
@@ -284,31 +212,74 @@ void Enemy::Fire() {
 
 	newBullet->SetBulletType(bulletType_);
 
-	newBullet->SetGameScene(gameScene_);
+	newBullet->SetGameScene(Character::GetGamePlayScene() );
 
 	newBullet->Update();
 
-	gameScene_->AddEnemyBullet(std::move(newBullet));
+	Character::GetGamePlayScene()->AddEnemyBullet(std::move(newBullet));
 }
 
 void Enemy::Fall() {
-	//移動ベクトル
-	Vector3 moveVector = { 0.0f,0.0f,0.0f };
+	//Vector3 rota = GetRotation();
 
-	moveVector = { 0.0f,-speedFall_,0.0f };
+	//Vector3 endFallRota = {
+	//	rota.x - ConvertToRadian(90.0f),
+	//	rota.y,
+	//	rota.z
+	//};
 
-	Vector3 pos = GetPosition();
+	//Quaternion fallQua = DirectionToDirection(rota,endFallRota);
 
-	pos += moveVector;
+	//SetRotation( RotateVector(rota, fallQua) );
 
-	SetPosition(pos);
-
-	Object3d::Update();
-
-	if (GetPosition().y <= kDeadBorder_) {
-		gameScene_->SetIsGushing(true);
-		isDead_ = true;
+	if(Character::IsOver()) {
+		Character::GetGamePlayScene()->SetIsGushing(true);
+		Character::SetIsDead(true);
 	}
+}
 
-	speedFall_ += 0.2f;
+void Enemy::ReSetEasePos() {
+	Character::GetStartPositionEase().Reset(
+		Ease::In_,
+		Character::GetTimerMax(),
+		{
+			Object3d::GetPosition().x,
+			Object3d::GetPosition().y ,
+			Object3d::GetPosition() .z - 10.0f
+		},
+			Object3d::GetPosition()
+		);
+
+	Character::GetStartRotationEase().Reset(
+		Ease::In_,
+		Character::GetTimerMax(),
+			Object3d::GetRotation(),
+		{
+			Object3d::GetRotation().x,
+			Object3d::GetRotation().y,
+			Object3d::GetRotation().z
+		}
+		);
+
+	Character::GetEndPositionEase().Reset(
+		Ease::In_,
+		60,
+		Object3d::GetPosition(),
+		{
+			Object3d::GetPosition().x,
+			kDeadBorder_,
+			Object3d::GetPosition().z - 20.0f
+		}
+	);
+
+	Character::GetEndRotationEase().Reset(
+		Ease::In_,
+		60,
+		Object3d::GetRotation(),
+		{
+			Object3d::GetRotation().x  - ConvertToRadian(90.0f),
+			Object3d::GetRotation().y,
+			Object3d::GetRotation().z
+		}
+	);
 }

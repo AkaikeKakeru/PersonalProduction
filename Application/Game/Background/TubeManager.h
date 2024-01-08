@@ -9,8 +9,8 @@
 //背景管理
 class TubeManager {
 public: //クラス内定数
-	const float kTubePopPosZ_ = 1200.0f;
-	const float kTubeDeadPosZ_ = -200.0f;
+	const float kTubePopPosZ_ = 800.0f;
+	const float kTubeDeadPosZ_ = -1000.0f;
 	const int32_t kRePopTime_ = 10;
 
 public: //静的メンバ関数
@@ -19,8 +19,6 @@ public://メンバ関数
 	void Initialize();
 	void Update();
 	void Draw();
-	void DrawUI();
-	void DrawImgui();
 	void Finalize();
 
 	//筒を追加
@@ -53,6 +51,9 @@ public://メンバ関数
 		scale_ = scale;
 	}
 
+	void SetIsStop(bool isStop) {
+		isStop_ = isStop;
+	}
 private: //メンバ変数
 
 	//背景筒用モデル
@@ -75,6 +76,9 @@ private: //メンバ変数
 
 	//回転
 	Vector3 rotation_ = { 0,0,0 };
+
+	//停止フラグ
+	bool isStop_ = false;
 
 private: //ImGui用
 	//Vector3の要素数

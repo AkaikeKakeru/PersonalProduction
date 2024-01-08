@@ -10,6 +10,8 @@
 #ifdef _DEBUG
 #include <imgui.h>
 #endif
+#include <Character.h>
+#include <Quaternion.h>
 
 using namespace ColorPallet;
 
@@ -31,30 +33,62 @@ void TitleScene::Initialize() {
 	//カメラ生成
 	camera_ = new Camera();
 	camera_->SetTarget({ 0,ConvertToRadian(-90.0f),0 });
-	camera_->SetEye( { 20,-10,30 } );
+	camera_->SetEye({ 20,-10,30 });
 
-	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("human", true);
+	playerModel_ = new Model();
+	playerModel_ = Model::LoadFromOBJ("human", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
+
+	cartModel_ = new Model();
+	cartModel_ = Model::LoadFromOBJ("cart", true);
+
+	tubeModel_ = new Model();
+	tubeModel_ = Model::LoadFromOBJ("BG_Tube", true);
+
 #pragma region Player
-	player_ = new Object3d();
-	player_ = Object3d::Create();
+	playerObj_ = new Object3d();
+	playerObj_ = Object3d::Create();
 
-	player_->SetPosition({ 0,0,-50.0f });
+	playerObj_->SetPosition({ 0,0,-50.0f });
 
-	player_->SetModel(planeModel_);
-	player_->SetCamera(camera_);
+	playerObj_->SetModel(playerModel_);
+	playerObj_->SetCamera(camera_);
+#pragma endregion
+
+#pragma region cart
+	cart_ = new Object3d();
+	cart_ = Object3d::Create();
+
+	cart_->SetPosition({
+		playerObj_->GetPosition().x,
+		playerObj_->GetPosition().y - 2.5f,
+		playerObj_->GetPosition().z }
+	);
+
+	cart_->SetModel(cartModel_);
+	cart_->SetCamera(camera_);
 #pragma endregion
 
 #pragma region Skydome
 	skydome_ = Skydome::Create();
 	skydome_->SetModel(skydomeModel_);
-	skydome_->SetScale({ 512.0f, 126.0f, 512.0f });
+	skydome_->SetScale({ 1024.0f, 126.0f, 1024.0f });
 	skydome_->SetPosition({ 0,0,-50.0f });
 	skydome_->SetCamera(camera_);
 	skydome_->Update();
+#pragma endregion
+
+#pragma region Tube
+	tubeManager_ = new TubeManager();
+	tubeManager_->SetCamera(camera_);
+	tubeManager_->SetSpeed(16.0f);
+	tubeManager_->SetRotation(CreateRotationVector(
+		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
+	tubeManager_->SetScale({ 100,100,100 });
+	tubeManager_->SetTubeModel(tubeModel_);
+	tubeManager_->Initialize();
 #pragma endregion
 
 	//ライト生成
@@ -168,6 +202,10 @@ void TitleScene::Update() {
 	CameraUpdate();
 
 	skydome_->Update();
+#pragma region Tube
+	tubeManager_->Update();
+#pragma endregion
+
 	PlayerUpdate();
 
 	buttonStart_->Update();
@@ -188,7 +226,13 @@ void TitleScene::Draw() {
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
 	//天球描画
 	skydome_->Draw();
-	player_->Draw();
+
+#pragma region Tube
+	tubeManager_->Draw();
+#pragma endregion
+
+	playerObj_->Draw();
+	cart_->Draw();
 
 	Object3d::PostDraw();
 
@@ -210,8 +254,17 @@ void TitleScene::Draw() {
 void TitleScene::Finalize() {
 	SafeDelete(skydome_);
 
-	SafeDelete(player_);
-	SafeDelete(planeModel_);
+	SafeDelete(cart_);
+	SafeDelete(cartModel_);
+
+#pragma region Tube
+	tubeManager_->Finalize();
+	SafeDelete(tubeManager_);
+	SafeDelete(tubeModel_);
+#pragma endregion
+
+	SafeDelete(playerObj_);
+	SafeDelete(playerModel_);
 	SafeDelete(skydomeModel_);
 	SafeDelete(sprite_);
 
@@ -247,10 +300,10 @@ void TitleScene::CameraUpdate() {
 }
 
 void TitleScene::PlayerUpdate() {
-	Vector3 pos = player_->GetPosition();
+	Vector3 pos = playerObj_->GetPosition();
 	Vector3 move{ 0,0,0 };
 
-	if (player_->GetPosition().z >= 0.0f) {
+	if (playerObj_->GetPosition().z >= 0.0f) {
 		move = { 0,0,0 };
 	}
 	else {
@@ -261,9 +314,17 @@ void TitleScene::PlayerUpdate() {
 
 	pos += move;
 
-	player_->SetPosition(pos);
+	playerObj_->SetPosition(pos);
 
-	player_->Update();
+	playerObj_->Update();
+
+	cart_->SetPosition({
+		playerObj_->GetPosition().x,
+		-15.0f,
+		playerObj_->GetPosition().z }
+	);
+
+	cart_->Update();
 }
 
 void TitleScene::BlackOutUpdate() {

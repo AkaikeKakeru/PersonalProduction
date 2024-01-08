@@ -31,8 +31,8 @@ void GameClearScene::Initialize() {
 	camera_->SetEye({ 0, 0, 0 });
 	camera_->SetTarget({ 0, 0, 0 });
 
-	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("human", true);
+	playerModel_ = new Model();
+	playerModel_ = Model::LoadFromOBJ("human", true);
 
 	skydomeModel_ = new Model();
 	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
@@ -40,23 +40,53 @@ void GameClearScene::Initialize() {
 	doorModel_ = new Model();
 	doorModel_ = Model::LoadFromOBJ("cube", true);
 
-	planeObj_ = new Object3d();
-	planeObj_ = Object3d::Create();
-	planeObj_->SetModel(planeModel_);
-	planeObj_->SetPosition({ 0, -5.0f, 150.0f });
-	planeObj_->SetRotation(CreateRotationVector(
-		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	planeObj_->SetCamera(camera_);
+	cartModel_ = new Model();
+	cartModel_ = Model::LoadFromOBJ("cart", true);
 
-	camera_->SetTarget(planeObj_->GetPosition());
+	tubeModel_ = new Model();
+	tubeModel_ = Model::LoadFromOBJ("BG_Tube", true);
+
+	playerObj_ = new Object3d();
+	playerObj_ = Object3d::Create();
+	playerObj_->SetModel(playerModel_);
+	playerObj_->SetPosition({ 0, -5.0f, 150.0f });
+	playerObj_->SetRotation(CreateRotationVector(
+		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
+	playerObj_->SetCamera(camera_);
+
+	camera_->SetTarget(playerObj_->GetPosition());
+
+#pragma region cart
+	cart_ = new Object3d();
+	cart_ = Object3d::Create();
+
+	cart_->SetPosition({
+		playerObj_->GetPosition().x,
+		playerObj_->GetPosition().y - 2.5f,
+		playerObj_->GetPosition().z }
+	);
+
+	cart_->SetModel(cartModel_);
+	cart_->SetCamera(camera_);
+#pragma endregion
 
 	skydomeObj_ = new Object3d();
 	skydomeObj_ = Object3d::Create();
 	skydomeObj_->SetModel(skydomeModel_);
-	skydomeObj_->SetScale({ 1024.0f, 256.0f, 1024.0f });
+	skydomeObj_->SetScale({ 1100.0f, 256.0f, 1100.0f });
 	skydomeObj_->SetPosition({ 0,0,0 });
 	skydomeObj_->SetCamera(camera_);
 
+#pragma region Tube
+	tubeManager_ = new TubeManager();
+	tubeManager_->SetCamera(camera_);
+	tubeManager_->SetSpeed(16.0f);
+	tubeManager_->SetRotation(CreateRotationVector(
+		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
+	tubeManager_->SetScale({ 100,100,100 });
+	tubeManager_->SetTubeModel(tubeModel_);
+	tubeManager_->Initialize();
+#pragma endregion
 
 	doorL_ = new Object3d();
 	doorR_ = new Object3d();
@@ -161,7 +191,7 @@ void GameClearScene::Initialize() {
 	const int timeMax = 60;
 	Vector2 start =
 		buttonTitle_->GetPosition();
-	Vector2 end = {300.0f,buttonTitle_->GetPosition().y};
+	Vector2 end = { 300.0f,buttonTitle_->GetPosition().y };
 
 	easeButtonPosition_.Reset(
 		Ease::In_,
@@ -170,11 +200,11 @@ void GameClearScene::Initialize() {
 		ConvertVector2ToVector3(end)
 	);
 
-	start = 
+	start =
 		text_->GetPosition();
 
-	end = {text_->GetPosition().x,WinApp::Win_Height/2};
-	
+	end = { text_->GetPosition().x,WinApp::Win_Height / 2 };
+
 	easeTextPosition_.Reset(
 		Ease::In_,
 		timeMax,
@@ -190,6 +220,8 @@ void GameClearScene::Update() {
 		Introduction();
 	}
 	else {
+		tubeManager_->SetIsStop(true);
+
 		buttonTitle_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
 		buttonRetry_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
 
@@ -215,9 +247,9 @@ void GameClearScene::Update() {
 	}
 
 	Vector3 playerWorldPos = {
-		planeObj_->GetMatWorld().m[3][0],
-		planeObj_->GetMatWorld().m[3][1],
-		planeObj_->GetMatWorld().m[3][2]
+		playerObj_->GetMatWorld().m[3][0],
+		playerObj_->GetMatWorld().m[3][1],
+		playerObj_->GetMatWorld().m[3][2]
 	};
 
 	const float distance = 100.0f;
@@ -233,27 +265,18 @@ void GameClearScene::Update() {
 		UIEase();
 	}
 
-	Vector3 move{  };
-	float endPointZ = 900.0f;
-
-	if (posPlayer.z < endPointZ) {
-		move.z = (float)cPlayerSpeed_;
-
-		move.y = RoopFloat(move.y, 0.1f, -1.0f, 1.0f);
-
-		posPlayer += move;
-
-	}
-	planeObj_->SetPosition(posPlayer);
-
 	light_->Update();
 
 	skydomeObj_->Update();
 
+#pragma region Tube
+	tubeManager_->Update();
+#pragma endregion
+
 	doorL_->Update();
 	doorR_->Update();
 
-	planeObj_->Update();
+	PlayerUpdate();
 
 	camera_->SetEye(posCamera);
 	camera_->SetTarget(posPlayer);
@@ -276,11 +299,19 @@ void GameClearScene::Draw() {
 
 	//モデル本命処理
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
-
-	doorL_->Draw();
-	doorR_->Draw();
 	skydomeObj_->Draw();
-	planeObj_->Draw();
+	if (isIntro_) {
+
+		doorL_->Draw();
+		doorR_->Draw();
+
+#pragma region Tube
+		tubeManager_->Draw();
+#pragma endregion
+	}
+
+	playerObj_->Draw();
+	cart_->Draw();
 
 	Object3d::PostDraw();
 
@@ -305,9 +336,18 @@ void GameClearScene::Draw() {
 }
 
 void GameClearScene::Finalize() {
-	SafeDelete(planeObj_);
+	SafeDelete(cart_);
+	SafeDelete(cartModel_);
+
+#pragma region Tube
+	tubeManager_->Finalize();
+	SafeDelete(tubeManager_);
+	SafeDelete(tubeModel_);
+#pragma endregion
+
+	SafeDelete(playerObj_);
 	SafeDelete(skydomeObj_);
-	SafeDelete(planeModel_);
+	SafeDelete(playerModel_);
 	SafeDelete(skydomeModel_);
 	SafeDelete(doorModel_);
 
@@ -361,9 +401,9 @@ void GameClearScene::Introduction() {
 	}
 
 	Vector3 playerWorldPos = {
-		planeObj_->GetMatWorld().m[3][0],
-		planeObj_->GetMatWorld().m[3][1],
-		planeObj_->GetMatWorld().m[3][2]
+		playerObj_->GetMatWorld().m[3][0],
+		playerObj_->GetMatWorld().m[3][1],
+		playerObj_->GetMatWorld().m[3][2]
 	};
 
 	Vector3 posPlayer = playerWorldPos;
@@ -383,7 +423,7 @@ void GameClearScene::Introduction() {
 			}
 		);
 
-		planeObj_->SetRotation(CreateRotationVector(
+		playerObj_->SetRotation(CreateRotationVector(
 			{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
 
 		isIntro_ = false;
@@ -392,7 +432,7 @@ void GameClearScene::Introduction() {
 		posPlayer += Vector3{ 0,0,(float)cPlayerSpeed_ };
 
 	}
-	planeObj_->SetPosition(posPlayer);
+	playerObj_->SetPosition(posPlayer);
 }
 
 float GameClearScene::RoopFloat(float f, float speed, float min, float max) {
@@ -416,12 +456,12 @@ void GameClearScene::UIEase() {
 
 	if (easeTextPosition_.IsEnd()) {
 
-	easeButtonPosition_.Update();
-	move = easeButtonPosition_.GetReturn();
+		easeButtonPosition_.Update();
+		move = easeButtonPosition_.GetReturn();
 
-	buttonTitle_->SetPosition(
-		ConvertVector3ToVector2(move)
-	);
+		buttonTitle_->SetPosition(
+			ConvertVector3ToVector2(move)
+		);
 	}
 
 	buttonTitle_->Update();
@@ -461,4 +501,28 @@ void GameClearScene::BlackOutUpdate() {
 	if (arrangeTile_->IsEnd()) {
 		arrangeTile_->SetIs(false);
 	}
+}
+
+void GameClearScene::PlayerUpdate() {
+	Vector3 pos = playerObj_->GetPosition();
+	Vector3 move{ 0,0,0 };
+
+	float endPointZ = 900.0f;
+
+	if (pos.z < endPointZ) {
+		move.z = (float)cPlayerSpeed_;
+		pos += move;
+	}
+
+	playerObj_->SetPosition(pos);
+
+	playerObj_->Update();
+
+	cart_->SetPosition({
+		playerObj_->GetPosition().x,
+		playerObj_->GetPosition().y - 15.0f,
+		playerObj_->GetPosition().z }
+	);
+
+	cart_->Update();
 }
