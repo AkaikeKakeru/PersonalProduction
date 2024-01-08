@@ -34,9 +34,6 @@ public://メンバ関数
 	virtual void DrawImgui();
 	virtual void Finalize();
 
-	//調整項目の適用
-	virtual void ApplyAdjustmentVariables();
-
 	//衝突時コールバック関数
 	virtual void OnCollision(const CollisionInfo& info) override;
 
@@ -55,6 +52,11 @@ public: //アクセッサ
 	//半径の取得
 	float GetRadius() const {
 		return radiusCollider_;
+	}
+
+	//スピードのセット
+	void SetSpeed(float speed) {
+		speed_ = speed;
 	}
 
 	//弾モデルのセット
@@ -130,6 +132,16 @@ public:
 	GamePlayScene* GetGamePlayScene() {
 		return gamePlayScene_;
 	}
+
+	//半径取得
+	float GetRadius() {
+		return radiusCollider_;
+	}
+	//半径セット
+	void SetRadius(float radius) {
+		radiusCollider_ = radius;
+	}
+
 	//弾モデルの取得
 	Model* GetBulletModel() {
 		return bulletModel_;
@@ -157,21 +169,21 @@ public:
 		return timerMax_;
 	}
 
-	//開始イーズ始点の取得
-	Ease& GetStartEase1() {
-		return startEase1_;
+	//開始Pos用イーズの取得
+	Ease& GetStartPositionEase() {
+		return startPositionEase_;
 	}
-	//開始イーズ終点点の取得
-	Ease& GetStartEase2() {
-		return startEase2_;
+	//開始Rota用イーズの取得
+	Ease& GetStartRotationEase() {
+		return startRotationEase_;
 	}
-	//終了イーズ始点の取得
-	Ease& GetEndEase1() {
-		return endEase1_;
+	//終了Pos用イーズの取得
+	Ease& GetEndPositionEase() {
+		return endPositionEase_;
 	}
-	//終了イーズ終点の取得
-	Ease& GetEndEase2() {
-		return endEase2_;
+	//終了Rota用イーズの取得
+	Ease& GetEndRotationEase() {
+		return endRotationEase_;
 	}
 	//グループ名の取得
 	void SetGroupName(const char* groupName) {
@@ -193,6 +205,23 @@ public:
 		return defaultPos_;
 	}
 
+	void SetDebugPosition(const float* debugPos) {
+		for (int i = 0; i < 3; i++) {
+			debugPos_[i] = debugPos[i];
+		}
+	}
+	const float* GetDebugPosition() {
+		return debugPos_;
+	}
+
+	void SetDebugDirection(const float* debugDir) {
+		for (int i = 0; i < 3; i++) {
+			debugDir_[i] = debugDir[i];
+		}
+	}
+	const float* GetDebugDirection() {
+		return debugDir_;
+	}
 private:
 	//調整変数グループ名
 	const char* groupName_ = "Character";
@@ -260,14 +289,14 @@ private: //メンバ変数
 	//タイマー現在値
 	int32_t timerNow_ = 0;
 
-	//開始イーズ始点
-	Ease startEase1_;
-	//開始イーズ終了
-	Ease startEase2_;
-	//終了イーズ始点
-	Ease endEase1_;
-	//終了イーズ終了
-	Ease endEase2_;
+	//開始Pos用イーズ
+	Ease startPositionEase_;
+	//開始Rota用イーズ
+	Ease startRotationEase_;
+	//終了Pos用イーズ
+	Ease endPositionEase_;
+	//終了Rota用イーズ
+	Ease endRotationEase_;
 
 	//スピード
 	float speed_ = 0.5f;

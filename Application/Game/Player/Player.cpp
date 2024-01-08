@@ -52,9 +52,9 @@ Player* Player::Create(Model* model) {
 bool Player::Initialize() {
 	Character::SetGroupName(groupName_);
 	Character::SetDefaultLife(kDefaultLife_);
-	Character::SetDefaultPosition({
-		kDefaultPosX_,kDefaultPosY_,kDefaultPosZ_
+	Character::SetDefaultPosition({ kDefaultPosX_,kDefaultPosY_,kDefaultPosZ_
 		});
+	Character::SetSpeed(0.5f);
 
 	Character::Initialize();
 
@@ -67,6 +67,31 @@ bool Player::Initialize() {
 
 	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
 	spriteReticle_->SetSize({ 64,64 });
+
+#pragma region 調整項目
+	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
+
+	//グループ追加
+	AdjustmentVariables::GetInstance()->CreateGroup(groupName_);
+
+	adjustmentVariables_->AddItem(
+		groupName_, "Position",
+		worldTransform_.position_);
+
+	adjustmentVariables_->AddItem(
+		groupName_, "Rotation",
+		worldTransform_.rotation_);
+
+	adjustmentVariables_->AddItem(
+		groupName_, "Scale",
+		worldTransform_.scale_);
+
+	adjustmentVariables_->AddItem(
+		groupName_, "RadiusCollider",
+		Character::GetRadius());
+
+	ApplyAdjustmentVariables();
+#pragma endregion
 
 #pragma region HPスプライト
 	Character::GetHPGauge()->SetRestMax(kDefaultLife_);
@@ -94,6 +119,26 @@ bool Player::Initialize() {
 	bulletGauge_->Update();
 #pragma endregion
 
+#ifdef _DEBUG
+	{
+		float debugPos[3] = {
+			GetPosition().x,
+			GetPosition().y,
+			GetPosition().z
+		};
+
+		Character::SetDebugPosition(debugPos);
+
+		float debugDir[3] = {
+			GetRotation().x,
+			GetRotation().y,
+			GetRotation().z
+		};
+
+		Character::SetDebugDirection(debugDir);
+	}
+#endif // _DEBUG
+
 	//テキスト
 	textEmpty_ = new Text();
 	textEmpty_->Initialize(Framework::kTextTextureIndex_);
@@ -117,14 +162,14 @@ bool Player::Initialize() {
 	Vector2 start{ -500,64 };
 	Vector2 end{ 64,64 };
 
-	Character::GetStartEase1().Reset(
+	setupHpGaugePos_.Reset(
 		Ease::In_,
 		Character::GetTimerMax(),
 		ConvertVector2ToVector3(start),
 		ConvertVector2ToVector3(end)
 	);
 
-	Character::GetStartEase2().Reset(
+	Character::GetStartPositionEase().Reset(
 		Ease::In_,
 		Character::GetTimerMax(),
 		{
@@ -138,8 +183,14 @@ bool Player::Initialize() {
 			Character::GetDefaultPosition().z
 		}
 		);
+	Character::GetStartRotationEase().Reset(
+		Ease::In_,
+		Character::GetTimerMax(),
+		Object3d::GetRotation(),
+		Object3d::GetRotation()
+	);
 
-	Character::GetEndEase1().Reset(
+	Character::GetEndPositionEase().Reset(
 		Ease::In_,
 		60,
 		Object3d::GetPosition(),
@@ -150,14 +201,14 @@ bool Player::Initialize() {
 		}
 	);
 
-	Character::GetEndEase1().Reset(
+	Character::GetEndRotationEase().Reset(
 		Ease::In_,
 		60,
-		Object3d::GetPosition(),
+		Object3d::GetRotation(),
 		{
-			Object3d::GetPosition().x,
-			Object3d::GetPosition().y - 100.0f,
-			Object3d::GetPosition().z
+			Object3d::GetRotation().x - ConvertToRadian(90.0f),
+			Object3d::GetRotation().y,
+			Object3d::GetRotation().z
 		}
 	);
 
@@ -165,17 +216,10 @@ bool Player::Initialize() {
 }
 
 void Player::Update() {
-	Vector2 mousePosition_ =
-		input_->GetMousePosition();
-
 	// 現在の座標を取得
 	Vector3 position = Object3d::GetPosition();
 	// 現在の回転を取得
 	Vector3 rot = Object3d::GetRotation();
-
-	Vector3 angleX = { 1.0f,0.0f,0.0f };
-	Vector3 angleY = { 0.0f,1.0f,0.0f };
-	Vector3 angleZ = { 0.0f,0.0f,1.0f };
 
 	//移動ベクトル
 	Vector3 moveVector = { 0.0f,0.0f,0.0f };
@@ -242,28 +286,30 @@ void Player::Update() {
 	if (Character::IsStart()) {
 		//ライフ0でデスフラグ
 		if (Character::GetLife() <= 0.0f) {
-			if (!Character::IsDead()) {
-				GetEndEase1().Reset(
+			if (!isSetupOverPositionEase_) {
+				GetEndPositionEase().Reset(
 					Ease::In_,
 					60,
 					Object3d::GetPosition(),
 					{
 						Object3d::GetPosition().x,
-						Object3d::GetPosition().y - 100.0f,
-						Object3d::GetPosition().z - 20.0f
+						Object3d::GetPosition().y - 60.0f,
+						Object3d::GetPosition().z - 30.0f
 					}
 				);
 
-				GetEndEase2().Reset(
+				GetEndRotationEase().Reset(
 					Ease::In_,
 					30,
 					Object3d::GetRotation(),
 					{
-						Object3d::GetRotation().x,
-						40.0f,
+						Object3d::GetRotation().x - ConvertToRadian(40.0f),
+						Object3d::GetRotation().y,
 						Object3d::GetRotation().z
 					}
 				);
+
+				isSetupOverPositionEase_ = true;
 			}
 		}
 	}
@@ -292,6 +338,23 @@ void Player::Update() {
 		textEmpty_->Print();
 	}
 
+#ifdef _DEBUG
+	{
+
+		position = {
+			Character::GetDebugPosition()[0],
+			Character::GetDebugPosition()[1],
+			Character::GetDebugPosition()[2]
+		};
+
+		rot = {
+			Character::GetDebugDirection()[0],
+			Character::GetDebugDirection()[1],
+			Character::GetDebugDirection()[2]
+		};
+	}
+#endif // _DEBUG
+
 	Character::Update();
 }
 
@@ -308,6 +371,15 @@ void Player::DrawUI() {
 }
 
 void Player::DrawImgui() {
+
+#pragma region 調整項目
+	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
+
+	//調整項目の更新
+	adjustmentVariables_->Update();
+	ApplyAdjustmentVariables();
+#pragma endregion
+
 	Character::DrawImgui();
 }
 
@@ -320,7 +392,34 @@ void Player::Finalize() {
 }
 
 void Player::ApplyAdjustmentVariables() {
-	Character::ApplyAdjustmentVariables();
+	//Character::ApplyAdjustmentVariables();
+
+	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
+
+	worldTransform_.position_ =
+		adjustmentVariables_->GetVector3Value(
+			groupName_, "Position"
+		);
+
+	Vector3 rota =
+		adjustmentVariables_->GetVector3Value(
+			groupName_, "Rotation"
+		);
+
+	worldTransform_.rotation_ = CreateRotationVector(
+		rota, ConvertToRadian(0.0f)
+	);
+
+	worldTransform_.scale_ =
+		adjustmentVariables_->GetVector3Value(
+			groupName_, "Scale"
+		);
+
+	Character::SetRadius(
+		adjustmentVariables_->GetFloatValue(
+			groupName_, "RadiusCollider"
+		)
+	);
 }
 
 void Player::OnCollision(const CollisionInfo& info) {
@@ -420,6 +519,16 @@ void Player::Attack() {
 }
 
 void Player::StartMove() {
+	Vector3 move{};
+	setupHpGaugePos_.Update();
+	move = setupHpGaugePos_.GetReturn();
+
+	Character::GetHPGauge()->SetPosition(
+		ConvertVector3ToVector2(move)
+	);
+
+	Character::GetHPGauge()->Update();
+
 	Character::StartMove();
 }
 
