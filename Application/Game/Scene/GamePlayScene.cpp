@@ -84,8 +84,11 @@ void GamePlayScene::Initialize3d() {
 	debugCamera_ = new DebugCamera();
 	debugCamera_->Initialize({ 0,20,-50 }, { ConvertToRadian(10),0,0 });
 
-	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("human", true);
+	playerActiveModel_ = new Model();
+	playerActiveModel_ = Model::LoadFromOBJ("human", true);
+	playerHideModel_ = new Model();
+	playerHideModel_ = Model::LoadFromOBJ("human-hide", true);
+
 	planeEnemyModel_ = Model::LoadFromOBJ("planeEnemy", true);
 
 	skydomeModel_ = new Model();
@@ -97,11 +100,20 @@ void GamePlayScene::Initialize3d() {
 	tubeModel_ = new Model();
 	tubeModel_ = Model::LoadFromOBJ("BG_Tube", true);
 
+	cartModel_ = new Model();
+	cartModel_ = Model::LoadFromOBJ("cart",true);
+
+	Character::SetCartModel(cartModel_);
+
+	Cart::Create(cartModel_);
+
 #pragma region Player
-	player_ = Player::Create(planeModel_);
+	player_ = Player::Create(playerActiveModel_);
+	player_->SetCamera(camera_);
+	player_->Initialize();
 	player_->SetGamePlayScene(this);
 	player_->SetBulletModel(bulletModel_);
-	player_->SetCamera(camera_);
+	player_->SetModelPauses(playerActiveModel_, playerHideModel_);
 #pragma endregion
 
 #pragma region Enemy
@@ -110,28 +122,21 @@ void GamePlayScene::Initialize3d() {
 
 #pragma region Skydome
 	skydome_ = Skydome::Create();
+	skydome_->SetCamera(camera_);
 	skydome_->SetModel(skydomeModel_);
 	skydome_->SetScale({ 1024.0f, 256.0f, 1024.0f });
 	skydome_->SetPosition({ 0,0,0 });
-	skydome_->SetCamera(camera_);
 #pragma endregion
 
 #pragma region Tube
 	tubeManager_ = new TubeManager();
-
+	tubeManager_->SetCamera(camera_);
 	tubeManager_->SetSpeed(16.0f);
-
 	tubeManager_->SetRotation(CreateRotationVector(
 		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
-
 	tubeManager_->SetScale({ 100,100,100 });
-
-	tubeManager_->SetCamera(camera_);
-
 	tubeManager_->SetTubeModel(tubeModel_);
-
 	tubeManager_->Initialize();
-
 #pragma endregion
 
 #pragma region 扉
@@ -141,6 +146,7 @@ void GamePlayScene::Initialize3d() {
 	doorPos_ = { 0,0,800 };
 
 	doorL_ = Object3d::Create();
+	doorL_->SetCamera(camera_);
 	doorL_->SetScale({ 50,400,10 });
 	Vector3 scaDoorL = doorL_->GetScale();
 
@@ -148,9 +154,9 @@ void GamePlayScene::Initialize3d() {
 	doorL_->SetRotation(CreateRotationVector(
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
 	doorL_->SetModel(doorModel_);
-	doorL_->SetCamera(camera_);
 
 	doorR_ = Object3d::Create();
+	doorR_->SetCamera(camera_);
 	doorR_->SetScale({ 50,400,10 });
 	Vector3 scaDoorR = doorR_->GetScale();
 
@@ -158,7 +164,6 @@ void GamePlayScene::Initialize3d() {
 	doorR_->SetRotation(CreateRotationVector(
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
 	doorR_->SetModel(doorModel_);
-	doorR_->SetCamera(camera_);
 #pragma endregion
 
 	//ライト生成
@@ -170,8 +175,8 @@ void GamePlayScene::Initialize3d() {
 	//パーティクル
 	particle_ = Particle::LoadFromObjModel("particle.png");
 	pm_ = ParticleManager::Create();
-	pm_->SetParticleModel(particle_);
 	pm_->SetCamera(camera_);
+	pm_->SetParticleModel(particle_);
 	pm_->SetColor({ 0.7f,0.4f,0.1f,0.7f });
 }
 
@@ -536,6 +541,7 @@ void GamePlayScene::AddEnemy(
 	const int bulletType) {
 	std::unique_ptr<Enemy> newEnemy =
 		std::make_unique<Enemy>();
+	newEnemy->SetCamera(camera_);
 	newEnemy->Initialize();
 	newEnemy->SetGamePlayScene(this);
 	newEnemy->SetPlayer(player_);
@@ -557,7 +563,6 @@ void GamePlayScene::AddEnemy(
 			)
 	);
 
-	newEnemy->SetCamera(camera_);
 	newEnemy->Update();
 	//リストに登録
 	enemys_.push_back(std::move(newEnemy));
@@ -690,6 +695,8 @@ void GamePlayScene::Finalize() {
 	SafeDelete(tubeModel_);
 #pragma endregion
 
+	SafeDelete(cartModel_);
+
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Finalize();
 	}
@@ -705,7 +712,9 @@ void GamePlayScene::Finalize() {
 
 	SafeDelete(bulletModel_);
 	SafeDelete(planeEnemyModel_);
-	SafeDelete(planeModel_);
+	SafeDelete(playerActiveModel_);
+	SafeDelete(playerHideModel_);
+
 	SafeDelete(skydomeModel_);
 
 	SafeDelete(particle_);

@@ -169,7 +169,8 @@ public: //メンバ変数
 	/// オブジェクト
 	/// </summary>
 	Object3d* planeObj_ = nullptr;
-	Model* planeModel_ = nullptr;
+	Model* playerActiveModel_ = nullptr;
+	Model* playerHideModel_ = nullptr;
 	Model* planeEnemyModel_ = nullptr;
 
 	Skydome* skydome_ = nullptr;
@@ -187,6 +188,9 @@ public: //メンバ変数
 	Object3d* doorL_ = nullptr;
 	//右扉
 	Object3d* doorR_ = nullptr;
+
+	//カートモデル
+	Model* cartModel_ = nullptr;
 
 	/// <summary>
 	/// パーティクル
