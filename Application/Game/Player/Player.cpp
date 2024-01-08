@@ -248,7 +248,7 @@ void Player::Update() {
 			if (isHideOld_ == false) {
 				cartPosYLock_ = worldTransform_.matWorld_.m[3][1] + kConfigCartPosY_;
 			}
-			const float hidePosY = cartPosYLock_ + 2.0f;
+			const float hidePosY = cartPosYLock_ + 3.0f;
 
 
 			if (remainBulletCount_ < kBulletRimit_) {
