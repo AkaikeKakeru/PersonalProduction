@@ -47,6 +47,9 @@ public:
 	void UIEase();
 
 	void BlackOutUpdate();
+
+	void PlayerUpdate();
+
 private:
 	static DirectXBasis* dxBas_;
 	static Input* input_;
@@ -61,11 +64,15 @@ private:
 #endif
 
 	// オブジェクト
-	Object3d* planeObj_ = nullptr;
-	Model* planeModel_ = nullptr;
+	Object3d* playerObj_ = nullptr;
+	Model* playerModel_ = nullptr;
 
 	Object3d* skydomeObj_ = nullptr;
 	Model* skydomeModel_ = nullptr;
+
+	//カートモデル
+	Object3d* cart_ = nullptr;
+	Model* cartModel_ = nullptr;
 
 	//扉の位置
 	Vector3 doorPos_{};
