@@ -46,6 +46,9 @@ void GameClearScene::Initialize() {
 	tubeModel_ = new Model();
 	tubeModel_ = Model::LoadFromOBJ("BG_Tube", true);
 
+	bottomBGModel_ = new Model();
+	bottomBGModel_ = Model::LoadFromOBJ("clearBottom", true);
+
 	playerObj_ = new Object3d();
 	playerObj_ = Object3d::Create();
 	playerObj_->SetModel(playerModel_);
@@ -76,6 +79,14 @@ void GameClearScene::Initialize() {
 	skydomeObj_->SetScale({ 1100.0f, 256.0f, 1100.0f });
 	skydomeObj_->SetPosition({ 0,0,0 });
 	skydomeObj_->SetCamera(camera_);
+
+	bottomBG_ = new Object3d();
+	bottomBG_ = Object3d::Create();
+	bottomBG_->SetModel(bottomBGModel_);
+	bottomBG_->SetScale({ 10.0f, 10.0f, 10.0f });
+	bottomBG_->SetPosition({ 0,-100,0 });
+	bottomBG_->SetCamera(camera_);
+	bottomBG_->Update();
 
 #pragma region Tube
 	tubeManager_ = new TubeManager();
@@ -268,6 +279,7 @@ void GameClearScene::Update() {
 	light_->Update();
 
 	skydomeObj_->Update();
+	bottomBG_->Update();
 
 #pragma region Tube
 	tubeManager_->Update();
@@ -300,6 +312,7 @@ void GameClearScene::Draw() {
 	//モデル本命処理
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
 	skydomeObj_->Draw();
+	bottomBG_->Draw();
 	if (isIntro_) {
 
 		doorL_->Draw();
@@ -347,8 +360,11 @@ void GameClearScene::Finalize() {
 
 	SafeDelete(playerObj_);
 	SafeDelete(skydomeObj_);
+	SafeDelete(bottomBG_);
+
 	SafeDelete(playerModel_);
 	SafeDelete(skydomeModel_);
+	SafeDelete(bottomBGModel_);
 	SafeDelete(doorModel_);
 
 	SafeDelete(sprite_);

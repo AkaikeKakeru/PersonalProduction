@@ -192,6 +192,9 @@ public: //メンバ変数
 	//カートモデル
 	Model* cartModel_ = nullptr;
 
+	Model* bottomBGModel_ = nullptr;
+	Object3d* bottomBG_ = nullptr;
+
 	/// <summary>
 	/// パーティクル
 	/// </summary>
