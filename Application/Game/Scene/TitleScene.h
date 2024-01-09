@@ -79,6 +79,9 @@ private:
 	Object3d* cart_ = nullptr;
 	Model* cartModel_ = nullptr;
 
+	Model* bottomBGModel_ = nullptr;
+	Object3d* bottomBG_ = nullptr;
+
 	/// スプライト
 	/// </summary>
 	Sprite* sprite_ = nullptr;

@@ -53,6 +53,10 @@ private: //メンバ変数
 	//スピード
 	float speed_ = 0.0f;
 
+	bool isStart_ = false;
+
+	int32_t timer_ = 10;
+
 private: //ImGui用
 	//Vector3の要素数
 	static const int kVector3Count_ = 3;

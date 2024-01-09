@@ -58,37 +58,45 @@ bool TubeBG::Initialize() {
 }
 
 void TubeBG::Update() {
-	camera_->Update();
+
+	if (timer_ <= 0) {
+		isStart_ = true;
+	}
+	else {
+		timer_--;
+	}
 
 	// 現在の座標を取得
 	Vector3 position = Object3d::GetPosition();
 	// 現在の回転を取得
 	Vector3 rot = Object3d::GetRotation();
+	if (isStart_) {
 
 #ifdef _DEBUG
-	//{
-	//	position = Vector3 {
-	//		debugPos_[0],
-	//		debugPos_[1],
-	//		debugPos_[2], };
+		//{
+		//	position = Vector3 {
+		//		debugPos_[0],
+		//		debugPos_[1],
+		//		debugPos_[2], };
 
-	//	rot = Vector3 {
-	//		debugDir_[0],
-	//		debugDir_[1],
-	//		debugDir_[2], };
-	//}
+		//	rot = Vector3 {
+		//		debugDir_[0],
+		//		debugDir_[1],
+		//		debugDir_[2], };
+		//}
 #endif // _DEBUG
 
-	Vector3 angleX = { 1.0f,0.0f,0.0f };
-	Vector3 angleY = { 0.0f,1.0f,0.0f };
-	Vector3 angleZ = { 0.0f,0.0f,1.0f };
+		Vector3 angleX = { 1.0f,0.0f,0.0f };
+		Vector3 angleY = { 0.0f,1.0f,0.0f };
+		Vector3 angleZ = { 0.0f,0.0f,1.0f };
 
-	//移動ベクトル
-	Vector3 moveVector = { 0.0f,0.0f,-speed_ };
-	//回転ベクトル
-	Vector3 rotVector = { 0.0f,0.0f,0.0f };
+		//移動ベクトル
+		Vector3 moveVector = { 0.0f,0.0f,-speed_ };
+		//回転ベクトル
+		Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
-	position += moveVector;
+		position += moveVector;
+	}
 
 	// 座標の回転を反映
 	Object3d::SetRotation(rot);

@@ -87,6 +87,9 @@ private:
 	//右扉
 	Object3d* doorR_ = nullptr;
 
+	Model* bottomBGModel_ = nullptr;
+	Object3d* bottomBG_ = nullptr;
+
 	// スプライト
 	Sprite* sprite_ = nullptr;
 
