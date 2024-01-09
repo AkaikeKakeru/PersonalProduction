@@ -103,6 +103,9 @@ void GamePlayScene::Initialize3d() {
 	cartModel_ = new Model();
 	cartModel_ = Model::LoadFromOBJ("cart",true);
 
+	bottomBGModel_ = new Model();
+	bottomBGModel_ = Model::LoadFromOBJ("bottom", true);
+
 	Character::SetCartModel(cartModel_);
 
 	Cart::Create(cartModel_);
@@ -165,6 +168,14 @@ void GamePlayScene::Initialize3d() {
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
 	doorR_->SetModel(doorModel_);
 #pragma endregion
+
+	bottomBG_ = new Object3d();
+	bottomBG_ = Object3d::Create();
+	bottomBG_->SetModel(bottomBGModel_);
+	bottomBG_->SetScale({ 10.0f, 10.0f, 10.0f });
+	bottomBG_->SetPosition({ 0,-100,0 });
+	bottomBG_->SetCamera(camera_);
+	bottomBG_->Update();
 
 	//ライト生成
 	light_ = new LightGroup();
@@ -418,6 +429,7 @@ void GamePlayScene::Update3d() {
 	light_->Update();
 
 	skydome_->Update();
+	bottomBG_->Update();
 
 	doorL_->Update();
 	doorR_->Update();
@@ -483,7 +495,7 @@ void GamePlayScene::Update2d() {
 void GamePlayScene::Draw3d() {
 	//天球描画
 	skydome_->Draw();
-
+	bottomBG_->Draw();
 #pragma region Tube
 	tubeManager_->Draw();
 #pragma endregion
@@ -688,14 +700,12 @@ Vector3 GamePlayScene::LoadCommandsVector3(
 
 void GamePlayScene::Finalize() {
 	SafeDelete(skydome_);
+	SafeDelete(bottomBG_);
 
 #pragma region Tube
 	tubeManager_->Finalize();
 	SafeDelete(tubeManager_);
-	SafeDelete(tubeModel_);
 #pragma endregion
-
-	SafeDelete(cartModel_);
 
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Finalize();
@@ -715,6 +725,9 @@ void GamePlayScene::Finalize() {
 	SafeDelete(playerActiveModel_);
 	SafeDelete(playerHideModel_);
 
+	SafeDelete(bottomBGModel_);
+	SafeDelete(tubeModel_);
+	SafeDelete(cartModel_);
 	SafeDelete(skydomeModel_);
 
 	SafeDelete(particle_);

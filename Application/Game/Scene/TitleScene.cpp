@@ -47,6 +47,9 @@ void TitleScene::Initialize() {
 	tubeModel_ = new Model();
 	tubeModel_ = Model::LoadFromOBJ("BG_Tube", true);
 
+	bottomBGModel_ = new Model();
+	bottomBGModel_ = Model::LoadFromOBJ("bottom", true);
+
 #pragma region Player
 	playerObj_ = new Object3d();
 	playerObj_ = Object3d::Create();
@@ -79,6 +82,14 @@ void TitleScene::Initialize() {
 	skydome_->SetCamera(camera_);
 	skydome_->Update();
 #pragma endregion
+
+	bottomBG_ = new Object3d();
+	bottomBG_ = Object3d::Create();
+	bottomBG_->SetModel(bottomBGModel_);
+	bottomBG_->SetScale({ 10.0f, 10.0f, 10.0f });
+	bottomBG_->SetPosition({ 0,-100,0 });
+	bottomBG_->SetCamera(camera_);
+	bottomBG_->Update();
 
 #pragma region Tube
 	tubeManager_ = new TubeManager();
@@ -202,6 +213,8 @@ void TitleScene::Update() {
 	CameraUpdate();
 
 	skydome_->Update();
+	bottomBG_->Update();
+
 #pragma region Tube
 	tubeManager_->Update();
 #pragma endregion
@@ -226,7 +239,7 @@ void TitleScene::Draw() {
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
 	//天球描画
 	skydome_->Draw();
-
+	bottomBG_->Draw();
 #pragma region Tube
 	tubeManager_->Draw();
 #pragma endregion
@@ -253,6 +266,7 @@ void TitleScene::Draw() {
 
 void TitleScene::Finalize() {
 	SafeDelete(skydome_);
+	SafeDelete(bottomBG_);
 
 	SafeDelete(cart_);
 	SafeDelete(cartModel_);
@@ -266,6 +280,7 @@ void TitleScene::Finalize() {
 	SafeDelete(playerObj_);
 	SafeDelete(playerModel_);
 	SafeDelete(skydomeModel_);
+	SafeDelete(bottomBGModel_);
 	SafeDelete(sprite_);
 
 	SafeDelete(light_);
