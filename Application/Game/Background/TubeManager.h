@@ -10,7 +10,7 @@
 class TubeManager {
 public: //クラス内定数
 	const float kTubePopPosZ_ = 800.0f;
-	const float kTubeDeadPosZ_ = -1000.0f;
+	const float kTubeDeadPosZ_ = -1200.0f;
 	const int32_t kRePopTime_ = 10;
 
 public: //静的メンバ関数

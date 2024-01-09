@@ -1,11 +1,11 @@
 #include "TubeManager.h"
 
 void TubeManager::Initialize() {
-	float popPos = -scale_.z * 2;
+	float popPos = scale_.z * 2;
 
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 10; i++) {
 		AddTube(
-			{ 0,0,kTubePopPosZ_ + (popPos * i) },
+			{ 0,0,kTubePopPosZ_ - (popPos * i) },
 			rotation_,
 			scale_
 		);
