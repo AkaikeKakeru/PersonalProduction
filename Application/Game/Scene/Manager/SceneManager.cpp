@@ -1,4 +1,6 @@
-﻿#include "SceneManager.h"
+﻿/*シーン管理*/
+
+#include "SceneManager.h"
 #include "ImGuiManager.h"
 #include <cassert>
 

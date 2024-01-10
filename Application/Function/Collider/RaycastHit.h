@@ -1,9 +1,11 @@
-﻿#pragma once
+﻿/*レイキャスト衝突時の情報*/
 
+#pragma once
 #include "BaseCollider.h"
 
 class Object3d;
 
+/*レイキャスト衝突時の情報*/
 struct RaycastHit {
 	//衝突相手のオブジェクト
 	Object3d* object_ = nullptr;

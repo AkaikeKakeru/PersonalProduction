@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*レールカメラ*/
+
+#pragma once
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 
@@ -13,16 +15,22 @@ public://メンバ関数
 	void Initialize(const Vector3 pos,
 		const Vector3 rotaRadianAngle);
 	void Update();
-
 	void Finalize();
-
 	void DrawImGui();
 
+	/// <summary>
+	/// スプライン曲線上の位置決め
+	/// </summary>
+	/// <param name="points">点の配列</param>
+	/// <param name="startIndex">開始フェーズ番号</param>
+	/// <param name="t">タイム</param>
+	/// <returns>スプライン曲線の位置</returns>
 	Vector3 SplinePosition(
 		const std::vector<Vector3>& points,
 		size_t startIndex,
 		float t);
 
+	//次のフェーズでの位置を探す
 	void SightNextPhasePosition();
 
 public://定数

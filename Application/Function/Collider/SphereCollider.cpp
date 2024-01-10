@@ -1,4 +1,6 @@
-﻿#include "SphereCollider.h"
+﻿/*球形コライダーの座標更新*/
+
+#include "SphereCollider.h"
 
 void SphereCollider::Update() {
 	//ワールド行列から座標を抽出

@@ -1,4 +1,6 @@
-﻿#include "ViewProjection.h"
+﻿/*ビュープロジェクション*/
+
+#include "ViewProjection.h"
 #include "WinApp.h"
 #include <cmath>
 #include <cassert>
@@ -17,7 +19,7 @@ void ViewProjection::Initialize() {
 	angle_ = ConvertToRadian(45.0f);
 	aspect_ = (float)WinApp::Win_Width/ WinApp::Win_Height;
 	nearClip_ = 0.1f;
-	farClip_ = 1000.0f;
+	farClip_ = 2000.0f;
 
 	CreateConstBuffer();
 	Maping();

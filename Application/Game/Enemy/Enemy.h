@@ -1,12 +1,7 @@
-﻿#pragma once
-#include "Model.h"
-#include "Object3d.h"
-#include "Sprite.h"
-#include "SpriteBasis.h"
-#include <Input.h>
+/*エネミー*/
 
-#include <list>
-#include <memory>
+#pragma once
+#include "Character.h"
 
 class GamePlayScene;
 class Player;
@@ -14,7 +9,7 @@ class CollisionManager;
 
 //エネミー
 class Enemy
-	: public Object3d {
+	: public Character {
 public: //サブ構造体
 	enum BulletType{
 		Gun_BulletType,
@@ -39,58 +34,45 @@ public://メンバ関数
 	//発射
 	void Fire();
 
+	//落下
+	void Fall();
+
+	//イージング位置リセット
+	void ReSetEasePos();
+
 public://定数
 	//発射間隔
 	static const int kFireInterval = 60 * 5;
 
-	//敵機のデフォルト体力
-	const float kDefaultEnemyLife_ = 10.0f;
+	//デスボーダー
+	const float kDeadBorder_ = -80.0f;
+
+//public: //定数
+	//調整変数グループ名
+	const char* groupName_ = "Enemy";
+
+	//自機のデフォルト体力
+	const float kDefaultLife_ = 10.0f;
+
+	//HP用イージング最大時間
+	const float kMaxTimeHP_ = 30.0f;
+
+	//銃ダメージ量
+	const float kGunDamage_ = 3.0f;
+
+	//デフォルトクールタイム
+	const int kDefaultBulletCooltime_ = 1;
+
+	//デフォルトX座標
+	const float kDefaultPosX_ = 0.0f;
+	//デフォルトY座標
+	const float kDefaultPosY_ = 0.0f;
+	//デフォルトZ座標
+	const float kDefaultPosZ_ = 0.0f;
 
 public: //アクセッサ
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_;
-	}
-	float GetRadius() const {
-		return radius_;
-	}
-
-	//弾モデルのセット
-	void SetBulletModel(Model* bulletModel) {
-		bulletModel_ = bulletModel;
-	}
-
-	//体力取得
-	float GetLife() {
-		return life_;
-	}
-
-	//体力のセット
-	void SetLife(float life) {
-		life_ = life;
-	}
-
-	//ダメージフラグの取得
-	bool IsDamage() {
-		return isDamage_;
-	}
-
-	//ダメージフラグのセット
-	void SetIsDamage(bool isDamage) {
-		isDamage_ = isDamage;
-	}
-
-	//デスフラグの取得
-	bool IsDead() {
-		return isDead_;
-	}
-	//デスフラグのセット
-	void SetIsDead(bool isDead) {
-		isDead_ = isDead;
-	}
-
-	//ゲームシーンのセット
-	void SetGameScene(GamePlayScene* gameScene) {
-		gameScene_ = gameScene;
 	}
 
 	//プレイヤーのセット
@@ -117,14 +99,8 @@ private: //静的メンバ変数
 	static SpriteBasis* spriteBas_;
 
 private: //メンバ変数
-	//ゲームシーン
-	GamePlayScene* gameScene_ = nullptr;
-
 	//プレイヤー
 	Player* player_ = nullptr;
-
-	//半径
-	float radius_ = 1.0f;
 
 	//3dレティクルのワールド変換
 	WorldTransform worldTransform3dReticle_;
@@ -132,16 +108,11 @@ private: //メンバ変数
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
 
-	//弾モデル
-	Model* bulletModel_ = nullptr;
+	//落下フラグ
+	bool isFall_ = false;
 
-	//体力
-	float life_ = kDefaultEnemyLife_;
-
-	//ダメージフラグ
-	bool isDamage_ = false; 
-	//デスフラグ
-	bool isDead_ = false;
+	//落下の速さ
+	float speedFall_ = 0.2f;
 
 	//発射タイマー
 	int32_t fireTimer_ = 0;
@@ -149,21 +120,28 @@ private: //メンバ変数
 	//弾種
 	int bulletType_ = Gun_BulletType;
 
-private: //ImGui用
-	//Vector3の要素数
-	static const int kVector3Count_ = 3;
+	///// <summary>
+	///// HP
+	///// </summary>
+	//Gauge* hpGauge_ = {};
 
-	//Pos範囲
-	const float PosRange_ = 30.0f;
+	////HPゲージの長さ
+	//float lengthHPGauge_ = 4.0f;
 
-	//Dir範囲
-	const float DirRange_ = ConvertToRadian(360.0f);
+	////HPゲージの位置(左上角)
+	//Vector2 positionHPGauge_ = {
+	//	lengthHPGauge_ * 2,
+	//	lengthHPGauge_ * 2
+	//};
 
-	//ImGui用敵Pos
-	float debugPos_[kVector3Count_] = {};
+	////HPゲージ位置のオフセット
+	//Vector2 positionHPGaugeOffset_ = {
+	//	lengthHPGauge_ / 2,
+	//	lengthHPGauge_ / 2 
+	//};
 
-	//ImGui用敵Dir
-	float debugDir_[kVector3Count_] = {};
+	////HP用イージング最大時間
+	//float maxTimeHP_ = 30.0f;
 
 public:
 	Enemy() = default;

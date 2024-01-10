@@ -1,0 +1,14 @@
+root = true
+
+[*.{cpp,h}]
+charset = utf-8
+
+indent_stayle = tab
+
+indent_size = 4
+
+end_of_line = 1f
+
+trim_trailing_whitespace = true
+
+insert_final_newLine = true

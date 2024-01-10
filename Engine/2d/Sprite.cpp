@@ -1,4 +1,6 @@
-﻿#include "Sprite.h"
+﻿/*スプライト*/
+
+#include "Sprite.h"
 #include "SafeDelete.h"
 #include "MyMath.h"
 #include "WinApp.h"

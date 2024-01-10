@@ -1,12 +1,19 @@
-﻿#include "WinApp.h"
+/*ウィンドウズアプリケーション。
+このクラスでウィンドウを作成する。*/
+
+#include "WinApp.h"
+#ifdef _DEBUG
 #include <imgui_impl_win32.h>
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+#endif
 
 LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+#ifdef _DEBUG
 	//ImGui用ウィンドウプロシージャ呼び出し
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
 		return true;
 	}
+#endif
 	
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {

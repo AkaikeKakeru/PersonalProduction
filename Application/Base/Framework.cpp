@@ -1,8 +1,18 @@
-﻿#include "Framework.h"
+/*コードの全体の処理を、
+初期化　更新　描画のグループとして三つに独立させる*/
+
+/*プロジェクト内の、ウィンドウ作成や基盤の初期化等の枠組みを行う*/
+
+#include "Framework.h"
 #include "Object3d.h"
 #include "SpriteBasis.h"
+#include "ParticleManager.h"
 #include "TitleScene.h"
+
+#ifdef _DEBUG
 #include <imgui.h>
+#endif
+#include <AdjustmentVariables.h>
 
 SceneManager* Framework::sceneManager_ = SceneManager::GetInstance();
 
@@ -44,12 +54,6 @@ void Framework::Initialize(){
 	//音声
 	audio_ = Audio::GetInstance();
 	audio_->Initialize();
-
-	//soundData1 = audio_->SoundLoadWave("Resource/fanfare.wav");
-
-	//再生
-	//audio_->SoundPlayWave(audio_->GetXAudio2().Get(), soundData1);
-
 #ifdef _DEBUG
 	//ImGuiマネージャー
 	ImGuiManager::GetInstance();
@@ -62,13 +66,26 @@ void Framework::Initialize(){
 	//描画基盤(スプライト)
 	SpriteBasis* spriteBas = SpriteBasis::GetInstance();
 	spriteBas->Initialize();
-	spriteBas->LoadTexture(0, "texture.png");
-	spriteBas->LoadTexture(1, "texture.png");
+	spriteBas->LoadTexture(kSampleTextureIndex_, "texture.png");
+	spriteBas->LoadTexture(kCursorTextureIndex_, "cursor.png");
+	spriteBas->LoadTexture(kGaugeTextureIndex_, "HPgauge.png");
+	spriteBas->LoadTexture(kBackgroundTextureIndex_, "remains_BG.png");
 
+	spriteBas->LoadTexture(kWhiteTextureIndex_, "white.png");
 	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");
+
+	//パーティクルマネージャー
+	ParticleManager::StaticInitialize(dxBas_->GetDevice().Get());
 
 	//ライト静的初期化
 	LightGroup::StaticInitialize(dxBas_->GetDevice().Get());
+
+	//ポストエフェクトの初期化
+	postEffect_ = new PostEffect();
+	postEffect_->Initialize();
+
+	//調整項目の読込
+	AdjustmentVariables::GetInstance()->LoadFiles();
 }
 
 void Framework::Update(){
@@ -88,5 +105,7 @@ void Framework::Finalize(){
 	imGuiManager_->Finalize();
 #endif // DEBUG
 	sceneManager_->Finalize();
+
+	delete postEffect_;
 	delete sceneFactory_;
 }

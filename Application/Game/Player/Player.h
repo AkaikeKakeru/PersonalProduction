@@ -1,21 +1,19 @@
-﻿#pragma once
-#include "Model.h"
-#include "Object3d.h"
-#include "RailCamera.h"
-#include "Sprite.h"
-#include "SpriteBasis.h"
-#include <Input.h>
+/*プレイヤー*/
 
-#include <list>
-#include <memory>
+#pragma once
+
+#include "Character.h"
+#include "RailCamera.h"
+#include "Shake.h"
 
 class GamePlayScene;
 class PlayerBullet;
+class Enemy;
 class CollisionManager;
 
 //プレイヤー
 class Player
-	: public Object3d {
+	: public Character {
 public: //静的メンバ関数
 	//オブジェクト生成
 	static Player* Create(Model* model = nullptr);
@@ -28,18 +26,33 @@ public://メンバ関数
 	void DrawImgui();
 	void Finalize();
 
+	//調整項目の適用
+	void ApplyAdjustmentVariables();
+
 	//衝突時コールバック関数
 	void OnCollision(const CollisionInfo& info) override;
 
-	//照準
-	void Reticle();
+	//照準更新
+	void UpdateReticle(const Vector3& targetWorldPos);
 
 	//発射攻撃
 	void Attack();
 
+	//開始時移動
+	void StartMove();
+
+	//脱落時移動
+	void OverMove();
+
 public: //定数
+	//調整変数グループ名
+	const char* groupName_ = "Player";
+
 	//自機のデフォルト体力
-	const float kDefaultPlayerLife_ = 10.0f;
+	const float kDefaultLife_ = 10.0f;
+
+	//HP用イージング最大時間
+	const float kMaxTimeHP_ = 30.0f;
 
 	//銃ダメージ量
 	const float kGunDamage_ = 3.0f;
@@ -47,60 +60,20 @@ public: //定数
 	//弾数の上限
 	const int kBulletRimit_ = 30;
 
+	//デフォルトクールタイム
+	const int kDefaultBulletCooltime_ = 1;
+
+	//デフォルトX座標
+	const float kDefaultPosX_ = 0.0f;
+	//デフォルトY座標
+	const float kDefaultPosY_ = -5.0f;
+	//デフォルトZ座標
+	const float kDefaultPosZ_ = 30.0f;
+
 public: //アクセッサ
-	//ゲームシーンのセット
-	void SetGameScene(GamePlayScene* gameScene) {
-		gameScene_ = gameScene;
-	}
-
-	const Vector3& GetPosition() const {
-		return worldTransform_.position_;
-	}
-	float GetRadius() const {
-		return radius_;
-	}
-
+	//レールカメラのワールド変換取得
 	void SetWorldTransformRailCamera(WorldTransform* worldTransformRailCamera) {
 		worldTransform_.parent_ = worldTransformRailCamera;
-	}
-
-	void SetDistanceFromCamera(float distance) {
-		distanceFromCamera_ = distance;
-	}
-
-	//弾モデルのセット
-	void SetBulletModel(Model* bulletModel) {
-		bulletModel_ = bulletModel;
-	}
-
-	//体力取得
-	float GetLife() {
-		return life_;
-	}
-
-	//体力のセット
-	void SetLife(float life) {
-		life_ = life;
-	}
-
-	//デスフラグの取得
-	bool IsDead() {
-		return isDead_;
-	}
-
-	//デスフラグのセット
-	void SetIsDead(bool isDead) {
-		isDead_ = isDead;
-	}
-
-	//ダメージフラグの取得
-	bool IsDamage() {
-		return isDamage_;
-	}
-
-	//ダメージフラグのセット
-	void SetIsDamage(bool isDamage) {
-		isDamage_ = isDamage;
 	}
 
 	//隠れフラグの取得
@@ -113,6 +86,12 @@ public: //アクセッサ
 		isHide_ = isHide;
 	}
 
+	//ポージングモデルのセット
+	void SetModelPauses(Model* active, Model* hyde) {
+		modelActive_ = active;
+		modelHide_ = hyde;
+	};
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -122,54 +101,61 @@ private: //静的メンバ変数
 	static SpriteBasis* spriteBas_;
 
 private: //メンバ変数
-	//ゲームシーン
-	GamePlayScene* gameScene_ = nullptr;
+	//テキスト
+	Text* textEmpty_ = nullptr;
 
-	//半径
-	float radius_ = 1.0f;
+	//カーソル
+	Cursor* cursor{};
 
 	//3dレティクルのワールド変換
 	WorldTransform worldTransform3dReticle_;
 
-	//カメラからの距離数値
-	float distanceFromCamera_ = 0.0f;
+	//隠れフラグ
+	bool isHide_ = false;
+
+	//残弾数
+	int remainBulletCount_ = kBulletRimit_;
+
+	//弾のクールタイム
+	int32_t bulletCooltime_ = kDefaultBulletCooltime_;
 
 	//レティクル用スプライト
 	Sprite* spriteReticle_ = nullptr;
 
-	//弾モデル
-	Model* bulletModel_ = nullptr;
-	
-	//体力
-	float life_ = kDefaultPlayerLife_;
+	//HPゲージのセットアップ位置
+	Ease setupHpGaugePos_ = {};
 
-	//デスフラグ
-	bool isDead_ = false;
+	/// <summary>
+	/// 残弾
+	/// </summary>
+	Gauge* bulletGauge_ = {};
 
-	//ダメージフラグ
-	bool isDamage_ = false; 
+	//残弾ゲージの位置(左上角)
+	Vector2 positionBulletGauge_ = {
+		0,
+		0
+	};
 
-	//隠れフラグ
-	bool isHide_ = false;
+	//残弾ゲージ位置のオフセット
+	Vector2 positionBulletGaugeOffset_ = {
+		0,
+		0
+	};
 
-	//発射した弾数
-	int firedCount_ = 0;
+	//残弾用イージング最大時間
+	float maxTimeBullet_ = 30.0f;
 
-private: //ImGui用
-	//Vector3の要素数
-	static const int kVector3Count_ = 3;
+	//シェイク
+	Shake shake_;
 
-	//Pos範囲
-	const float PosRange_ = 30.0f;
+	//オーバー位置用イーズを、セットアップしたかのフラグ
+	bool isSetupOverPositionEase_ = false;
 
-	//Dir範囲
-	const float DirRange_ = ConvertToRadian(360.0f);
+	Model* modelActive_ = nullptr;
+	Model* modelHide_ = nullptr;
 
-	//ImGui用自機Pos
-	float debugPos_[kVector3Count_] = {};
-
-	//ImGui用自機Dir
-	float debugDir_[kVector3Count_] = {};
+	float cartPosYLock_ = {};
+	bool isHideOld_ = false;
 
 public:
 	Player() = default;

@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*自作の数学関数まとめ*/
+
+#pragma once
 
 //ラジアン変換
 float ConvertToRadian(float degree);

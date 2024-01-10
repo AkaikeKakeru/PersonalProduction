@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿/*概念的なシーンファクトリー*/
+
+#pragma once
 
 #include "BaseScene.h"
 #include <string>

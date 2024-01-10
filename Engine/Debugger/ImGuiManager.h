@@ -1,6 +1,10 @@
-﻿#pragma once
+/*ImGuiマネージャー*/
+
+#ifdef _DEBUG
+#pragma once
 #include "DirectXBasis.h"
 
+/*ImGuiマネージャー*/
 class ImGuiManager {
 private://省略
 	template <class T>
@@ -25,11 +29,6 @@ public:
 	//SRV用デスクリプタヒープ
 	static ComPtr<ID3D12DescriptorHeap> srvHeap_;
 
-	//DirectX基盤
-	//DirectXBasis* dXBas_;
-
-	//SRV用デスクリプタヒープ
-	//ComPtr<ID3D12DescriptorHeap> srvHeap_;
 private:
 	ImGuiManager() = default;
 	~ImGuiManager() = default;
@@ -41,3 +40,5 @@ private:
 public://static
 	static ImGuiManager* GetInstance();
 };
+#endif
+

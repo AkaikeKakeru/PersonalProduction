@@ -1,4 +1,6 @@
-﻿#include "Vector2.h"
+﻿/*2次元ベクトル*/
+
+#include "Vector2.h"
 #include <cmath> //sqrt
 
 Vector2::Vector2()

@@ -1,9 +1,12 @@
-﻿#pragma once
+﻿/*コライダーの共通基礎*/
+
+#pragma once
 
 #include "CollisionTypes.h"
 #include "CollisionInfo.h"
 #include "Object3d.h"
 
+/*コライダーの共通基礎*/
 class BaseCollider {
 public: //フレンドクラス
 	friend class CollisionManager;

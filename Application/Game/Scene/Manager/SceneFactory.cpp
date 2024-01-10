@@ -1,4 +1,6 @@
-﻿#include "SceneFactory.h"
+﻿/*シーンファクトリー*/
+
+#include "SceneFactory.h"
 #include "TitleScene.h"
 #include "GamePlayScene.h"
 #include "GameClearScene.h"

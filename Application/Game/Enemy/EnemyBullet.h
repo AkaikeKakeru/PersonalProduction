@@ -1,4 +1,6 @@
-﻿#pragma once
+/*エネミー弾*/
+
+#pragma once
 #include "Model.h"
 #include "Object3d.h"
 #include "Sprite.h"
@@ -7,6 +9,7 @@
 class CollisionManager;
 class GamePlayScene;
 
+//エネミー弾
 class EnemyBullet :
 	public Object3d{
 public: //サブ構造体
@@ -43,8 +46,10 @@ public: //アクセッサ
 		gameScene_ = gameScene;
 	}
 
+	//位置取得
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_; }
+	//半径取得
 	float GetRadius() const {
 		return radius_; }
 

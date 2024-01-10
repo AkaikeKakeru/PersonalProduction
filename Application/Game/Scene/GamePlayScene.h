@@ -1,4 +1,6 @@
-﻿#pragma once
+/*ゲームプレイシーン*/
+
+#pragma once
 #include "BaseScene.h"
 
 #include "Input.h"
@@ -6,13 +8,21 @@
 #include "Model.h"
 #include "Sprite.h"
 #include "Object3d.h"
+#include "Particle.h"
+#include "ParticleManager.h"
+#include "TubeManager.h"
 
 #include "Camera.h"
 #include "RailCamera.h"
 #include "DebugCamera.h"
 
 #include "LightGroup.h"
+
+#include "Cursor.h"
+
+#ifdef _DEBUG
 #include "ImGuiManager.h"
+#endif
 
 #include <memory>
 #include <List>
@@ -21,9 +31,19 @@
 #include "PlayerBullet.h"
 #include "Enemy.h"
 #include "EnemyBullet.h"
+#include "Skydome.h"
+#include "Cart.h"
+
+#include "Fade.h"
+#include "ArrangeTile.h"
+
+#pragma region popLoader
+#include <sstream>
+#pragma endregion
 
 class CollisionManager;
 
+/*ゲームプレイシーン*/
 class GamePlayScene :
 	public BaseScene {
 public:
@@ -40,14 +60,13 @@ private:
 	void Update2d();
 
 	void Draw3d();
+	void DrawParticle();
 	void Draw2d();
 
 public://定数
 	const int kFinalPhaseIndex_ = 3;
 
 public:
-	Vector3 CreateRotationVector(Vector3 axisAngle, float angleRadian);
-
 	//自機弾を追加
 	void AddPlayerBullet(std::unique_ptr<PlayerBullet> playerBullet);
 
@@ -59,9 +78,23 @@ public:
 		const Vector3 scale,
 		const int bulletType);
 
-	//次の敵の湧き情報を調べる
-	void SightNextEnemy();
+#pragma region popLoader
+	//敵発生データの読込
+	void LoadEnemyPopData(std::string filename);
 
+	//敵発生コマンドの実行
+	void UpdateEnemyPopCommands();
+
+	//発生コマンドの読込
+	Vector3 LoadCommandsVector3(
+		std::istringstream* line_stream,
+		std::string word);
+#pragma endregion
+
+	//黒幕の更新
+	void BlackOutUpdate();
+
+public:
 	//フェーズ番号取得
 	size_t GetPhaseIndex() {
 		return phaseIndex_;
@@ -97,15 +130,30 @@ public:
 		nowBulletTypeEnemy_ = bulletType;
 	}
 
+	//カーソルの取得
+	Cursor* GetCursor() {
+		return &cursor_;
+	}
+
+	//噴きあがりフラグのセット
+	void SetIsGushing(bool isGushing) {
+		isGushing_ = isGushing;
+	}
+
 private: //静的メンバ変数
 	//基盤
 	static DirectXBasis* dxBas_;
 	static Input* input_;
 	static SpriteBasis* spriteBas_;
+
+#ifdef _DEBUG
 	//ImGuiマネージャー
 	static ImGuiManager* imGuiManager_;
+#endif _
+
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
+
 
 public: //メンバ変数
 	Camera* camera_ = nullptr;
@@ -121,13 +169,37 @@ public: //メンバ変数
 	/// オブジェクト
 	/// </summary>
 	Object3d* planeObj_ = nullptr;
-	Model* planeModel_ = nullptr;
+	Model* playerActiveModel_ = nullptr;
+	Model* playerHideModel_ = nullptr;
 	Model* planeEnemyModel_ = nullptr;
 
-	Object3d* skydomeObj_ = nullptr;
+	Skydome* skydome_ = nullptr;
+
 	Model* skydomeModel_ = nullptr;
 
 	Model* bulletModel_ = nullptr;
+	Model* tubeModel_ = nullptr;
+
+	//扉の位置
+	Vector3 doorPos_{};
+
+	Model* doorModel_ = nullptr;
+	//左扉
+	Object3d* doorL_ = nullptr;
+	//右扉
+	Object3d* doorR_ = nullptr;
+
+	//カートモデル
+	Model* cartModel_ = nullptr;
+
+	Model* bottomBGModel_ = nullptr;
+	Object3d* bottomBG_ = nullptr;
+
+	/// <summary>
+	/// パーティクル
+	/// </summary>
+	Particle* particle_ = nullptr;
+	ParticleManager* pm_ = nullptr;
 
 	/// <summary>
 	/// スプライト
@@ -160,4 +232,37 @@ public: //メンバ変数
 
 	//デバッグカメラのオンオフ
 	bool isDebugCamera_ = false;
+
+#pragma region popLoader
+	//敵発生コマンド
+	std::stringstream enemyPopCommands_;
+
+	//発生待機フラグ
+	bool isWait_ = false;
+#pragma endregion
+
+	//画面の暗幕
+	Fade* blackOut_ = nullptr;
+
+	//タイルならべのシーン遷移
+	ArrangeTile* arrangeTile_ = nullptr;
+
+	//タイマー最大値
+	int timerMax_ = 60;
+	//タイマー現在値
+	int timerNow_ = 0;
+
+	/*カーソル用の変数*/
+	//カーソル
+	Cursor cursor_;
+	//エネミーのワールド座標
+	Vector3 enemyWorldPos_{0.0f,0.0f,30.0f};
+	//ロックオン時の標的座標
+	Vector3 LockOnTargetPos_{0.0f,0.0f,30.0f};
+
+	//噴きあがりフラグ
+	bool isGushing_ = false;
+
+	//背景筒マネージャー
+	TubeManager* tubeManager_;
 };

@@ -1,19 +1,30 @@
-﻿#include "TitleScene.h"
+/*タイトルシーン*/
+
+#include "TitleScene.h"
 #include "SafeDelete.h"
 
 #include "Framework.h"
 #include "SceneManager.h"
+#include "ColorPallet.h"
+
+#ifdef _DEBUG
 #include <imgui.h>
+#endif
+#include <Character.h>
+#include <Quaternion.h>
+
+using namespace ColorPallet;
 
 DirectXBasis* TitleScene::dxBas_ = DirectXBasis::GetInstance();
 Input* TitleScene::input_ = Input::GetInstance();
 SpriteBasis* TitleScene::spriteBas_ = SpriteBasis::GetInstance();
 
-void TitleScene::Initialize(){
+void TitleScene::Initialize() {
 	/// 描画初期化
-
+#ifdef _DEBUG
 	//imGui
 	imGuiManager_ = ImGuiManager::GetInstance();
+#endif
 
 	//オブジェクト基盤
 
@@ -21,23 +32,75 @@ void TitleScene::Initialize(){
 
 	//カメラ生成
 	camera_ = new Camera();
+	camera_->SetTarget({ 0,ConvertToRadian(-90.0f),0 });
+	camera_->SetEye({ 20,-10,30 });
 
-	planeModel_ = new Model();
-	planeModel_ = Model::LoadFromOBJ("plane", true);
+	playerModel_ = new Model();
+	playerModel_ = Model::LoadFromOBJ("human", true);
 
 	skydomeModel_ = new Model();
-	skydomeModel_ = Model::LoadFromOBJ("skydome",false);
+	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
 
+	cartModel_ = new Model();
+	cartModel_ = Model::LoadFromOBJ("cart", true);
 
-	planeObj_ = new Object3d();
-	planeObj_ = Object3d::Create();
-	planeObj_->SetModel(planeModel_);
-	planeObj_->SetCamera(camera_);
+	tubeModel_ = new Model();
+	tubeModel_ = Model::LoadFromOBJ("BG_Tube", true);
 
-	skydomeObj_ = new Object3d();
-	skydomeObj_ = Object3d::Create();
-	skydomeObj_->SetModel(skydomeModel_);
-	skydomeObj_->SetCamera(camera_);
+	bottomBGModel_ = new Model();
+	bottomBGModel_ = Model::LoadFromOBJ("bottom", true);
+
+#pragma region Player
+	playerObj_ = new Object3d();
+	playerObj_ = Object3d::Create();
+
+	playerObj_->SetPosition({ 0,0,-50.0f });
+
+	playerObj_->SetModel(playerModel_);
+	playerObj_->SetCamera(camera_);
+#pragma endregion
+
+#pragma region cart
+	cart_ = new Object3d();
+	cart_ = Object3d::Create();
+
+	cart_->SetPosition({
+		playerObj_->GetPosition().x,
+		playerObj_->GetPosition().y - 2.5f,
+		playerObj_->GetPosition().z }
+	);
+
+	cart_->SetModel(cartModel_);
+	cart_->SetCamera(camera_);
+#pragma endregion
+
+#pragma region Skydome
+	skydome_ = Skydome::Create();
+	skydome_->SetModel(skydomeModel_);
+	skydome_->SetScale({ 1024.0f, 126.0f, 1024.0f });
+	skydome_->SetPosition({ 0,0,-50.0f });
+	skydome_->SetCamera(camera_);
+	skydome_->Update();
+#pragma endregion
+
+	bottomBG_ = new Object3d();
+	bottomBG_ = Object3d::Create();
+	bottomBG_->SetModel(bottomBGModel_);
+	bottomBG_->SetScale({ 10.0f, 10.0f, 10.0f });
+	bottomBG_->SetPosition({ 0,-100,0 });
+	bottomBG_->SetCamera(camera_);
+	bottomBG_->Update();
+
+#pragma region Tube
+	tubeManager_ = new TubeManager();
+	tubeManager_->SetCamera(camera_);
+	tubeManager_->SetSpeed(16.0f);
+	tubeManager_->SetRotation(CreateRotationVector(
+		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
+	tubeManager_->SetScale({ 100,100,100 });
+	tubeManager_->SetTubeModel(tubeModel_);
+	tubeManager_->Initialize();
+#pragma endregion
 
 	//ライト生成
 	light_ = new LightGroup();
@@ -46,32 +109,96 @@ void TitleScene::Initialize(){
 	Object3d::SetLight(light_);
 
 	//描画スプライト
+	sprite_ = new Sprite();
 	sprite_->Initialize(0);
 
-	//テキスト
-	text_ = new Text();
-	text_->Initialize(Framework::kTextTextureIndex_);
+	//暗幕
+	blackOut_ = new Fade();
+	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
+	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
+	blackOut_->SetColor(colorBlackVivit_);
+
+	//タイルならべ
+
+	//タイルサイズ
+	float tileSize = WinApp::Win_Width / 8.0f;
+
+	//横に並べる枚数
+	float width = (WinApp::Win_Width / tileSize) + 1;
+	//縦に並べる枚数
+	float height = (WinApp::Win_Height / tileSize) + 1;
+
+	arrangeTile_ = new ArrangeTile();
+	arrangeTile_->Initialize(
+		Framework::kBackgroundTextureIndex_,
+		//開始位置
+		{
+			WinApp::Win_Width / 2,
+			-200.0f
+		},
+		0.0f,
+		{
+			tileSize,
+			tileSize
+		},
+		(int)(width * height)
+	);
+
+	float textSize = 2.5f;
 
 	//ボタン
-
 	buttonStart_ = new Button();
 	buttonStart_->Initialize(0);
+	buttonStart_->SetTelop("Click here to Start");
 	buttonStart_->SetPosition({ WinApp::Win_Width / 2 ,500.0f });
 	buttonStart_->SetSize({ 600.0f,96.0f });
+	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,0.0f });
+	buttonStart_->GetText()->
+		SetSize({ textSize,textSize });
+
+	float len =
+		static_cast<float>(
+			buttonStart_->GetText()->GetString().length()
+			);
+
+	buttonStart_->GetText()->
+		SetPosition({
+		WinApp::Win_Width / 2.0f + len * 8.0f,
+		500.0f
+			});
+
+	//テキスト
+	textSize = 5.0f;
+
+	text_ = new Text();
+	text_->Initialize(Framework::kTextTextureIndex_);
+	text_->SetString("Remain");
+	text_->SetPosition({
+		buttonStart_->GetPosition().x,
+		WinApp::Win_Height / 4,
+		});
+	text_->SetSize({ textSize,textSize });
 }
 
-void TitleScene::Update(){
+void TitleScene::Update() {
 	input_->Update();
 
-	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+	alpha_ = RoopFloat(alpha_, 0.04f, 0.0f, 1.0f);
+
+	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,alpha_ });
 
 	if (buttonStart_->ChackClick(input_->PressMouse(0))) {
 		buttonStart_->SetColor({ 0.4f,0.4f,0.4f,1.0f });
 	}
 
 	if (buttonStart_->ChackClick(input_->ReleaseMouse(0))) {
-		//シーンの切り替えを依頼
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+		////シーンの切り替えを依頼
+		//SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+
+		blackOut_->SetIs(true);
+		blackOut_->SetIsOpen(false);
+
+		arrangeTile_->Reset(true, false);
 	}
 
 #ifdef _DEBUG
@@ -83,29 +210,25 @@ void TitleScene::Update(){
 
 	light_->Update();
 
-	skydomeObj_->Update();
-	planeObj_->Update();
+	CameraUpdate();
+
+	skydome_->Update();
+	bottomBG_->Update();
+
+#pragma region Tube
+	tubeManager_->Update();
+#pragma endregion
+
+	PlayerUpdate();
 
 	buttonStart_->Update();
 
 	sprite_->Update();
 
-	float textSize = 5.0f;
-
-	text_->Print("Personal Production",
-		buttonStart_->GetPosition().x - (text_->fontWidth_ * 2.0f * 21.0f),
-		WinApp::Win_Height / 4,
-		textSize);
-
-	textSize = 2.5f;
-
-	text_->Print("Press here to Start",
-		buttonStart_->GetPosition().x - (text_->fontWidth_ * 19.0f),
-		buttonStart_->GetPosition().y,
-		textSize);
+	BlackOutUpdate();
 }
 
-void TitleScene::Draw(){
+void TitleScene::Draw() {
 #ifdef _DEBUG
 	imGuiManager_->Begin();
 
@@ -114,9 +237,15 @@ void TitleScene::Draw(){
 
 	//モデル本命処理
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
+	//天球描画
+	skydome_->Draw();
+	bottomBG_->Draw();
+#pragma region Tube
+	tubeManager_->Draw();
+#pragma endregion
 
-	//skydomeObj_->Draw();
-	planeObj_->Draw();
+	playerObj_->Draw();
+	cart_->Draw();
 
 	Object3d::PostDraw();
 
@@ -126,17 +255,32 @@ void TitleScene::Draw(){
 	//sprite_->Draw();
 
 	buttonStart_->Draw();
+	text_->Print();
 
 	text_->DrawAll();
 
+	blackOut_->Draw();
+	arrangeTile_->Draw();
 	SpriteBasis::GetInstance()->PostDraw();
 }
 
-void TitleScene::Finalize(){
-	SafeDelete(planeObj_);
-	SafeDelete(skydomeObj_);
-	SafeDelete(planeModel_);
+void TitleScene::Finalize() {
+	SafeDelete(skydome_);
+	SafeDelete(bottomBG_);
+
+	SafeDelete(cart_);
+	SafeDelete(cartModel_);
+
+#pragma region Tube
+	tubeManager_->Finalize();
+	SafeDelete(tubeManager_);
+	SafeDelete(tubeModel_);
+#pragma endregion
+
+	SafeDelete(playerObj_);
+	SafeDelete(playerModel_);
 	SafeDelete(skydomeModel_);
+	SafeDelete(bottomBGModel_);
 	SafeDelete(sprite_);
 
 	SafeDelete(light_);
@@ -146,4 +290,79 @@ void TitleScene::Finalize(){
 	SafeDelete(buttonStart_);
 
 	SafeDelete(text_);
+
+	blackOut_->Finalize();
+	SafeDelete(blackOut_);
+	SafeDelete(arrangeTile_);
+}
+
+void TitleScene::CameraUpdate() {
+	Vector3 target = camera_->GetTarget();
+	Vector3 move{ 0,0,0 };
+
+	if (camera_->GetTarget().y >= 0) {
+		move = { 0,0,0 };
+	}
+	else {
+		move = { 0,ConvertToRadian(1.5f),0 };
+	}
+
+	target += move;
+
+	camera_->SetTarget(target);
+
+	camera_->Update();
+}
+
+void TitleScene::PlayerUpdate() {
+	Vector3 pos = playerObj_->GetPosition();
+	Vector3 move{ 0,0,0 };
+
+	if (playerObj_->GetPosition().z >= 0.0f) {
+		move = { 0,0,0 };
+	}
+	else {
+		move = { 0,0,0.4f };
+	}
+
+	move.y = RoopFloat(move.y, 0.1f, -1.0f, 1.0f);
+
+	pos += move;
+
+	playerObj_->SetPosition(pos);
+
+	playerObj_->Update();
+
+	cart_->SetPosition({
+		playerObj_->GetPosition().x,
+		-15.0f,
+		playerObj_->GetPosition().z }
+	);
+
+	cart_->Update();
+}
+
+void TitleScene::BlackOutUpdate() {
+	blackOut_->Update();
+
+	if (!arrangeTile_->IsOpen()) {
+		arrangeTile_->Update();
+	}
+
+	if (arrangeTile_->IsEnd()) {
+		//シーンの切り替えを依頼
+		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+	}
+}
+
+float TitleScene::RoopFloat(float f, float speed, float min, float max) {
+	static float t = speed;
+
+	if (f < min || f > max) {
+		t *= -1.0f;
+	}
+
+	f += t;
+
+	return f;
 }

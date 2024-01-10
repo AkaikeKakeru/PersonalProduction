@@ -1,4 +1,6 @@
-﻿#pragma once
+/*タイトルシーン*/
+
+#pragma once
 #include "BaseScene.h"
 
 #include "Input.h"
@@ -7,6 +9,8 @@
 #include "Sprite.h"
 #include "Object3d.h"
 
+#include "Skydome.h"
+
 #include "Text.h"
 #include "Button.h"
 
@@ -14,9 +18,16 @@
 #include "LightGroup.h"
 
 #include "SceneManager.h"
-#include "ImGuiManager.h"
+#include "Fade.h"
+#include "ArrangeTile.h"
+#include "TubeManager.h"
 
-class TitleScene : public BaseScene{
+#ifdef _DEBUG
+#include "ImGuiManager.h"
+#endif
+
+/*タイトルシーン*/
+class TitleScene : public BaseScene {
 public://構造体
 
 public:
@@ -24,6 +35,24 @@ public:
 	void Update() override;
 	void Draw() override;
 	void Finalize() override;
+
+	//カメラの処理
+	void CameraUpdate();
+	//プレイヤーオブジェクトの処理
+	void PlayerUpdate();
+	//暗幕の処理
+	void BlackOutUpdate();
+
+	/// <summary>
+	///float値のループ
+	/// </summary>
+	/// <param name="f">変化対象float</param>
+	/// <param name="s">変化の量(速さ)</param>
+	/// <param name="min">最小値</param>
+	/// <param name="max">最大値</param>
+	/// <returns>変化後の値</returns>
+	float RoopFloat(float f, float speed, float min, float max);
+
 private:
 	static DirectXBasis* dxBas_;
 	static Input* input_;
@@ -32,25 +61,50 @@ private:
 	Camera* camera_ = nullptr;
 	LightGroup* light_ = nullptr;
 
+#ifdef _DEBUG
 	//ImGuiマネージャー
 	ImGuiManager* imGuiManager_ = nullptr;
+#endif
 
-	/// <summary>
-	/// オブジェクト
-	/// </summary>
-	/// <summary>
-	Object3d* planeObj_ = nullptr;
-	Model* planeModel_ = nullptr;
+	// オブジェクト
+	Object3d* playerObj_ = nullptr;
+	Model* playerModel_ = nullptr;
 
-	Object3d* skydomeObj_ = nullptr;
+	Skydome* skydome_ = nullptr;
 	Model* skydomeModel_ = nullptr;
+
+	Model* tubeModel_ = nullptr;
+
+	//カートモデル
+	Object3d* cart_ = nullptr;
+	Model* cartModel_ = nullptr;
+
+	Model* bottomBGModel_ = nullptr;
+	Object3d* bottomBG_ = nullptr;
+
 	/// スプライト
 	/// </summary>
-	Sprite* sprite_ = new Sprite();
+	Sprite* sprite_ = nullptr;
 
 	//テキスト
 	Text* text_ = nullptr;
 
 	//ボタン
 	Button* buttonStart_ = nullptr;
+	float alpha_ = 0.0f;
+
+	//タイトルループまで
+	int32_t roopTimer_ = 60 * 30;
+
+	//タイトルループフラグ
+	bool isRoop_ = false;
+
+	//画面の暗幕
+	Fade* blackOut_ = nullptr;
+
+	//タイルならべのシーン遷移
+	ArrangeTile* arrangeTile_ = nullptr;
+
+	//背景筒マネージャー
+	TubeManager* tubeManager_;
 };
