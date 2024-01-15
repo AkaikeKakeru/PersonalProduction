@@ -293,6 +293,16 @@ void GamePlayScene::Update3d() {
 			isGushing_ = false;
 		}
 
+#ifdef _DEBUG
+		if (input_->TriggerKey(DIK_K)) {
+			//敵機のダメージ処理
+			for (std::unique_ptr<Enemy>& enemy : enemys_) {
+				enemy->SetIsDead(true);
+			}
+		}
+#endif // _DEBUG
+
+
 		//敵機をデスフラグで削除
 		enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
 			return enemy->IsDead();
