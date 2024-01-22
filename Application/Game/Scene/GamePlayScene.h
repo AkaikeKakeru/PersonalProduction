@@ -66,6 +66,15 @@ public:
 		doorR_,
 		bottomBG_,
 	};
+
+	enum mouseSpriteIndex {
+		mouseSpriteL_,
+		mouseSpriteR_,
+		mouseSpriteWheel_,
+		mouseSpriteTextS_,
+		mouseSpriteTextH_,
+	};
+
 public:
 	void Initialize() override;
 	void Update() override;
@@ -265,4 +274,7 @@ public: //メンバ変数
 
 	//背景筒マネージャー
 	std::unique_ptr<TubeManager> tubeManager_;
+
+	//マウススプライトリスト
+	std::vector<std::unique_ptr<Sprite>> mouseSprites_;
 };

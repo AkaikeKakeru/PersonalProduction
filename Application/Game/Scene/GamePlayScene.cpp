@@ -190,6 +190,103 @@ void GamePlayScene::Initialize3d() {
 }
 
 void GamePlayScene::Initialize2d() {
+	float size = 64.0f;
+	float texSize = 64.0f;
+	std::unique_ptr<Sprite> mouseL =
+		std::make_unique<Sprite>();
+	mouseL->Initialize(Framework::kMouseTextureIndex_);
+	mouseL->SetPosition({
+		WinApp::Win_Width - (texSize * 2),
+		WinApp::Win_Height - (texSize * 2)});
+	mouseL->SetSize({size, size*2});
+	mouseL->SetAnchorPoint({
+		0.5f,
+		0.5f });
+	mouseL->SetTextureSize({
+		texSize,
+		(texSize * 2) });
+	mouseL->SetTextureLeftTop({
+		0,
+		0 });
+	//mouseSpriteL_.reset(newSprite);
+	mouseSprites_.push_back(std::move(mouseL));
+
+	std::unique_ptr<Sprite> mouseR =
+		std::make_unique<Sprite>();
+	mouseR->Initialize(Framework::kMouseTextureIndex_);
+	mouseR->SetPosition({
+		WinApp::Win_Width - texSize,
+		WinApp::Win_Height - (texSize * 2)});
+	mouseR->SetSize({size, size*2});
+	mouseR->SetAnchorPoint({
+		0.5f,
+		0.5f });
+	mouseR->SetTextureSize({
+		texSize,
+		(texSize * 2) });
+	mouseR->SetTextureLeftTop({
+		texSize,
+		0 });
+	//mouseSpriteR_.reset(newSprite);
+	mouseSprites_.push_back(std::move(mouseR));
+
+	std::unique_ptr<Sprite> mouseW =
+		std::make_unique<Sprite>();
+	mouseW->Initialize(Framework::kMouseTextureIndex_);
+	mouseW->SetPosition({
+		WinApp::Win_Width - (texSize * 1.5f),
+		WinApp::Win_Height - (texSize * 2)});
+	mouseW->SetSize({size, size});
+	mouseW->SetAnchorPoint({
+		0.5f,
+		0.5f });
+	mouseW->SetTextureSize({
+		texSize,
+		texSize });
+	mouseW->SetTextureLeftTop({
+		0,
+		(texSize * 2) });
+	//mouseSpriteWheel_.reset(newSprite);
+	mouseSprites_.push_back(std::move(mouseW));
+
+	std::unique_ptr<Sprite> mouseTS =
+		std::make_unique<Sprite>();
+	mouseTS->Initialize(Framework::kMouseTextureIndex_);
+	mouseTS->SetPosition({
+		WinApp::Win_Width - (texSize * 2),
+		WinApp::Win_Height - (texSize *1.5f)});
+	mouseTS->SetSize({size, size/2});
+	mouseTS->SetAnchorPoint({
+		0.5f,
+		0.5f });
+	mouseTS->SetTextureSize({
+		texSize,
+		texSize/2 });
+	mouseTS->SetTextureLeftTop({
+		texSize,
+		(texSize * 2) });
+	//mouseSpriteTextS_.reset(newSprite);
+	mouseSprites_.push_back(std::move(mouseTS));
+
+	std::unique_ptr<Sprite> mouseTH =
+		std::make_unique<Sprite>();
+	mouseTH->Initialize(Framework::kMouseTextureIndex_);
+	mouseTH->SetPosition({
+		WinApp::Win_Width - texSize,
+		WinApp::Win_Height - (texSize *1.5f)});
+	mouseTH->SetSize({size, size/2});
+	mouseTH->SetAnchorPoint({
+		0.5f,
+		0.5f });
+	mouseTH->SetTextureSize({
+		texSize,
+		texSize/2 });
+	mouseTH->SetTextureLeftTop({
+		texSize,
+		(texSize * 2) + (texSize / 2) });
+	//mouseSpriteTextH_.reset(newSprite);
+	mouseSprites_.push_back(std::move(mouseTH));
+
 	//暗幕
 	Fade* newFade = new Fade();
 	blackOut_.reset(newFade);
@@ -500,6 +597,30 @@ void GamePlayScene::Update3d() {
 }
 
 void GamePlayScene::Update2d() {
+	static const Vector4 col = { 1,1,1,1 };
+	static const Vector4 colPress = { 0.5f,0.2f,0.2f,1 };
+
+	Vector4 colL, colR;
+
+	if (input_->PressMouse(0)) {
+		colL = colPress;
+	}
+	else {
+		colL = col;
+	}
+
+	if (input_->PressMouse(1)) {
+		colR = colPress;
+	}
+	else {
+		colR = col;
+	}
+
+		mouseSprites_[mouseSpriteL_]->SetColor(colL);
+		mouseSprites_[mouseSpriteR_]->SetColor(colR);
+	for (std::unique_ptr<Sprite>& mouse : mouseSprites_) {
+		mouse->Update();
+	}
 }
 
 void GamePlayScene::Draw3d() {
@@ -537,6 +658,10 @@ void GamePlayScene::DrawParticle() {
 }
 
 void GamePlayScene::Draw2d() {
+	for (std::unique_ptr<Sprite>& mouse : mouseSprites_) {
+		mouse->Draw();
+	}
+
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->DrawUI();
 	}
