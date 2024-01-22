@@ -31,6 +31,8 @@ public:
 		kGaugeTextureIndex_ = 2,
 		//背景テクスチャ番号
 		kBackgroundTextureIndex_ = 3,
+		//マウスUIテクスチャ番号
+		kMouseTextureIndex_ = 4,
 		//テキストテクスチャ番号
 		kTextTextureIndex_ = 100,
 		//白塗りテクスチャ番号

@@ -77,6 +77,7 @@ void Framework::Initialize(){
 
 	spriteBas->LoadTexture(kWhiteTextureIndex_, "white.png");
 	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");
+	spriteBas->LoadTexture(kMouseTextureIndex_, "mouse.png");
 
 	//パーティクルマネージャー
 	ParticleManager::StaticInitialize(dxBas_->GetDevice().Get());
