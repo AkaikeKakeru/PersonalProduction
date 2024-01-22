@@ -49,9 +49,9 @@ bool Character::Initialize() {
 	collider_->SetAttribute(COLLISION_ATTR_PLAYER);
 
 #pragma region HPスプライト
-	hpGauge_ = new Gauge();
+	Gauge* newHpGauge = new Gauge();
+	hpGauge_.reset(newHpGauge);
 	hpGauge_->Initialize();
-
 	hpGauge_->SetRestMax(life_);
 	hpGauge_->SetRest(life_);
 	hpGauge_->SetMaxTime(maxTimeHP_);
@@ -59,8 +59,8 @@ bool Character::Initialize() {
 	hpGauge_->SetPosition({ 64,64 });
 	hpGauge_->SetSize({ 1,1 });
 #pragma endregion
-
-	cart_ = new Cart();
+	Cart* newCart = Cart::Create();
+	cart_.reset(newCart);
 	cart_->Initialize();
 	cart_->SetModel(cartModel_);
 	cart_->SetCamera(camera_);
@@ -163,7 +163,7 @@ void Character::DrawImgui() {
 void Character::Finalize() {
 	hpGauge_->Finalize();
 	cart_->Finalize();
-	SafeDelete(cart_);
+	//SafeDelete(cart_);
 	//SafeDelete(cartModel_);
 }
 

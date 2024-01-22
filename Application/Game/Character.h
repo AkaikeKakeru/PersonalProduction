@@ -124,11 +124,11 @@ public: //アクセッサ
 
 	//HPゲージの取得
 	Gauge* GetHPGauge() const {
-		return hpGauge_;
+		return hpGauge_.get();
 	}
 
 	Cart* GetCart() const {
-		return cart_;
+		return cart_.get();
 	}
 
 private: //静的メンバ変数
@@ -206,7 +206,7 @@ public:
 	}
 
 	void SetHpGauge(Gauge* hpGauge) {
-		hpGauge_ = hpGauge;
+		hpGauge_.reset(hpGauge);
 	}
 
 	void SetDefaultLife(float defaultLife) {
@@ -279,7 +279,7 @@ private: //メンバ変数
 	/// <summary>
 	/// HP
 	/// </summary>
-	Gauge* hpGauge_ = {};
+	std::unique_ptr<Gauge> hpGauge_ = {};
 
 	//HPゲージの位置(左上角)
 	Vector2 positionHPGauge_ = {
@@ -317,7 +317,7 @@ private: //メンバ変数
 	float speed_ = 0.5f;
 
 	//カート
-	Cart* cart_ = nullptr;
+	std::unique_ptr<Cart> cart_ = nullptr;
 
 private: //ImGui用
 	//Vector3の要素数
