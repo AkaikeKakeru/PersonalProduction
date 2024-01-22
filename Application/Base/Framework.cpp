@@ -63,6 +63,10 @@ void Framework::Initialize(){
 	//オブジェクト基盤
 	Object3d::StaticInitialize(dxBas_->GetDevice().Get());
 
+	objManager_ = ObjectManager::GetInstance();
+	objManager_->CreateModelList();
+	objManager_->CreateObjectList();
+
 	//描画基盤(スプライト)
 	SpriteBasis* spriteBas = SpriteBasis::GetInstance();
 	spriteBas->Initialize();

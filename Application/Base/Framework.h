@@ -8,6 +8,7 @@
 #include "DirectXBasis.h"
 #include "Input.h"
 #include "Audio.h"
+#include "ObjectManager.h"
 
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
@@ -85,6 +86,9 @@ private:
 
 	//シーンマネージャー
 	static SceneManager* sceneManager_;
+
+	//オブジェクトマネージャー
+	ObjectManager* objManager_;
 
 #ifdef _DEBUG
 	//ImGuiマネージャー

@@ -64,7 +64,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer;$(ProjectDir)Application\Function\System;$(ProjectDir)Application\Function\UI;$(ProjectDir)Engine\Color;$(ProjectDir)Application\Game\Cart</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer;$(ProjectDir)Application\Function\System;$(ProjectDir)Application\Function\UI;$(ProjectDir)Engine\Color;$(ProjectDir)Application\Game\Cart;$(ProjectDir)Application\Game\Background\Scroll</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -87,7 +87,7 @@
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer;$(ProjectDir)Application\Function\System;$(ProjectDir)Application\Function\UI;$(ProjectDir)Engine\Color;$(ProjectDir)Application\Game\Cart</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer;$(ProjectDir)Application\Function\System;$(ProjectDir)Application\Function\UI;$(ProjectDir)Engine\Color;$(ProjectDir)Application\Game\Cart;$(ProjectDir)Application\Game\Background\Scroll</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -111,13 +111,17 @@
     <ClCompile Include="Application\Function\Collider\SphereCollider.cpp" />
     <ClCompile Include="Application\Function\UI\Gauge.cpp" />
     <ClCompile Include="Application\Function\System\Shake.cpp" />
+    <ClCompile Include="Application\Game\Background\Scroll\Rail.cpp" />
+    <ClCompile Include="Application\Game\Background\Scroll\RailManager.cpp" />
+    <ClCompile Include="Application\Game\Background\Scroll\ScrollBase.cpp" />
+    <ClCompile Include="Application\Game\Background\Scroll\Tube.cpp" />
+    <ClCompile Include="Application\Game\Background\Scroll\TubeManager.cpp" />
     <ClCompile Include="Application\Game\Background\Skydome.cpp" />
-    <ClCompile Include="Application\Game\Background\Tube.cpp" />
-    <ClCompile Include="Application\Game\Background\TubeManager.cpp" />
     <ClCompile Include="Application\Game\Cart\Cart.cpp" />
     <ClCompile Include="Application\Game\Character.cpp" />
     <ClCompile Include="Application\Game\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\Game\Enemy\EnemyBullet.cpp" />
+    <ClCompile Include="Application\Game\ObjectManager.cpp" />
     <ClCompile Include="Application\Game\Player\Player.cpp" />
     <ClCompile Include="Application\Game\Player\PlayerBullet.cpp" />
     <ClCompile Include="Application\Game\Scene\GameClearScene.cpp" />
@@ -178,15 +182,19 @@
     <ClInclude Include="Application\Function\Collider\RaycastHit.h" />
     <ClInclude Include="Application\Function\Collider\SphereCollider.h" />
     <ClInclude Include="Application\Function\System\Shake.h" />
+    <ClInclude Include="Application\Game\Background\Scroll\Rail.h" />
+    <ClInclude Include="Application\Game\Background\Scroll\RailManager.h" />
+    <ClInclude Include="Application\Game\Background\Scroll\ScrollBase.h" />
+    <ClInclude Include="Application\Game\Background\Scroll\Tube.h" />
+    <ClInclude Include="Application\Game\Background\Scroll\TubeManager.h" />
     <ClInclude Include="Application\Game\Background\Skydome.h" />
-    <ClInclude Include="Application\Game\Background\Tube.h" />
-    <ClInclude Include="Application\Game\Background\TubeManager.h" />
     <ClInclude Include="Application\Game\Cart\Cart.h" />
     <ClInclude Include="Application\Game\Character.h" />
     <ClInclude Include="Application\Game\Enemy\Enemy.h" />
     <ClInclude Include="Application\Game\Enemy\EnemyBullet.h" />
     <ClInclude Include="Application\Game\GameMain.h" />
     <ClInclude Include="Application\Function\UI\Gauge.h" />
+    <ClInclude Include="Application\Game\ObjectManager.h" />
     <ClInclude Include="Application\Game\Player\Player.h" />
     <ClInclude Include="Application\Game\Player\PlayerBullet.h" />
     <ClInclude Include="Application\Game\Scene\GameClearScene.h" />
