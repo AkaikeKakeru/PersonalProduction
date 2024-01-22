@@ -7,6 +7,7 @@
 #include "SpriteBasis.h"
 #include "Sprite.h"
 #include "Object3d.h"
+#include "ObjectManager.h"
 #include "Model.h"
 
 #include "Text.h"
@@ -24,8 +25,12 @@
 #endif
 
 /*ゲームオーバーシーン*/
-class GameOverScene : public BaseScene{
+class GameOverScene : public BaseScene {
 public://構造体
+	enum modelName {
+		enemyModel_ = ObjectManager::enemyModel_,
+		skydomeModel_ = ObjectManager::skydomeModel_,
+	};
 
 public:
 	void Initialize() override;
@@ -40,6 +45,7 @@ private:
 	static DirectXBasis* dxBas_;
 	static Input* input_;
 	static SpriteBasis* spriteBas_;
+	static ObjectManager* objManager_;
 
 	Camera* camera_ = nullptr;
 	LightGroup* light_ = nullptr;
@@ -50,25 +56,19 @@ private:
 #endif
 
 	// オブジェクト
-	Object3d* planeObj_ = nullptr;
-	Model* planeModel_ = nullptr;
-
-	Object3d* skydomeObj_ = nullptr;
-	Model* skydomeModel_ = nullptr;
-
-	// スプライト
-	Sprite* sprite_ = nullptr;
+	std::unique_ptr<Object3d> planeObj_ = nullptr;
+	std::unique_ptr<Object3d> skydomeObj_ = nullptr;
 
 	//テキスト
-	Text* text_ = nullptr;
+	std::unique_ptr<Text> text_ = nullptr;
 
 	//ボタン
-	Button* buttonTitle_ = nullptr;
-	Button* buttonRetry_ = nullptr;
+	std::unique_ptr<Button> buttonTitle_ = nullptr;
+	std::unique_ptr<Button> buttonRetry_ = nullptr;
 
 	//画面の暗幕
-	Fade* blackOut_ = nullptr;
+	std::unique_ptr<Fade> blackOut_ = nullptr;
 
 	//タイルならべのシーン遷移
-	ArrangeTile* arrangeTile_ = nullptr;
+	std::unique_ptr<ArrangeTile> arrangeTile_ = nullptr;
 };

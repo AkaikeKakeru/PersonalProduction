@@ -8,6 +8,8 @@
 #include "Model.h"
 #include "Sprite.h"
 #include "Object3d.h"
+#include "ObjectManager.h"
+
 #include "Particle.h"
 #include "ParticleManager.h"
 #include "TubeManager.h"
@@ -46,6 +48,24 @@ class CollisionManager;
 /*ゲームプレイシーン*/
 class GamePlayScene :
 	public BaseScene {
+public:
+	enum modelName {
+		playerActiveModel_ = ObjectManager::playerActiveModel_,
+		playerHideModel_ = ObjectManager::playerHideModel_,
+		enemyModel_ = ObjectManager::enemyModel_,
+		skydomeModel_ = ObjectManager::skydomeModel_,
+		bulletModel_ = ObjectManager::bulletModel_,
+		tubeModel_ = ObjectManager::tubeModel_,
+		cartModel_ = ObjectManager::cartModel_,
+		bottomBGModel_ = ObjectManager::bottomBGModel_,
+		doorModel_ = ObjectManager::doorModel_,
+	};
+
+	enum objName {
+		doorL_,
+		doorR_,
+		bottomBG_,
+	};
 public:
 	void Initialize() override;
 	void Update() override;
@@ -146,6 +166,8 @@ private: //静的メンバ変数
 	static Input* input_;
 	static SpriteBasis* spriteBas_;
 
+	static ObjectManager* objManager_;
+
 #ifdef _DEBUG
 	//ImGuiマネージャー
 	static ImGuiManager* imGuiManager_;
@@ -156,58 +178,36 @@ private: //静的メンバ変数
 
 
 public: //メンバ変数
+	//カメラ
 	Camera* camera_ = nullptr;
+	//カメラ(自機用)
 	Camera* camera_player = nullptr;
 
+	//カメラ(レール)
 	RailCamera* railCamera_;
 
+	//カメラ(デバッグ)
 	DebugCamera* debugCamera_;
 
+	//ライト
 	LightGroup* light_ = nullptr;
 
-	/// <summary>
-	/// オブジェクト
-	/// </summary>
-	Object3d* planeObj_ = nullptr;
-	Model* playerActiveModel_ = nullptr;
-	Model* playerHideModel_ = nullptr;
-	Model* planeEnemyModel_ = nullptr;
-
-	Skydome* skydome_ = nullptr;
-
-	Model* skydomeModel_ = nullptr;
-
-	Model* bulletModel_ = nullptr;
-	Model* tubeModel_ = nullptr;
+	//天球
+	std::unique_ptr<Skydome> skydome_ = nullptr;
 
 	//扉の位置
 	Vector3 doorPos_{};
 
-	Model* doorModel_ = nullptr;
-	//左扉
-	Object3d* doorL_ = nullptr;
-	//右扉
-	Object3d* doorR_ = nullptr;
+	//オブジェリスト
+	std::list<std::unique_ptr<Object3d>> objs_;
 
-	//カートモデル
-	Model* cartModel_ = nullptr;
-
-	Model* bottomBGModel_ = nullptr;
-	Object3d* bottomBG_ = nullptr;
-
-	/// <summary>
-	/// パーティクル
-	/// </summary>
-	Particle* particle_ = nullptr;
-	ParticleManager* pm_ = nullptr;
-
-	/// <summary>
-	/// スプライト
-	/// </summary>
-	Sprite* sprite_ = nullptr;
+	//パーティクル
+	std::unique_ptr<Particle> particle_ = nullptr;
+	//パーティクルマネージャー
+	std::unique_ptr<ParticleManager> pm_ = nullptr;
 
 	//プレイヤー
-	Player* player_ = nullptr;
+	std::unique_ptr<Player> player_ = nullptr;
 
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>> playerBullets_;
@@ -242,10 +242,10 @@ public: //メンバ変数
 #pragma endregion
 
 	//画面の暗幕
-	Fade* blackOut_ = nullptr;
+	std::unique_ptr<Fade> blackOut_ = nullptr;
 
 	//タイルならべのシーン遷移
-	ArrangeTile* arrangeTile_ = nullptr;
+	std::unique_ptr<ArrangeTile> arrangeTile_ = nullptr;
 
 	//タイマー最大値
 	int timerMax_ = 60;
@@ -256,13 +256,13 @@ public: //メンバ変数
 	//カーソル
 	Cursor cursor_;
 	//エネミーのワールド座標
-	Vector3 enemyWorldPos_{0.0f,0.0f,30.0f};
+	Vector3 enemyWorldPos_{ 0.0f,0.0f,30.0f };
 	//ロックオン時の標的座標
-	Vector3 LockOnTargetPos_{0.0f,0.0f,30.0f};
+	Vector3 LockOnTargetPos_{ 0.0f,0.0f,30.0f };
 
 	//噴きあがりフラグ
 	bool isGushing_ = false;
 
 	//背景筒マネージャー
-	TubeManager* tubeManager_;
+	std::unique_ptr<TubeManager> tubeManager_;
 };

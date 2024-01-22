@@ -24,6 +24,8 @@ Input* GamePlayScene::input_ = Input::GetInstance();
 SpriteBasis* GamePlayScene::spriteBas_ = SpriteBasis::GetInstance();
 CollisionManager* GamePlayScene::collisionManager_ = CollisionManager::GetInstance();
 
+ObjectManager* GamePlayScene::objManager_ = ObjectManager::GetInstance();
+
 #ifdef _DEBUG
 ImGuiManager* GamePlayScene::imGuiManager_ = ImGuiManager::GetInstance();
 #endif
@@ -84,39 +86,21 @@ void GamePlayScene::Initialize3d() {
 	debugCamera_ = new DebugCamera();
 	debugCamera_->Initialize({ 0,20,-50 }, { ConvertToRadian(10),0,0 });
 
-	playerActiveModel_ = new Model();
-	playerActiveModel_ = Model::LoadFromOBJ("human", true);
-	playerHideModel_ = new Model();
-	playerHideModel_ = Model::LoadFromOBJ("human-hide", true);
-
-	planeEnemyModel_ = Model::LoadFromOBJ("planeEnemy", true);
-
-	skydomeModel_ = new Model();
-	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
-
-	bulletModel_ = new Model();
-	bulletModel_ = Model::LoadFromOBJ("missile", true);
-
-	tubeModel_ = new Model();
-	tubeModel_ = Model::LoadFromOBJ("BG_Tube", true);
-
-	cartModel_ = new Model();
-	cartModel_ = Model::LoadFromOBJ("cart",true);
-
-	bottomBGModel_ = new Model();
-	bottomBGModel_ = Model::LoadFromOBJ("bottom", true);
-
-	Character::SetCartModel(cartModel_);
-
-	Cart::Create(cartModel_);
+	Character::SetCartModel(objManager_->GetModel(cartModel_));
 
 #pragma region Player
-	player_ = Player::Create(playerActiveModel_);
+	Player* newPlayer = Player::Create(
+		objManager_->GetModel(playerActiveModel_));
+	player_.reset(newPlayer);
+
 	player_->SetCamera(camera_);
 	player_->Initialize();
 	player_->SetGamePlayScene(this);
-	player_->SetBulletModel(bulletModel_);
-	player_->SetModelPauses(playerActiveModel_, playerHideModel_);
+	player_->SetBulletModel(
+		objManager_->GetModel(bulletModel_));
+	player_->SetModelPauses(
+		objManager_->GetModel(playerActiveModel_),
+		objManager_->GetModel(playerHideModel_));
 #pragma endregion
 
 #pragma region Enemy
@@ -124,58 +108,69 @@ void GamePlayScene::Initialize3d() {
 #pragma endregion
 
 #pragma region Skydome
-	skydome_ = Skydome::Create();
+	Skydome* newSkydome = Skydome::Create();
+	skydome_.reset(newSkydome);
 	skydome_->SetCamera(camera_);
-	skydome_->SetModel(skydomeModel_);
+	skydome_->SetModel(objManager_->GetModel(skydomeModel_));
 	skydome_->SetScale({ 1024.0f, 256.0f, 1024.0f });
 	skydome_->SetPosition({ 0,0,0 });
 #pragma endregion
 
 #pragma region Tube
-	tubeManager_ = new TubeManager();
+	TubeManager* newTubeManager_ = new TubeManager();
+	tubeManager_.reset(newTubeManager_);
+
 	tubeManager_->SetCamera(camera_);
 	tubeManager_->SetSpeed(16.0f);
 	tubeManager_->SetRotation(CreateRotationVector(
 		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
 	tubeManager_->SetScale({ 100,100,100 });
-	tubeManager_->SetTubeModel(tubeModel_);
+	tubeManager_->SetTubeModel(objManager_->GetModel(tubeModel_));
 	tubeManager_->Initialize();
 #pragma endregion
 
 #pragma region 扉
-	doorL_ = new Object3d();
-	doorR_ = new Object3d();
+	Object3d* obj = new Object3d();
+
+	std::unique_ptr<Object3d> newObj =
+		std::make_unique<Object3d>();
 
 	doorPos_ = { 0,0,800 };
 
-	doorL_ = Object3d::Create();
-	doorL_->SetCamera(camera_);
-	doorL_->SetScale({ 50,400,10 });
-	Vector3 scaDoorL = doorL_->GetScale();
+	obj = Object3d::Create();
+	obj->SetCamera(camera_);
+	obj->SetScale({ 50,400,10 });
+	Vector3 scaDoorL = obj->GetScale();
 
-	doorL_->SetPosition({ -scaDoorL.x, scaDoorL.y / 2,doorPos_.z });
-	doorL_->SetRotation(CreateRotationVector(
+	obj->SetPosition({ -scaDoorL.x, scaDoorL.y / 2,doorPos_.z });
+	obj->SetRotation(CreateRotationVector(
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	doorL_->SetModel(doorModel_);
+	obj->SetModel(objManager_->GetModel(doorModel_));
 
-	doorR_ = Object3d::Create();
-	doorR_->SetCamera(camera_);
-	doorR_->SetScale({ 50,400,10 });
-	Vector3 scaDoorR = doorR_->GetScale();
+	newObj.reset(obj);
+	objs_.push_back(std::move(newObj));
 
-	doorR_->SetPosition({ scaDoorR.x, scaDoorR.y / 2, doorPos_.z });
-	doorR_->SetRotation(CreateRotationVector(
+	obj = Object3d::Create();
+	obj->SetCamera(camera_);
+	obj->SetScale({ 50,400,10 });
+	Vector3 scaDoorR = obj->GetScale();
+	obj->SetPosition({ scaDoorR.x, scaDoorR.y / 2, doorPos_.z });
+	obj->SetRotation(CreateRotationVector(
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	doorR_->SetModel(doorModel_);
+	obj->SetModel(objManager_->GetModel(doorModel_));
+	newObj.reset(obj);
+	objs_.push_back(std::move(newObj));
 #pragma endregion
 
-	bottomBG_ = new Object3d();
-	bottomBG_ = Object3d::Create();
-	bottomBG_->SetModel(bottomBGModel_);
-	bottomBG_->SetScale({ 10.0f, 10.0f, 10.0f });
-	bottomBG_->SetPosition({ 0,-100,0 });
-	bottomBG_->SetCamera(camera_);
-	bottomBG_->Update();
+	obj = Object3d::Create();
+	obj->SetModel(objManager_->GetModel(bottomBGModel_));
+	obj->SetScale({ 10.0f, 10.0f, 10.0f });
+	obj->SetPosition({ 0,-100,0 });
+	obj->SetCamera(camera_);
+	obj->Update();
+
+	newObj.reset(obj);
+	objs_.push_back(std::move(newObj));
 
 	//ライト生成
 	light_ = new LightGroup();
@@ -184,16 +179,20 @@ void GamePlayScene::Initialize3d() {
 	Object3d::SetLight(light_);
 
 	//パーティクル
-	particle_ = Particle::LoadFromObjModel("particle.png");
-	pm_ = ParticleManager::Create();
+	Particle* newParticle = Particle::LoadFromObjModel("particle.png");
+	particle_.reset(newParticle);
+
+	ParticleManager* newPM = ParticleManager::Create();
+	pm_.reset(newPM);
 	pm_->SetCamera(camera_);
-	pm_->SetParticleModel(particle_);
+	pm_->SetParticleModel(particle_.get());
 	pm_->SetColor({ 0.7f,0.4f,0.1f,0.7f });
 }
 
 void GamePlayScene::Initialize2d() {
 	//暗幕
-	blackOut_ = new Fade();
+	Fade* newFade = new Fade();
+	blackOut_.reset(newFade);
 	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
 	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
 	blackOut_->SetColor({ 0,0,0,1 });
@@ -208,7 +207,8 @@ void GamePlayScene::Initialize2d() {
 	//縦に並べる枚数
 	float height = (WinApp::Win_Height / tileSize) + 1;
 
-	arrangeTile_ = new ArrangeTile();
+	ArrangeTile* newArrangeTile_ = new ArrangeTile();
+	arrangeTile_.reset(newArrangeTile_);
 	arrangeTile_->Initialize(
 		Framework::kBackgroundTextureIndex_,
 		//開始位置
@@ -423,7 +423,7 @@ void GamePlayScene::Update3d() {
 		}
 
 		UpdateEnemyPopCommands();
-		}
+	}
 	else {
 		Vector3 startCameraMove = railCamera_->GetWorldTransform()->position_;
 
@@ -439,10 +439,10 @@ void GamePlayScene::Update3d() {
 	light_->Update();
 
 	skydome_->Update();
-	bottomBG_->Update();
 
-	doorL_->Update();
-	doorR_->Update();
+	for (std::unique_ptr<Object3d>& obj : objs_) {
+		obj->Update();
+	}
 
 	//マウス座標
 	Vector2 mousePos = input_->GetMousePosition();
@@ -497,7 +497,7 @@ void GamePlayScene::Update3d() {
 	blackOut_->Update();
 
 	BlackOutUpdate();
-	}
+}
 
 void GamePlayScene::Update2d() {
 }
@@ -505,13 +505,13 @@ void GamePlayScene::Update2d() {
 void GamePlayScene::Draw3d() {
 	//天球描画
 	skydome_->Draw();
-	bottomBG_->Draw();
+	for (std::unique_ptr<Object3d>& obj : objs_) {
+		obj->Draw();
+	}
+
 #pragma region Tube
 	tubeManager_->Draw();
 #pragma endregion
-
-	doorL_->Draw();
-	doorR_->Draw();
 
 	//敵機描画
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
@@ -566,7 +566,7 @@ void GamePlayScene::AddEnemy(
 	newEnemy->SetCamera(camera_);
 	newEnemy->Initialize();
 	newEnemy->SetGamePlayScene(this);
-	newEnemy->SetPlayer(player_);
+	newEnemy->SetPlayer(player_.get());
 
 	newEnemy->SetScale(scale);
 	newEnemy->SetRotation(rota);
@@ -574,8 +574,8 @@ void GamePlayScene::AddEnemy(
 
 	newEnemy->ReSetEasePos();
 
-	newEnemy->SetModel(planeEnemyModel_);
-	newEnemy->SetBulletModel(bulletModel_);
+	newEnemy->SetModel(objManager_->GetModel(enemyModel_));
+	newEnemy->SetBulletModel(objManager_->GetModel(bulletModel_));
 
 	newEnemy->SetBulletType(bulletType);
 
@@ -709,12 +709,8 @@ Vector3 GamePlayScene::LoadCommandsVector3(
 }
 
 void GamePlayScene::Finalize() {
-	SafeDelete(skydome_);
-	SafeDelete(bottomBG_);
-
 #pragma region Tube
 	tubeManager_->Finalize();
-	SafeDelete(tubeManager_);
 #pragma endregion
 
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
@@ -722,34 +718,16 @@ void GamePlayScene::Finalize() {
 	}
 
 	player_->Finalize();
-	SafeDelete(player_);
 
 	SafeDelete(light_);
 	SafeDelete(debugCamera_);
 	railCamera_->Finalize();
 	SafeDelete(railCamera_);
+	SafeDelete(camera_player);
 	SafeDelete(camera_);
 
-	SafeDelete(bulletModel_);
-	SafeDelete(planeEnemyModel_);
-	SafeDelete(playerActiveModel_);
-	SafeDelete(playerHideModel_);
-
-	SafeDelete(bottomBGModel_);
-	SafeDelete(tubeModel_);
-	SafeDelete(cartModel_);
-	SafeDelete(skydomeModel_);
-
-	SafeDelete(particle_);
-	SafeDelete(pm_);
-
 	blackOut_->Finalize();
-	SafeDelete(blackOut_);
-	SafeDelete(arrangeTile_);
-
-	SafeDelete(doorModel_);
-	SafeDelete(doorL_);
-	SafeDelete(doorR_);
+	arrangeTile_->Finalize();
 }
 
 void GamePlayScene::BlackOutUpdate() {

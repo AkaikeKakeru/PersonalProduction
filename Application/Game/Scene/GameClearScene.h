@@ -7,6 +7,7 @@
 #include "SpriteBasis.h"
 #include "Sprite.h"
 #include "Object3d.h"
+#include "ObjectManager.h"
 #include "Model.h"
 
 #include "Text.h"
@@ -30,6 +31,14 @@
 /*ゲームクリアシーン*/
 class GameClearScene : public BaseScene{
 public://構造体
+	enum modelName {
+		playerActiveModel_ = ObjectManager::playerActiveModel_,
+		skydomeModel_ = ObjectManager::skydomeModel_,
+		tubeModel_ = ObjectManager::tubeModel_,
+		cartModel_ = ObjectManager::cartModel_,
+		bottomBGModel_ = ObjectManager::bottomClearBGModel_,
+		doorModel_ = ObjectManager::doorModel_,
+	};
 
 private://定数
 	int const cPlayerSpeed_ = 4;
@@ -56,6 +65,7 @@ private:
 	static DirectXBasis* dxBas_;
 	static Input* input_;
 	static SpriteBasis* spriteBas_;
+	static ObjectManager* objManager_;
 
 	Camera* camera_ = nullptr;
 	LightGroup* light_ = nullptr;
@@ -66,39 +76,35 @@ private:
 #endif
 
 	// オブジェクト
-	Object3d* playerObj_ = nullptr;
-	Model* playerModel_ = nullptr;
+	std::unique_ptr<Object3d> playerObj_ = nullptr;
 
-	Object3d* skydomeObj_ = nullptr;
-	Model* skydomeModel_ = nullptr;
-
-	Model* tubeModel_ = nullptr;
+	std::unique_ptr<Object3d> skydomeObj_ = nullptr;
 
 	//カートモデル
-	Object3d* cart_ = nullptr;
-	Model* cartModel_ = nullptr;
+	std::unique_ptr<Object3d> cart_ = nullptr;
 
 	//扉の位置
 	Vector3 doorPos_{};
 
-	Model* doorModel_ = nullptr;
 	//左扉
-	Object3d* doorL_ = nullptr;
+	std::unique_ptr<Object3d> doorL_ = nullptr;
 	//右扉
-	Object3d* doorR_ = nullptr;
+	std::unique_ptr<Object3d> doorR_ = nullptr;
 
-	Model* bottomBGModel_ = nullptr;
-	Object3d* bottomBG_ = nullptr;
+	std::unique_ptr<Object3d> bottomBG_ = nullptr;
+
+	//オブジェリスト
+	std::list<std::unique_ptr<Object3d>> objs_;
 
 	// スプライト
 	Sprite* sprite_ = nullptr;
 
 	//テキスト
-	Text* text_ = nullptr;
+	std::unique_ptr<Text> text_ = nullptr;
 
 	//ボタン
-	Button* buttonTitle_ = nullptr;
-	Button* buttonRetry_ = nullptr;
+	std::unique_ptr<Button> buttonTitle_ = nullptr;
+	std::unique_ptr<Button> buttonRetry_ = nullptr;
 
 	//導入中かのフラグ
 	bool isIntro_ = true;
@@ -119,10 +125,10 @@ private:
 	bool isGoTitle_ = false;
 
 	//画面の暗幕
-	Fade* blackOut_ = nullptr;
+	std::unique_ptr<Fade> blackOut_ = nullptr;
 
 	//タイルならべのシーン遷移
-	ArrangeTile* arrangeTile_ = nullptr;
+	std::unique_ptr<ArrangeTile> arrangeTile_ = nullptr;
 
 #pragma endregion
 

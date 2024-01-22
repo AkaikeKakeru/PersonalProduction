@@ -5,19 +5,16 @@
 
 #include "Framework.h"
 #include "SceneManager.h"
-#include "ColorPallet.h"
-
 #ifdef _DEBUG
 #include <imgui.h>
 #endif
 #include <Character.h>
 #include <Quaternion.h>
 
-using namespace ColorPallet;
-
 DirectXBasis* TitleScene::dxBas_ = DirectXBasis::GetInstance();
 Input* TitleScene::input_ = Input::GetInstance();
 SpriteBasis* TitleScene::spriteBas_ = SpriteBasis::GetInstance();
+ObjectManager* TitleScene::objManager_ = ObjectManager::GetInstance();
 
 void TitleScene::Initialize() {
 	/// 描画初期化
@@ -35,71 +32,62 @@ void TitleScene::Initialize() {
 	camera_->SetTarget({ 0,ConvertToRadian(-90.0f),0 });
 	camera_->SetEye({ 20,-10,30 });
 
-	playerModel_ = new Model();
-	playerModel_ = Model::LoadFromOBJ("human", true);
-
-	skydomeModel_ = new Model();
-	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
-
-	cartModel_ = new Model();
-	cartModel_ = Model::LoadFromOBJ("cart", true);
-
-	tubeModel_ = new Model();
-	tubeModel_ = Model::LoadFromOBJ("BG_Tube", true);
-
-	bottomBGModel_ = new Model();
-	bottomBGModel_ = Model::LoadFromOBJ("bottom", true);
-
+	Object3d* newObj = new Object3d();
 #pragma region Player
-	playerObj_ = new Object3d();
-	playerObj_ = Object3d::Create();
 
-	playerObj_->SetPosition({ 0,0,-50.0f });
+	newObj = Object3d::Create();
+	newObj->SetCamera(camera_);
+	newObj->SetPosition({ 0,0,-50.0f });
+	newObj->SetModel(objManager_->GetModel(playerModel_));
 
-	playerObj_->SetModel(playerModel_);
-	playerObj_->SetCamera(camera_);
+	playerObj_.reset(newObj);
 #pragma endregion
 
 #pragma region cart
-	cart_ = new Object3d();
-	cart_ = Object3d::Create();
-
-	cart_->SetPosition({
+	newObj = Object3d::Create();
+	newObj->SetCamera(camera_);
+	newObj->SetPosition({
 		playerObj_->GetPosition().x,
 		playerObj_->GetPosition().y - 2.5f,
 		playerObj_->GetPosition().z }
 	);
+	newObj->SetModel(objManager_->GetModel(cartModel_));
 
-	cart_->SetModel(cartModel_);
-	cart_->SetCamera(camera_);
+	cart_.reset(newObj);
 #pragma endregion
 
 #pragma region Skydome
-	skydome_ = Skydome::Create();
-	skydome_->SetModel(skydomeModel_);
-	skydome_->SetScale({ 1024.0f, 126.0f, 1024.0f });
-	skydome_->SetPosition({ 0,0,-50.0f });
-	skydome_->SetCamera(camera_);
-	skydome_->Update();
+	Skydome* newSky = new Skydome();
+	newSky = Skydome::Create();
+	newSky->SetModel(objManager_->GetModel(skydomeModel_));
+	newSky->SetScale({ 1024.0f, 126.0f, 1024.0f });
+	newSky->SetPosition({ 0,0,-50.0f });
+	newSky->SetCamera(camera_);
+	newSky->Update();
+
+	skydome_.reset(newSky);
 #pragma endregion
 
-	bottomBG_ = new Object3d();
-	bottomBG_ = Object3d::Create();
-	bottomBG_->SetModel(bottomBGModel_);
-	bottomBG_->SetScale({ 10.0f, 10.0f, 10.0f });
-	bottomBG_->SetPosition({ 0,-100,0 });
-	bottomBG_->SetCamera(camera_);
-	bottomBG_->Update();
+	newObj = Object3d::Create();
+	newObj->SetCamera(camera_);
+	newObj->SetModel(objManager_->GetModel(bottomBGModel_));
+	newObj->SetScale({ 10.0f, 10.0f, 10.0f });
+	newObj->SetPosition({ 0,-100,0 });
+	newObj->Update();
+
+	bottomBG_.reset(newObj);
 
 #pragma region Tube
-	tubeManager_ = new TubeManager();
-	tubeManager_->SetCamera(camera_);
-	tubeManager_->SetSpeed(16.0f);
-	tubeManager_->SetRotation(CreateRotationVector(
+	TubeManager* newTube = new TubeManager();
+	newTube->SetCamera(camera_);
+	newTube->SetSpeed(16.0f);
+	newTube->SetRotation(CreateRotationVector(
 		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
-	tubeManager_->SetScale({ 100,100,100 });
-	tubeManager_->SetTubeModel(tubeModel_);
-	tubeManager_->Initialize();
+	newTube->SetScale({ 100,100,100 });
+	newTube->SetTubeModel(objManager_->GetModel(tubeModel_));
+	newTube->Initialize();
+
+	tubeManager_.reset(newTube);
 #pragma endregion
 
 	//ライト生成
@@ -108,16 +96,13 @@ void TitleScene::Initialize() {
 	light_->SetAmbientColor({ 1,1,1 });
 	Object3d::SetLight(light_);
 
-	//描画スプライト
-	sprite_ = new Sprite();
-	sprite_->Initialize(0);
-
 	//暗幕
-	blackOut_ = new Fade();
-	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
-	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
-	blackOut_->SetColor(colorBlackVivit_);
+	Fade* newFade = new Fade();
+	newFade->Initialize(Framework::kWhiteTextureIndex_);
+	newFade->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
+	newFade->SetColor({0,0,0,1});
 
+	blackOut_.reset(newFade);
 	//タイルならべ
 
 	//タイルサイズ
@@ -128,8 +113,8 @@ void TitleScene::Initialize() {
 	//縦に並べる枚数
 	float height = (WinApp::Win_Height / tileSize) + 1;
 
-	arrangeTile_ = new ArrangeTile();
-	arrangeTile_->Initialize(
+	ArrangeTile* newArrTile = new ArrangeTile();
+	newArrTile->Initialize(
 		Framework::kBackgroundTextureIndex_,
 		//開始位置
 		{
@@ -144,17 +129,21 @@ void TitleScene::Initialize() {
 		(int)(width * height)
 	);
 
+	arrangeTile_.reset(newArrTile);
+
 	float textSize = 2.5f;
 
 	//ボタン
-	buttonStart_ = new Button();
-	buttonStart_->Initialize(0);
-	buttonStart_->SetTelop("Click here to Start");
-	buttonStart_->SetPosition({ WinApp::Win_Width / 2 ,500.0f });
-	buttonStart_->SetSize({ 600.0f,96.0f });
-	buttonStart_->SetColor({ 1.0f,1.0f,1.0f,0.0f });
-	buttonStart_->GetText()->
+	Button* newButton = new Button();
+	newButton->Initialize(0);
+	newButton->SetTelop("Click here to Start");
+	newButton->SetPosition({ WinApp::Win_Width / 2 ,500.0f });
+	newButton->SetSize({ 600.0f,96.0f });
+	newButton->SetColor({ 1.0f,1.0f,1.0f,0.0f });
+	newButton->GetText()->
 		SetSize({ textSize,textSize });
+
+	buttonStart_.reset(newButton);
 
 	float len =
 		static_cast<float>(
@@ -170,14 +159,16 @@ void TitleScene::Initialize() {
 	//テキスト
 	textSize = 5.0f;
 
-	text_ = new Text();
-	text_->Initialize(Framework::kTextTextureIndex_);
-	text_->SetString("Remain");
-	text_->SetPosition({
+	Text* newText = new Text();
+	newText->Initialize(Framework::kTextTextureIndex_);
+	newText->SetString("Remain");
+	newText->SetPosition({
 		buttonStart_->GetPosition().x,
 		WinApp::Win_Height / 4,
 		});
-	text_->SetSize({ textSize,textSize });
+	newText->SetSize({ textSize,textSize });
+
+	text_.reset(newText);
 }
 
 void TitleScene::Update() {
@@ -223,8 +214,6 @@ void TitleScene::Update() {
 
 	buttonStart_->Update();
 
-	sprite_->Update();
-
 	BlackOutUpdate();
 }
 
@@ -252,8 +241,6 @@ void TitleScene::Draw() {
 	//スプライト本命処理
 	SpriteBasis::GetInstance()->PreDraw();
 
-	//sprite_->Draw();
-
 	buttonStart_->Draw();
 	text_->Print();
 
@@ -265,35 +252,13 @@ void TitleScene::Draw() {
 }
 
 void TitleScene::Finalize() {
-	SafeDelete(skydome_);
-	SafeDelete(bottomBG_);
-
-	SafeDelete(cart_);
-	SafeDelete(cartModel_);
-
 #pragma region Tube
 	tubeManager_->Finalize();
-	SafeDelete(tubeManager_);
-	SafeDelete(tubeModel_);
 #pragma endregion
-
-	SafeDelete(playerObj_);
-	SafeDelete(playerModel_);
-	SafeDelete(skydomeModel_);
-	SafeDelete(bottomBGModel_);
-	SafeDelete(sprite_);
-
 	SafeDelete(light_);
 	SafeDelete(camera_);
-
 	buttonStart_->Finalize();
-	SafeDelete(buttonStart_);
-
-	SafeDelete(text_);
-
 	blackOut_->Finalize();
-	SafeDelete(blackOut_);
-	SafeDelete(arrangeTile_);
 }
 
 void TitleScene::CameraUpdate() {
