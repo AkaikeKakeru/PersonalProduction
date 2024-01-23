@@ -185,18 +185,15 @@ private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
 
-
 public: //メンバ変数
 	//カメラ
-	Camera* camera_ = nullptr;
-	//カメラ(自機用)
-	Camera* camera_player = nullptr;
+	std::unique_ptr<Camera> camera_ = nullptr;
 
 	//カメラ(レール)
-	RailCamera* railCamera_;
+	std::unique_ptr<RailCamera> railCamera_;
 
 	//カメラ(デバッグ)
-	DebugCamera* debugCamera_;
+	std::unique_ptr<DebugCamera> debugCamera_;
 
 	//ライト
 	LightGroup* light_ = nullptr;

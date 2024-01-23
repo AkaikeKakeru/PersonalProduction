@@ -69,22 +69,25 @@ void GamePlayScene::Draw() {
 
 void GamePlayScene::Initialize3d() {
 	//カメラ生成
-	camera_ = new Camera();
+	Camera* newCamera = new Camera();
 
-	camera_->SetEye({ 0.0f,10.0f,-20.0f });
-	camera_->SetTarget({ 0.0f,0.0f,0.0f });
-	camera_->SetUp({ 0.0f,1.0f,0.0f });
-	camera_->Update();
+	newCamera->SetEye({ 0.0f,10.0f,-20.0f });
+	newCamera->SetTarget({ 0.0f,0.0f,0.0f });
+	newCamera->SetUp({ 0.0f,1.0f,0.0f });
+	newCamera->Update();
+	camera_.reset(newCamera);
 
-	railCamera_ = new RailCamera();
-	railCamera_->Initialize(camera_->GetEye(), { 0,0,0 });
-	railCamera_->SetGameScene(this);
-	railCamera_->SetTarget(camera_->GetTarget());
-	railCamera_->SetUp(camera_->GetUp());
-	railCamera_->Update();
+	RailCamera* newRailCamera = new RailCamera();
+	newRailCamera->Initialize(camera_->GetEye(), { 0,0,0 });
+	newRailCamera->SetGameScene(this);
+	newRailCamera->SetTarget(camera_->GetTarget());
+	newRailCamera->SetUp(camera_->GetUp());
+	newRailCamera->Update();
+	railCamera_.reset(newRailCamera);
 
-	debugCamera_ = new DebugCamera();
-	debugCamera_->Initialize({ 0,20,-50 }, { ConvertToRadian(10),0,0 });
+	DebugCamera* newDebugCamera = new DebugCamera();
+	newDebugCamera->Initialize({ 0,20,-50 }, { ConvertToRadian(10),0,0 });
+	debugCamera_.reset(newDebugCamera);
 
 	Character::SetCartModel(objManager_->GetModel(cartModel_));
 
@@ -93,7 +96,7 @@ void GamePlayScene::Initialize3d() {
 		objManager_->GetModel(playerActiveModel_));
 	player_.reset(newPlayer);
 
-	player_->SetCamera(camera_);
+	player_->SetCamera(camera_.get());
 	player_->Initialize();
 	player_->SetGamePlayScene(this);
 	player_->SetBulletModel(
@@ -110,7 +113,7 @@ void GamePlayScene::Initialize3d() {
 #pragma region Skydome
 	Skydome* newSkydome = Skydome::Create();
 	skydome_.reset(newSkydome);
-	skydome_->SetCamera(camera_);
+	skydome_->SetCamera(camera_.get());
 	skydome_->SetModel(objManager_->GetModel(skydomeModel_));
 	skydome_->SetScale({ 1024.0f, 256.0f, 1024.0f });
 	skydome_->SetPosition({ 0,0,0 });
@@ -120,7 +123,7 @@ void GamePlayScene::Initialize3d() {
 	TubeManager* newTubeManager_ = new TubeManager();
 	tubeManager_.reset(newTubeManager_);
 
-	tubeManager_->SetCamera(camera_);
+	tubeManager_->SetCamera(camera_.get());
 	tubeManager_->SetSpeed(16.0f);
 	tubeManager_->SetRotation(CreateRotationVector(
 		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
@@ -138,7 +141,7 @@ void GamePlayScene::Initialize3d() {
 	doorPos_ = { 0,0,800 };
 
 	obj = Object3d::Create();
-	obj->SetCamera(camera_);
+	obj->SetCamera(camera_.get());
 	obj->SetScale({ 50,400,10 });
 	Vector3 scaDoorL = obj->GetScale();
 
@@ -151,7 +154,7 @@ void GamePlayScene::Initialize3d() {
 	objs_.push_back(std::move(newObj));
 
 	obj = Object3d::Create();
-	obj->SetCamera(camera_);
+	obj->SetCamera(camera_.get());
 	obj->SetScale({ 50,400,10 });
 	Vector3 scaDoorR = obj->GetScale();
 	obj->SetPosition({ scaDoorR.x, scaDoorR.y / 2, doorPos_.z });
@@ -166,7 +169,7 @@ void GamePlayScene::Initialize3d() {
 	obj->SetModel(objManager_->GetModel(bottomBGModel_));
 	obj->SetScale({ 10.0f, 10.0f, 10.0f });
 	obj->SetPosition({ 0,-100,0 });
-	obj->SetCamera(camera_);
+	obj->SetCamera(camera_.get());
 	obj->Update();
 
 	newObj.reset(obj);
@@ -184,7 +187,7 @@ void GamePlayScene::Initialize3d() {
 
 	ParticleManager* newPM = ParticleManager::Create();
 	pm_.reset(newPM);
-	pm_->SetCamera(camera_);
+	pm_->SetCamera(camera_.get());
 	pm_->SetParticleModel(particle_.get());
 	pm_->SetColor({ 0.7f,0.4f,0.1f,0.7f });
 }
@@ -197,8 +200,8 @@ void GamePlayScene::Initialize2d() {
 	mouseL->Initialize(Framework::kMouseTextureIndex_);
 	mouseL->SetPosition({
 		WinApp::Win_Width - (texSize * 2),
-		WinApp::Win_Height - (texSize * 2)});
-	mouseL->SetSize({size, size*2});
+		WinApp::Win_Height - (texSize * 2) });
+	mouseL->SetSize({ size, size * 2 });
 	mouseL->SetAnchorPoint({
 		0.5f,
 		0.5f });
@@ -216,8 +219,8 @@ void GamePlayScene::Initialize2d() {
 	mouseR->Initialize(Framework::kMouseTextureIndex_);
 	mouseR->SetPosition({
 		WinApp::Win_Width - texSize,
-		WinApp::Win_Height - (texSize * 2)});
-	mouseR->SetSize({size, size*2});
+		WinApp::Win_Height - (texSize * 2) });
+	mouseR->SetSize({ size, size * 2 });
 	mouseR->SetAnchorPoint({
 		0.5f,
 		0.5f });
@@ -235,8 +238,8 @@ void GamePlayScene::Initialize2d() {
 	mouseW->Initialize(Framework::kMouseTextureIndex_);
 	mouseW->SetPosition({
 		WinApp::Win_Width - (texSize * 1.5f),
-		WinApp::Win_Height - (texSize * 2)});
-	mouseW->SetSize({size, size});
+		WinApp::Win_Height - (texSize * 2) });
+	mouseW->SetSize({ size, size });
 	mouseW->SetAnchorPoint({
 		0.5f,
 		0.5f });
@@ -254,14 +257,14 @@ void GamePlayScene::Initialize2d() {
 	mouseTS->Initialize(Framework::kMouseTextureIndex_);
 	mouseTS->SetPosition({
 		WinApp::Win_Width - (texSize * 2),
-		WinApp::Win_Height - (texSize *1.5f)});
-	mouseTS->SetSize({size, size/2});
+		WinApp::Win_Height - (texSize * 1.5f) });
+	mouseTS->SetSize({ size, size / 2 });
 	mouseTS->SetAnchorPoint({
 		0.5f,
 		0.5f });
 	mouseTS->SetTextureSize({
 		texSize,
-		texSize/2 });
+		texSize / 2 });
 	mouseTS->SetTextureLeftTop({
 		texSize,
 		(texSize * 2) });
@@ -273,14 +276,14 @@ void GamePlayScene::Initialize2d() {
 	mouseTH->Initialize(Framework::kMouseTextureIndex_);
 	mouseTH->SetPosition({
 		WinApp::Win_Width - texSize,
-		WinApp::Win_Height - (texSize *1.5f)});
-	mouseTH->SetSize({size, size/2});
+		WinApp::Win_Height - (texSize * 1.5f) });
+	mouseTH->SetSize({ size, size / 2 });
 	mouseTH->SetAnchorPoint({
 		0.5f,
 		0.5f });
 	mouseTH->SetTextureSize({
 		texSize,
-		texSize/2 });
+		texSize / 2 });
 	mouseTH->SetTextureLeftTop({
 		texSize,
 		(texSize * 2) + (texSize / 2) });
@@ -575,7 +578,7 @@ void GamePlayScene::Update3d() {
 
 			//マウスカーソルから、3D照準座標を取得する
 			LockOnTargetPos_ =
-				cursor_.Get3DReticlePosition(camera_, enemyWorldPos_);
+				cursor_.Get3DReticlePosition(camera_.get(), enemyWorldPos_);
 		}
 
 		//自機のレティクル更新
@@ -616,8 +619,8 @@ void GamePlayScene::Update2d() {
 		colR = col;
 	}
 
-		mouseSprites_[mouseSpriteL_]->SetColor(colL);
-		mouseSprites_[mouseSpriteR_]->SetColor(colR);
+	mouseSprites_[mouseSpriteL_]->SetColor(colL);
+	mouseSprites_[mouseSpriteR_]->SetColor(colR);
 	for (std::unique_ptr<Sprite>& mouse : mouseSprites_) {
 		mouse->Update();
 	}
@@ -629,7 +632,6 @@ void GamePlayScene::Draw3d() {
 	for (std::unique_ptr<Object3d>& obj : objs_) {
 		obj->Draw();
 	}
-
 #pragma region Tube
 	tubeManager_->Draw();
 #pragma endregion
@@ -688,7 +690,7 @@ void GamePlayScene::AddEnemy(
 	const int bulletType) {
 	std::unique_ptr<Enemy> newEnemy =
 		std::make_unique<Enemy>();
-	newEnemy->SetCamera(camera_);
+	newEnemy->SetCamera(camera_.get());
 	newEnemy->Initialize();
 	newEnemy->SetGamePlayScene(this);
 	newEnemy->SetPlayer(player_.get());
@@ -841,15 +843,12 @@ void GamePlayScene::Finalize() {
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Finalize();
 	}
+	skydome_->Finalize();
 
 	player_->Finalize();
 
 	SafeDelete(light_);
-	SafeDelete(debugCamera_);
 	railCamera_->Finalize();
-	SafeDelete(railCamera_);
-	SafeDelete(camera_player);
-	SafeDelete(camera_);
 
 	blackOut_->Finalize();
 	arrangeTile_->Finalize();
