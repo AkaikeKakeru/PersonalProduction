@@ -41,6 +41,7 @@
 
 #pragma region popLoader
 #include <sstream>
+#include <FollowCamera.h>
 #pragma endregion
 
 class CollisionManager;
@@ -85,12 +86,41 @@ private:
 	void Initialize3d();
 	void Initialize2d();
 
+	void InitializeCamera();
+	void InitializeBackground();
+	void InitializeCharacter();
+
+	void InitializeMouseUI();
+	void InitializeBlackOut();
+
 	void Update3d();
 	void Update2d();
 
+	void UpdateCamera();
+	void UpdateBackground();
+	void UpdateCharacter();
+	void UpdateDamage();
+
+	void UpdateMouseUI();
+	void UpdateBlackOut();
+
 	void Draw3d();
-	void DrawParticle();
 	void Draw2d();
+
+	void DrawCharacter();
+	void DrawBackground();
+	void DrawParticle();
+	void DrawMouseUI();
+	void DrawCharacterUI();
+	void DrawBlackOut();
+
+	void FinalizeBackGround();
+	void FinalizeCharacter();
+	void FinalizeBlackOut();
+
+	void RemoveUniquePtr();
+	void DebugShortCut();
+	void PhaseChange();
 
 public://定数
 	const int kFinalPhaseIndex_ = 3;
@@ -120,8 +150,6 @@ public:
 		std::string word);
 #pragma endregion
 
-	//黒幕の更新
-	void BlackOutUpdate();
 
 public:
 	//フェーズ番号取得
@@ -192,6 +220,9 @@ public: //メンバ変数
 	//カメラ(レール)
 	std::unique_ptr<RailCamera> railCamera_;
 
+	//カメラ(追従)
+	std::unique_ptr<FollowCamera> followCamera_;
+
 	//カメラ(デバッグ)
 	std::unique_ptr<DebugCamera> debugCamera_;
 
@@ -234,7 +265,7 @@ public: //メンバ変数
 	int nowBulletTypeEnemy_ = EnemyBullet::Gun_BulletType;
 
 	//フェーズ番号
-	size_t phaseIndex_ = 0;
+	int phaseIndex_ = 0;
 
 	//デバッグカメラのオンオフ
 	bool isDebugCamera_ = false;

@@ -30,86 +30,52 @@ ObjectManager* GamePlayScene::objManager_ = ObjectManager::GetInstance();
 ImGuiManager* GamePlayScene::imGuiManager_ = ImGuiManager::GetInstance();
 #endif
 
-void GamePlayScene::Initialize() {
-	Initialize2d();
-	Initialize3d();
+void GamePlayScene::Finalize() {
+	SafeDelete(light_);
+	FinalizeBlackOut();
+	FinalizeBackGround();
+	FinalizeCharacter();
 }
 
-void GamePlayScene::Update() {
-	input_->Update();
+void GamePlayScene::FinalizeBackGround() {
+#pragma region Tube
+	tubeManager_->Finalize();
+#pragma endregion
 
-	Update3d();
-	Update2d();
-
-	collisionManager_->CheckAllCollisions();
+	skydome_->Finalize();
 }
-
-void GamePlayScene::Draw() {
-#ifdef _DEBUG
-	imGuiManager_->Begin();
-	railCamera_->DrawImGui();
+void GamePlayScene::FinalizeCharacter() {
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		enemy->DrawImgui();
+		enemy->Finalize();
 	}
-	player_->DrawImgui();
-	imGuiManager_->End();
-#endif // DEBUG
-	Object3d::PreDraw(dxBas_->GetCommandList().Get());
-	Draw3d();
-	Object3d::PostDraw();
-
-	ParticleManager::PreDraw(dxBas_->GetCommandList().Get());
-	DrawParticle();
-	ParticleManager::PostDraw();
-
-	SpriteBasis::GetInstance()->PreDraw();
-	Draw2d();
-	SpriteBasis::GetInstance()->PostDraw();
+	player_->Finalize();
+}
+void GamePlayScene::FinalizeBlackOut() {
+	blackOut_->Finalize();
+	arrangeTile_->Finalize();
 }
 
-void GamePlayScene::Initialize3d() {
+void GamePlayScene::InitializeCamera() {
 	//カメラ生成
-	Camera* newCamera = new Camera();
+	camera_ = std::make_unique<Camera>();
+	camera_->SetEye({ 0.0f,10.0f,-20.0f });
+	camera_->SetTarget({ 0.0f,0.0f,0.0f });
+	camera_->SetUp({ 0.0f,1.0f,0.0f });
+	camera_->Update();
 
-	newCamera->SetEye({ 0.0f,10.0f,-20.0f });
-	newCamera->SetTarget({ 0.0f,0.0f,0.0f });
-	newCamera->SetUp({ 0.0f,1.0f,0.0f });
-	newCamera->Update();
-	camera_.reset(newCamera);
+	debugCamera_ = std::make_unique<DebugCamera>();
+	debugCamera_->Initialize(
+		{ 0,20,-50 },
+		{ ConvertToRadian(10),0,0 });
 
-	RailCamera* newRailCamera = new RailCamera();
-	newRailCamera->Initialize(camera_->GetEye(), { 0,0,0 });
-	newRailCamera->SetGameScene(this);
-	newRailCamera->SetTarget(camera_->GetTarget());
-	newRailCamera->SetUp(camera_->GetUp());
-	newRailCamera->Update();
-	railCamera_.reset(newRailCamera);
-
-	DebugCamera* newDebugCamera = new DebugCamera();
-	newDebugCamera->Initialize({ 0,20,-50 }, { ConvertToRadian(10),0,0 });
-	debugCamera_.reset(newDebugCamera);
-
-	Character::SetCartModel(objManager_->GetModel(cartModel_));
-
-#pragma region Player
-	Player* newPlayer = Player::Create(
-		objManager_->GetModel(playerActiveModel_));
-	player_.reset(newPlayer);
-
-	player_->SetCamera(camera_.get());
-	player_->Initialize();
-	player_->SetGamePlayScene(this);
-	player_->SetBulletModel(
-		objManager_->GetModel(bulletModel_));
-	player_->SetModelPauses(
-		objManager_->GetModel(playerActiveModel_),
-		objManager_->GetModel(playerHideModel_));
-#pragma endregion
-
-#pragma region Enemy
-	LoadEnemyPopData("enemyPop");
-#pragma endregion
-
+	//追従カメラの生成
+	followCamera_ = std::make_unique<FollowCamera>();
+	followCamera_->Initialize();
+	followCamera_->SetEye({ 0.0f,10.0f,-20.0f });
+	followCamera_->SetTarget({ 0.0f,0.0f,0.0f });
+	followCamera_->SetUp({ 0.0f,1.0f,0.0f });
+}
+void GamePlayScene::InitializeBackground() {
 #pragma region Skydome
 	Skydome* newSkydome = Skydome::Create();
 	skydome_.reset(newSkydome);
@@ -174,25 +140,35 @@ void GamePlayScene::Initialize3d() {
 
 	newObj.reset(obj);
 	objs_.push_back(std::move(newObj));
+}
+void GamePlayScene::InitializeCharacter() {
 
-	//ライト生成
-	light_ = new LightGroup();
-	light_ = LightGroup::Create();
-	light_->SetAmbientColor({ 1,1,1 });
-	Object3d::SetLight(light_);
+#pragma region Player
+	Player* newPlayer = Player::Create(
+		objManager_->GetModel(playerActiveModel_));
+	newPlayer->SetBulletModel(
+		objManager_->GetModel(bulletModel_));
+	newPlayer->SetModelPauses(
+		objManager_->GetModel(playerActiveModel_),
+		objManager_->GetModel(playerHideModel_));
+	newPlayer->SetCartModel(objManager_->GetModel(cartModel_));
 
-	//パーティクル
-	Particle* newParticle = Particle::LoadFromObjModel("particle.png");
-	particle_.reset(newParticle);
+	newPlayer->SetCamera(camera_.get());
+	newPlayer->SetGamePlayScene(this);
+	newPlayer->Initialize();
+	player_.reset(newPlayer);
+	player_->Update();
+	//追従カメラの更新
+	followCamera_->SetTargetWorldTransform(player_->GetWorldTransform());
+	followCamera_->Update();
+#pragma endregion
 
-	ParticleManager* newPM = ParticleManager::Create();
-	pm_.reset(newPM);
-	pm_->SetCamera(camera_.get());
-	pm_->SetParticleModel(particle_.get());
-	pm_->SetColor({ 0.7f,0.4f,0.1f,0.7f });
+#pragma region Enemy
+	LoadEnemyPopData("enemyPop");
+#pragma endregion
 }
 
-void GamePlayScene::Initialize2d() {
+void GamePlayScene::InitializeMouseUI() {
 	float size = 64.0f;
 	float texSize = 64.0f;
 	std::unique_ptr<Sprite> mouseL =
@@ -289,7 +265,8 @@ void GamePlayScene::Initialize2d() {
 		(texSize * 2) + (texSize / 2) });
 	//mouseSpriteTextH_.reset(newSprite);
 	mouseSprites_.push_back(std::move(mouseTH));
-
+}
+void GamePlayScene::InitializeBlackOut() {
 	//暗幕
 	Fade* newFade = new Fade();
 	blackOut_.reset(newFade);
@@ -325,110 +302,102 @@ void GamePlayScene::Initialize2d() {
 	);
 }
 
-void GamePlayScene::Update3d() {
-	{
-		static Vector3 lightDir = { 0,1,5 };
-		light_->SetDirLightDir(0, lightDir);
-	}
+void GamePlayScene::UpdateCamera() {
 	if (player_->IsStart()) {
+		followCamera_->Update();
+	}
+	else {
+		Vector3 startCameraMove = followCamera_->GetWorldTransform()->position_;
+		startCameraMove += {0.0f, 0.0f, -0.2f};
+		followCamera_->GetWorldTransform()->position_ = startCameraMove;
+	}
 
-		//自機弾自壊フラグの立った弾を削除
-		playerBullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
-			return bullet->IsDead();
-			});
+	//デバッグカメラが起動中なら
+	if (isDebugCamera_) {
+		debugCamera_->Update();
 
-		//敵機弾自壊フラグの立った弾を削除
-		enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
-			return bullet->IsDead();
-			});
+		camera_->SetEye(debugCamera_->GetEye());
+		camera_->SetTarget(debugCamera_->GetTarget());
+		camera_->SetUp(debugCamera_->GetUp());
+	}
+	else {
+		camera_->SetEye(followCamera_->GetEye());
+		camera_->SetTarget(followCamera_->GetTarget());
+		camera_->SetUp(followCamera_->GetUp());
+	}
 
-		//敵機が全滅したら(コンテナが空になったら)
-		if (enemys_.size() <= 0) {
-			//ファイナルフェイズに届いてなければ
-			if (phaseIndex_ < kFinalPhaseIndex_) {
-				//次の敵の湧き位置検索
-				isWait_ = false;
-				//フェーズ番号を進める
-				phaseIndex_++;
-				//レールカメラを前進させる
-				railCamera_->SetPhaseAdvance(true);
-			}
-			else {
-				if (!arrangeTile_->IsOpen()) {
-					arrangeTile_->Update();
-				}
-				else {
-					arrangeTile_->Reset(true, false);
-				}
+	camera_->Update();
+}
+void GamePlayScene::UpdateBackground() {
+	skydome_->Update();
 
-				if (arrangeTile_->IsEnd()) {
-					//シーンの切り替えを依頼
-					SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-				}
-			}
+	for (std::unique_ptr<Object3d>& obj : objs_) {
+		obj->Update();
+	}
+#pragma region Tube
+	tubeManager_->Update();
+#pragma endregion
+}
+void GamePlayScene::UpdateCharacter() {
+	if (player_->IsStart()) {
+		//自機弾更新
+		for (std::unique_ptr<PlayerBullet>& bullet : playerBullets_) {
+			bullet->Update();
 		}
 
-		//敵機のダメージ処理
+		//敵機弾更新
+		for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+			bullet->Update();
+		}
+
+		//敵機の更新
 		for (std::unique_ptr<Enemy>& enemy : enemys_) {
+			enemy->Update();
+			{
+			//if (!cursor_.IsLockOn()) {
+			//	enemyWorldPos_ = {
+			//		enemy->GetMatWorld().m[3][0],
+			//		enemy->GetMatWorld().m[3][1],
+			//		enemy->GetMatWorld().m[3][2]
+			//	};
 
-			if (isGushing_) {
-				pm_->Active(
-					{
-						enemy->GetMatWorld().m[3][0],
-						enemy->GetMatWorld().m[3][1],
-						enemy->GetMatWorld().m[3][2] },
-					{ 2.0f,0.0f,2.0f },
-					{ -2.0f,0.0f,-2.0f },
+			//}
 
-					{ 3.0f,10.0f,3.0f },
-					{ -3.0f,0.0f,-3.0f },
-					{ 0.0f,0.001f,0.0f },
-					1000,
-					5.0f,
-					0.0f,
-					20
-					);
+			//if (!player_->IsDead()) {
+			//	//自機と敵機の距離(仮)
+			//	float distancePToE =
+			//		Vector3Dot(
+			//			Vector3{
+			//			enemy->GetMatWorld().m[3][0],
+			//			enemy->GetMatWorld().m[3][1],
+			//			enemy->GetMatWorld().m[3][2] },
+
+			//			Vector3{
+			//			player_->GetMatWorld().m[3][0],
+			//			player_->GetMatWorld().m[3][1],
+			//			player_->GetMatWorld().m[3][2] });
+
+			//	//カーソルから3Dレティクルまでの距離を設定
+			//	cursor_.SetDistance(distancePToE);
+
+			//	//マウスカーソルから、3D照準座標を取得する
+			//	LockOnTargetPos_ =
+			//		cursor_.Get3DReticlePosition(camera_.get(), enemyWorldPos_);;
+			//}
 			}
 
-			isGushing_ = false;
+
 		}
+	}
 
-#ifdef _DEBUG
-		if (input_->TriggerKey(DIK_K)) {
-			//敵機のダメージ処理
-			for (std::unique_ptr<Enemy>& enemy : enemys_) {
-				enemy->SetIsDead(true);
-			}
-		}
-#endif // _DEBUG
-
-
-		//敵機をデスフラグで削除
-		enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
-			return enemy->IsDead();
-			});
-
-		railCamera_->Update();
-
-#ifdef _DEBUG
-		if (input_->ReleaseKey(DIK_Q)) {
-			isDebugCamera_ = !isDebugCamera_;
-		}
-#endif // _DEBUG
-
-		//デバッグカメラが起動中なら
-		if (isDebugCamera_) {
-			debugCamera_->Update();
-
-			railCamera_->SetEye(debugCamera_->GetEye());
-			railCamera_->SetTarget(debugCamera_->GetTarget());
-			railCamera_->SetUp(debugCamera_->GetUp());
-		}
-
-		camera_->SetEye(railCamera_->GetEye());
-		camera_->SetTarget(railCamera_->GetTarget());
-		camera_->SetUp(railCamera_->GetUp());
-		player_->SetWorldTransformRailCamera(railCamera_->GetWorldTransform());
+	//自機のレティクル更新
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		player_->UpdateReticle(enemy.get());
+	}
+	player_->Update();
+}
+void GamePlayScene::UpdateDamage() {
+	if (player_->IsStart()) {
 		//敵機のダメージ処理
 		for (std::unique_ptr<Enemy>& enemy : enemys_) {
 			enemy->Update();
@@ -459,6 +428,27 @@ void GamePlayScene::Update3d() {
 					10
 					);
 			}
+
+			if (isGushing_) {
+				pm_->Active(
+					{
+						enemy->GetMatWorld().m[3][0],
+						enemy->GetMatWorld().m[3][1],
+						enemy->GetMatWorld().m[3][2] },
+					{ 2.0f,0.0f,2.0f },
+					{ -2.0f,0.0f,-2.0f },
+
+					{ 3.0f,10.0f,3.0f },
+					{ -3.0f,0.0f,-3.0f },
+					{ 0.0f,0.001f,0.0f },
+					1000,
+					5.0f,
+					0.0f,
+					20
+					);
+			}
+
+			isGushing_ = false;
 		}
 
 		//自機の被ダメージ処理
@@ -512,94 +502,9 @@ void GamePlayScene::Update3d() {
 				10
 				);
 		}
-
-		if (player_->IsOver()) {
-			blackOut_->SetIs(true);
-			blackOut_->SetIsOpen(false);
-			if (blackOut_->IsEnd()) {
-				//シーンの切り替えを依頼
-				SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-			}
-		}
-
-		UpdateEnemyPopCommands();
 	}
-	else {
-		Vector3 startCameraMove = railCamera_->GetWorldTransform()->position_;
-
-		startCameraMove += {0.0f, 0.0f, -0.2f};
-
-		railCamera_->GetWorldTransform()->position_ = startCameraMove;
-	}
-	camera_->SetEye(railCamera_->GetEye());
-	camera_->SetTarget(railCamera_->GetTarget());
-	camera_->SetUp(railCamera_->GetUp());
-	player_->SetWorldTransformRailCamera(railCamera_->GetWorldTransform());
-	camera_->Update();
-	light_->Update();
-
-	skydome_->Update();
-
-	for (std::unique_ptr<Object3d>& obj : objs_) {
-		obj->Update();
-	}
-
-	//マウス座標
-	Vector2 mousePos = input_->GetMousePosition();
-
-	if (player_->IsStart()) {
-		//自機弾更新
-		for (std::unique_ptr<PlayerBullet>& bullet : playerBullets_) {
-			bullet->Update();
-		}
-
-		//敵機弾更新
-		for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-			bullet->Update();
-		}
-
-		//敵機の更新
-		for (std::unique_ptr<Enemy>& enemy : enemys_) {
-			enemy->Update();
-
-			if (!cursor_.IsLockOn()) {
-				enemyWorldPos_ = {
-					enemy->GetMatWorld().m[3][0],
-					enemy->GetMatWorld().m[3][1] - 1.0f,
-					enemy->GetMatWorld().m[3][2]
-				};
-
-			}
-			//自機と敵機の距離(仮)
-			float distancePToE = 30.0f;
-
-			//カーソルから3Dレティクルまでの距離を設定
-			cursor_.SetDistance(70.0f + distancePToE);
-
-			//マウスカーソルから、3D照準座標を取得する
-			LockOnTargetPos_ =
-				cursor_.Get3DReticlePosition(camera_.get(), enemyWorldPos_);
-		}
-
-		//自機のレティクル更新
-		player_->UpdateReticle(LockOnTargetPos_);
-	}
-
-
-#pragma region Tube
-	tubeManager_->Update();
-#pragma endregion
-
-	player_->Update();
-
-	pm_->Update();
-
-	blackOut_->Update();
-
-	BlackOutUpdate();
 }
-
-void GamePlayScene::Update2d() {
+void GamePlayScene::UpdateMouseUI() {
 	static const Vector4 col = { 1,1,1,1 };
 	static const Vector4 colPress = { 0.5f,0.2f,0.2f,1 };
 
@@ -625,17 +530,37 @@ void GamePlayScene::Update2d() {
 		mouse->Update();
 	}
 }
+void GamePlayScene::UpdateBlackOut() {
+	blackOut_->Update();
 
-void GamePlayScene::Draw3d() {
-	//天球描画
-	skydome_->Draw();
-	for (std::unique_ptr<Object3d>& obj : objs_) {
-		obj->Draw();
+	if (arrangeTile_->IsOpen()) {
+		arrangeTile_->Update();
 	}
-#pragma region Tube
-	tubeManager_->Draw();
-#pragma endregion
 
+	if (arrangeTile_->IsEnd()) {
+		arrangeTile_->SetIs(false);
+	}
+}
+
+void GamePlayScene::DrawParticle() {
+	pm_->Draw();
+}
+void GamePlayScene::DrawMouseUI() {
+	for (std::unique_ptr<Sprite>& mouse : mouseSprites_) {
+		mouse->Draw();
+	}
+}
+void GamePlayScene::DrawCharacterUI() {
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		enemy->DrawUI();
+	}
+	player_->DrawUI();
+}
+void GamePlayScene::DrawBlackOut() {
+	blackOut_->Draw();
+	arrangeTile_->Draw();
+}
+void GamePlayScene::DrawCharacter() {
 	//敵機描画
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Draw();
@@ -654,35 +579,88 @@ void GamePlayScene::Draw3d() {
 	//自機描画
 	player_->Draw();
 }
-
-void GamePlayScene::DrawParticle() {
-	pm_->Draw();
+void GamePlayScene::DrawBackground() {
+	//天球描画
+	skydome_->Draw();
+	for (std::unique_ptr<Object3d>& obj : objs_) {
+		obj->Draw();
+	}
+#pragma region Tube
+	tubeManager_->Draw();
+#pragma endregion
 }
 
-void GamePlayScene::Draw2d() {
-	for (std::unique_ptr<Sprite>& mouse : mouseSprites_) {
-		mouse->Draw();
+void GamePlayScene::RemoveUniquePtr() {
+	//自機弾自壊フラグの立った弾を削除
+	playerBullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+		return bullet->IsDead();
+		});
+
+	//敵機弾自壊フラグの立った弾を削除
+	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
+		return bullet->IsDead();
+		});
+
+
+	//敵機をデスフラグで削除
+	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
+		return enemy->IsDead();
+		});
+}
+void GamePlayScene::DebugShortCut() {
+	if (player_->IsStart()) {
+#ifdef _DEBUG
+		if (input_->TriggerKey(DIK_K)) {
+			//敵機のダメージ処理
+			for (std::unique_ptr<Enemy>& enemy : enemys_) {
+				enemy->SetIsDead(true);
+			}
+		}
+#endif // _DEBUG
 	}
 
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		enemy->DrawUI();
+#ifdef _DEBUG
+	if (input_->ReleaseKey(DIK_Q)) {
+		isDebugCamera_ = !isDebugCamera_;
 	}
-	player_->DrawUI();
+#endif // _DEBUG
+}
+void GamePlayScene::PhaseChange() {
+	//敵機が全滅したら(コンテナが空になったら)
+	if (enemys_.size() <= 0) {
+		//ファイナルフェイズに届いてなければ
+		if (phaseIndex_ < kFinalPhaseIndex_) {
+			//次の敵の湧き位置検索
+			isWait_ = false;
+			//フェーズ番号を進める
+			phaseIndex_++;
 
-	blackOut_->Draw();
-	arrangeTile_->Draw();
+			player_->SetPhaseAdvance(true);
+		}
+		else {
+			if (!arrangeTile_->IsOpen()) {
+				arrangeTile_->Update();
+			}
+			else {
+				arrangeTile_->Reset(true, false);
+			}
+
+			if (arrangeTile_->IsEnd()) {
+				//シーンの切り替えを依頼
+				SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+			}
+		}
+	}
 }
 
 void GamePlayScene::AddPlayerBullet(std::unique_ptr<PlayerBullet> playerBullet) {
 	//リストに登録
 	playerBullets_.push_back(std::move(playerBullet));
 }
-
 void GamePlayScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet) {
 	//リストに登録
 	enemyBullets_.push_back(std::move(enemyBullet));
 }
-
 void GamePlayScene::AddEnemy(
 	const Vector3 pos,
 	const Vector3 rota,
@@ -691,6 +669,9 @@ void GamePlayScene::AddEnemy(
 	std::unique_ptr<Enemy> newEnemy =
 		std::make_unique<Enemy>();
 	newEnemy->SetCamera(camera_.get());
+	newEnemy->SetModel(objManager_->GetModel(enemyModel_));
+	newEnemy->SetBulletModel(objManager_->GetModel(bulletModel_));
+	newEnemy->SetCartModel(objManager_->GetModel(cartModel_));
 	newEnemy->Initialize();
 	newEnemy->SetGamePlayScene(this);
 	newEnemy->SetPlayer(player_.get());
@@ -700,9 +681,6 @@ void GamePlayScene::AddEnemy(
 	newEnemy->SetPosition(pos);
 
 	newEnemy->ReSetEasePos();
-
-	newEnemy->SetModel(objManager_->GetModel(enemyModel_));
-	newEnemy->SetBulletModel(objManager_->GetModel(bulletModel_));
 
 	newEnemy->SetBulletType(bulletType);
 
@@ -737,7 +715,6 @@ void GamePlayScene::LoadEnemyPopData(std::string filename) {
 	//ファイルを閉じる
 	file.close();
 }
-
 void GamePlayScene::UpdateEnemyPopCommands() {
 	//待機処理
 	if (isWait_) {
@@ -814,7 +791,6 @@ void GamePlayScene::UpdateEnemyPopCommands() {
 		}
 	}
 }
-
 Vector3 GamePlayScene::LoadCommandsVector3(
 	std::istringstream* line_stream,
 	std::string word) {
@@ -835,31 +811,112 @@ Vector3 GamePlayScene::LoadCommandsVector3(
 	return result;
 }
 
-void GamePlayScene::Finalize() {
-#pragma region Tube
-	tubeManager_->Finalize();
-#pragma endregion
+void GamePlayScene::Initialize3d() {
+	InitializeCamera();
+	InitializeCharacter();
+	InitializeBackground();
 
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		enemy->Finalize();
-	}
-	skydome_->Finalize();
+	//ライト生成
+	light_ = new LightGroup();
+	light_ = LightGroup::Create();
+	light_->SetAmbientColor({ 1,1,1 });
+	Object3d::SetLight(light_);
 
-	player_->Finalize();
+	//パーティクル
+	Particle* newParticle = Particle::LoadFromObjModel("particle.png");
+	particle_.reset(newParticle);
 
-	SafeDelete(light_);
-	railCamera_->Finalize();
-
-	blackOut_->Finalize();
-	arrangeTile_->Finalize();
+	ParticleManager* newPM = ParticleManager::Create();
+	pm_.reset(newPM);
+	pm_->SetCamera(camera_.get());
+	pm_->SetParticleModel(particle_.get());
+	pm_->SetColor({ 0.7f,0.4f,0.1f,0.7f });
+}
+void GamePlayScene::Initialize2d() {
+	InitializeMouseUI();
+	InitializeBlackOut();
 }
 
-void GamePlayScene::BlackOutUpdate() {
-	if (arrangeTile_->IsOpen()) {
-		arrangeTile_->Update();
+void GamePlayScene::Update3d() {
+	{
+		static Vector3 lightDir = { 0,1,5 };
+		light_->SetDirLightDir(0, lightDir);
+	}
+	RemoveUniquePtr();
+	if (player_->IsStart()) {
+		DebugShortCut();
+
+		PhaseChange();
+
+		UpdateCamera();
+
+		UpdateDamage();
+
+		if (player_->IsOver()) {
+			blackOut_->SetIs(true);
+			blackOut_->SetIsOpen(false);
+			if (blackOut_->IsEnd()) {
+				//シーンの切り替えを依頼
+				SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+			}
+		}
+
+		UpdateEnemyPopCommands();
 	}
 
-	if (arrangeTile_->IsEnd()) {
-		arrangeTile_->SetIs(false);
+	UpdateCharacter();
+	UpdateBackground();
+	UpdateCamera();
+
+	light_->Update();
+
+	pm_->Update();
+}
+void GamePlayScene::Update2d() {
+	UpdateMouseUI();
+	UpdateBlackOut();
+}
+
+void GamePlayScene::Draw3d() {
+	DrawBackground();
+	DrawCharacter();
+}
+void GamePlayScene::Draw2d() {
+	DrawMouseUI();
+	DrawCharacterUI();
+	DrawBlackOut();
+}
+
+void GamePlayScene::Initialize() {
+	Initialize3d();
+	Initialize2d();
+}
+void GamePlayScene::Update() {
+	input_->Update();
+
+	Update3d();
+	Update2d();
+
+	collisionManager_->CheckAllCollisions();
+}
+void GamePlayScene::Draw() {
+#ifdef _DEBUG
+	imGuiManager_->Begin();
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		enemy->DrawImgui();
 	}
+	player_->DrawImgui();
+	imGuiManager_->End();
+#endif // DEBUG
+	Object3d::PreDraw(dxBas_->GetCommandList().Get());
+	Draw3d();
+	Object3d::PostDraw();
+
+	ParticleManager::PreDraw(dxBas_->GetCommandList().Get());
+	DrawParticle();
+	ParticleManager::PostDraw();
+
+	SpriteBasis::GetInstance()->PreDraw();
+	Draw2d();
+	SpriteBasis::GetInstance()->PostDraw();
 }
