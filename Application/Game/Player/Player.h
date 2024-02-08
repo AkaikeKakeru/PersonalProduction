@@ -33,7 +33,7 @@ public://メンバ関数
 	void OnCollision(const CollisionInfo& info) override;
 
 	//照準更新
-	void UpdateReticle(const Vector3& targetWorldPos);
+	void UpdateReticle(Enemy* enemy);
 
 	//発射攻撃
 	void Attack();
@@ -71,6 +71,11 @@ public: //定数
 	const float kDefaultPosZ_ = 30.0f;
 
 public: //アクセッサ
+	//追従カメラのビュープロジェクション
+	void SetViewProjection(const ViewProjection* viewProjection) {
+		viewProjection_ = viewProjection;
+	}
+
 	//レールカメラのワールド変換取得
 	void SetWorldTransformRailCamera(WorldTransform* worldTransformRailCamera) {
 		worldTransform_.parent_ = worldTransformRailCamera;
@@ -92,6 +97,11 @@ public: //アクセッサ
 		modelHide_ = hyde;
 	};
 
+	//フェーズ進行フラグのセット
+	void SetPhaseAdvance(bool isPhaseAdvance) {
+		isPhaseAdvance_ = isPhaseAdvance;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -101,11 +111,21 @@ private: //静的メンバ変数
 	static SpriteBasis* spriteBas_;
 
 private: //メンバ変数
+	//カメラのビュープロジェクション
+	const ViewProjection* viewProjection_ = nullptr;
+
+private: //メンバ変数
+	//移動イーズ
+	Ease moveEase{};
+	//回転イーズ
+	Ease rotaEase{};
+
 	//テキスト
-	Text* textEmpty_ = nullptr;
+	std::unique_ptr<Text> textEmpty_ = nullptr;
 
 	//カーソル
-	Cursor* cursor{};
+	//std::unique_ptr<Cursor> cursor{};
+	Cursor cursor_;
 
 	//3dレティクルのワールド変換
 	WorldTransform worldTransform3dReticle_;
@@ -120,7 +140,7 @@ private: //メンバ変数
 	int32_t bulletCooltime_ = kDefaultBulletCooltime_;
 
 	//レティクル用スプライト
-	Sprite* spriteReticle_ = nullptr;
+	std::unique_ptr<Sprite> spriteReticle_ = nullptr;
 
 	//HPゲージのセットアップ位置
 	Ease setupHpGaugePos_ = {};
@@ -128,7 +148,7 @@ private: //メンバ変数
 	/// <summary>
 	/// 残弾
 	/// </summary>
-	Gauge* bulletGauge_ = {};
+	std::unique_ptr<Gauge> bulletGauge_ = {};
 
 	//残弾ゲージの位置(左上角)
 	Vector2 positionBulletGauge_ = {
@@ -156,6 +176,9 @@ private: //メンバ変数
 
 	float cartPosYLock_ = {};
 	bool isHideOld_ = false;
+
+	//フェーズ進行フラグ
+	bool isPhaseAdvance_ = false;
 
 public:
 	Player() = default;

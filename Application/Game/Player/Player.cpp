@@ -10,6 +10,8 @@
 #include "PlayerBullet.h"
 #include <Framework.h>
 
+#include "ObjectManager.h"
+
 #include <Quaternion.h>
 #include <Ease.h>
 
@@ -65,9 +67,9 @@ bool Player::Initialize() {
 
 	worldTransform3dReticle_.Initialize();
 
-	spriteReticle_ = new Sprite();
+	Sprite* newSprite = new Sprite();
+	spriteReticle_.reset(newSprite);
 	spriteReticle_->Initialize(Framework::kCursorTextureIndex_);
-
 	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
 	spriteReticle_->SetSize({ 64,64 });
 
@@ -97,29 +99,41 @@ bool Player::Initialize() {
 #pragma endregion
 
 #pragma region HPスプライト
-	Character::GetHPGauge()->SetRestMax(kDefaultLife_);
-	Character::GetHPGauge()->SetRest(kDefaultLife_);
-	Character::GetHPGauge()->SetMaxTime(kMaxTimeHP_);
+	Gauge* newHpGauge = new Gauge();
+	newHpGauge->SetRestMax(kDefaultLife_);
+	newHpGauge->SetRest(kDefaultLife_);
+	newHpGauge->SetMaxTime(kMaxTimeHP_);
+	newHpGauge->Initialize();
+	newHpGauge->SetPosition({ 64,64 });
+	newHpGauge->SetSize({ 1,1 });
+	Character::SetHPGauge(newHpGauge);
+#pragma endregion
 
-	Character::GetHPGauge()->SetPosition({ 64,64 });
-	Character::GetHPGauge()->SetSize({ 1,1 });
+#pragma region カート
+	Cart* newCart = Cart::Create();
+	newCart->Initialize();
+	newCart->SetModel(
+		ObjectManager::GetInstance()->
+		GetModel(
+			ObjectManager::cartModel_
+		)
+	);
+	newCart->SetCamera(camera_);
+	Character::SetCart(newCart);
 #pragma endregion
 
 #pragma region 残弾数スプライト
-	bulletGauge_ = new Gauge();
-	bulletGauge_->Initialize();
-
-	bulletGauge_->GetRestSprite()->SetColor({ 0.2f,0.7f,0.2f,0.5f });
-	bulletGauge_->SetRestMax(static_cast<float>(remainBulletCount_));
-	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
-	bulletGauge_->SetMaxTime(maxTimeBullet_);
-
-	bulletGauge_->SetPosition({ 64,64 });
-	bulletGauge_->SetSize({ 0.5f,0.5f });
-
-	bulletGauge_->GetAmountSprite()->SetColor({ 0.7f,0.7f,0.2f,0.5f });
-
-	bulletGauge_->Update();
+	Gauge* newGauge = new Gauge();
+	newGauge->Initialize();
+	newGauge->GetRestSprite()->SetColor({ 0.2f,0.7f,0.2f,0.5f });
+	newGauge->SetRestMax(static_cast<float>(remainBulletCount_));
+	newGauge->SetRest(static_cast<float>(remainBulletCount_));
+	newGauge->SetMaxTime(maxTimeBullet_);
+	newGauge->SetPosition({ 64,64 });
+	newGauge->SetSize({ 0.5f,0.5f });
+	newGauge->GetAmountSprite()->SetColor({ 0.7f,0.7f,0.2f,0.5f });
+	newGauge->Update();
+	bulletGauge_.reset(newGauge);
 #pragma endregion
 
 #ifdef _DEBUG
@@ -143,7 +157,8 @@ bool Player::Initialize() {
 #endif // _DEBUG
 
 	//テキスト
-	textEmpty_ = new Text();
+	Text* newText = new Text();
+	textEmpty_.reset(newText);
 	textEmpty_->Initialize(Framework::kTextTextureIndex_);
 	textEmpty_->SetString("AmmoIsEmpty");
 
@@ -233,6 +248,38 @@ void Player::Update() {
 	Vector3 shakePos = Object3d::GetPosition();
 
 	if (Character::IsStart()) {
+		if (isPhaseAdvance_) {
+			float updateRota = ConvertToRadian(90.0f);
+
+			if (GetGamePlayScene()->GetPhaseIndex() % 2 == 1) {
+				updateRota *= -1;
+			}
+
+			moveEase.Reset(
+				Ease::InOut_,
+				Character::GetTimerMax(),
+				Object3d::GetPosition(),
+				{
+					Object3d::GetPosition().x,
+					Object3d::GetPosition().y,
+					Object3d::GetPosition().z/* + 50.0f*/
+				}
+			);
+
+			rotaEase.Reset(
+				Ease::InOut_,
+				Character::GetTimerMax(),
+				Object3d::GetRotation(),
+				{
+					Object3d::GetRotation().x,
+					Object3d::GetRotation().y + updateRota,
+					Object3d::GetRotation().z
+				}
+			);
+
+			isPhaseAdvance_ = false;
+		}
+
 		//入力で隠れフラグ操作
 		if (input_->PressMouse(1)) {
 			Object3d::SetModel(modelHide_);
@@ -267,7 +314,13 @@ void Player::Update() {
 			}
 		}
 
+		moveEase.Update();
+		rotaEase.Update();
+		rotVector += rotaEase.GetReturn();
+		moveVector += moveEase.GetReturn();
+
 		position += moveVector;
+		rot += rotVector;
 
 		//ダメージフラグを確認
 		if (Character::IsDamage()) {
@@ -284,8 +337,6 @@ void Player::Update() {
 			shakePos = position;
 			shakePos += shake_.GetOutput();
 		}
-
-		rot += rotVector;
 
 		Character::SetMovePos(position);
 		Character::SetMoveRota(rot);
@@ -326,9 +377,13 @@ void Player::Update() {
 	//残弾数ゲージの変動
 	bulletGauge_->GetRestSprite()->
 		SetColor({ 0.2f,0.7f,0.2f,5.0f });
+	//bulletGauge_->SetPosition({
+	//	input_->GetMousePosition().x - 64.0f + 16.0f,
+	//	input_->GetMousePosition().y + 16.0f
+	//	});
 	bulletGauge_->SetPosition({
-		input_->GetMousePosition().x - 64.0f + 16.0f,
-		input_->GetMousePosition().y + 16.0f
+		spriteReticle_->GetPosition().x - 64.0f + 16.0f,
+		spriteReticle_->GetPosition().y + 32.0f
 		});
 
 	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
@@ -366,13 +421,13 @@ void Player::Update() {
 
 	if (IsHide()) {
 
-	Character::GetCart()->SetPosition(
-		Vector3{
-			worldTransform_.matWorld_.m[3][0],
-			cartPosYLock_,
-			worldTransform_.matWorld_.m[3][2]
-		}
-	);
+		Character::GetCart()->SetPosition(
+			Vector3{
+				worldTransform_.matWorld_.m[3][0],
+				cartPosYLock_,
+				worldTransform_.matWorld_.m[3][2]
+			}
+		);
 	}
 	else {
 		Character::GetCart()->SetPosition(
@@ -419,9 +474,7 @@ void Player::DrawImgui() {
 }
 
 void Player::Finalize() {
-	SafeDelete(spriteReticle_);
 	bulletGauge_->Finalize();
-	SafeDelete(textEmpty_);
 
 	Character::Finalize();
 }
@@ -461,9 +514,51 @@ void Player::OnCollision(const CollisionInfo& info) {
 	Character::OnCollision(info);
 }
 
-void Player::UpdateReticle(const Vector3& targetWorldPos) {
+void Player::UpdateReticle(Enemy* enemy) {
+	Vector3 targetWorldPos{};
+	Vector3 enemyWorldPos{};
 
-	//ゲームシーンからカーソルを借りる
+	if (input_->PressMouse(2)) {
+		int a = 0;
+		a += 1;
+	}
+
+	if (!IsDead()) {
+		//ゲームシーンから受け取った敵機から、ワールド座標を抽出
+		if (!cursor_.IsLockOn()) {
+			enemyWorldPos = {
+				enemy->GetWorldTransform()->matWorld_.m[3][0],
+				enemy->GetWorldTransform()->matWorld_.m[3][1],
+				enemy->GetWorldTransform()->matWorld_.m[3][2]
+			};
+
+			//自機と敵機の距離(仮)
+			float distancePToE =
+				Vector3Dot(
+					Vector3{
+						enemy->GetMatWorld().m[3][0],
+						enemy->GetMatWorld().m[3][1],
+						enemy->GetMatWorld().m[3][2] },
+
+						Vector3{
+						Character::GetMatWorld().m[3][0],
+						Character::GetMatWorld().m[3][1],
+						Character::GetMatWorld().m[3][2] });
+
+			//カーソルから3Dレティクルまでの距離を設定
+			cursor_.SetDistance(distancePToE);
+
+			//マウスカーソルから、3D照準座標を取得する
+			targetWorldPos =
+				cursor_.Get3DReticlePosition(camera_, enemyWorldPos);
+
+		}
+	}
+
+	if (cursor_.IsLockOn()) {
+		int a = 0;
+		a++;
+	}
 
 	//3Dレティクル座標を更新
 	worldTransform3dReticle_.position_ = targetWorldPos;
@@ -472,10 +567,10 @@ void Player::UpdateReticle(const Vector3& targetWorldPos) {
 	//レティクルスプライトの位置
 	// エネミーのワールド座標をスクリーン座標に変換して設定
 	spriteReticle_->SetPosition(
-		Character::GetGamePlayScene()->GetCursor()->TransFromWorldToScreen(targetWorldPos)
+		cursor_.TransFromWorldToScreen(targetWorldPos)
 	);
 	//ロックオン中か否かでスプライトのサイズを変える
-	if (Character::GetGamePlayScene()->GetCursor()->IsLockOn()) {
+	if (cursor_.IsLockOn()) {
 		spriteReticle_->SetSize({ 80,80 });
 		spriteReticle_->SetColor({ 0.7f,0.2f,0.2f,0.8f });
 	}
