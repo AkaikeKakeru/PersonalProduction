@@ -51,7 +51,7 @@ public://定数
 	//調整変数グループ名
 	const char* groupName_ = "Enemy";
 
-	//自機のデフォルト体力
+	//デフォルト体力
 	const float kDefaultLife_ = 10.0f;
 
 	//HP用イージング最大時間
@@ -61,7 +61,7 @@ public://定数
 	const float kGunDamage_ = 3.0f;
 
 	//デフォルトクールタイム
-	const int kDefaultBulletCooltime_ = 1;
+	const int kDefaultBulletCoolTime_ = 1;
 
 	//デフォルトX座標
 	const float kDefaultPosX_ = 0.0f;

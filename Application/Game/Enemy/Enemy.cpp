@@ -57,12 +57,29 @@ bool Enemy::Initialize() {
 	worldTransform3dReticle_.Initialize();
 
 #pragma region HPスプライト
-	Character::GetHPGauge()->SetRestMax(kDefaultLife_);
-	Character::GetHPGauge()->SetRest(kDefaultLife_);
-	Character::GetHPGauge()->SetMaxTime(kMaxTimeHP_);
+	Gauge* newHpGauge = new Gauge();
+	newHpGauge->SetRestMax(kDefaultLife_);
+	newHpGauge->SetRest(kDefaultLife_);
+	newHpGauge->SetMaxTime(kMaxTimeHP_);
+	newHpGauge->Initialize();
+	newHpGauge->SetPosition({ 64,64 });
+	newHpGauge->SetSize({ 1,0.5f });
+	Character::SetHPGauge(newHpGauge);
+#pragma endregion
 
-	Character::GetHPGauge()->SetPosition({ 64,64 });
-	Character::GetHPGauge()->SetSize({ 1,0.25f });
+#pragma region カート
+
+	Cart* newCart = Cart::Create();
+	newCart->Initialize();
+	newCart->SetModel(
+		ObjectManager::GetInstance()->
+		GetModel(
+			ObjectManager::cartModel_
+		)
+	);
+	newCart->SetCamera(camera_);
+	Character::SetCart(newCart);
+
 #pragma endregion
 
 	return true;
