@@ -1,6 +1,7 @@
-﻿/*自作の数学関数まとめ*/
+/*自作の数学関数まとめ*/
 
 #include "MyMath.h"
+#include <cstdint>
 
 //円周率
 const float PI = 3.1415926535f;
@@ -34,17 +35,52 @@ float SquareRoot(float f) {
 	return x;
 }
 
-float Sin(float theta) {
-	float sin = 90 / theta;
-	return ConvertToRadian(sin);
+float Pow(float f, size_t n) {
+	float result = 1.0f;
+
+	for (size_t k = 0; k < n; k++) {
+		result *= f;
+	}
+
+	return result;
 }
 
-float Cos(float theta) {
-	float cos = 90 / (90 - theta);
-	return ConvertToRadian(cos);
+size_t Factorial(size_t n) {
+	int result = 1;
+	while (n > 1) {
+		result *= (int)n--;
+	}
+		 
+	return result;
 }
 
-float Tan(float theta) {
-	float tan = (90 - theta) / theta;
-	return ConvertToRadian(tan);
+float Sin(float f, size_t n) {
+	float result = 0.0f;
+
+	for (size_t k = 0; k < n; k++) {
+		int32_t sign = (k % 2 == 0) ? 1 : -1;
+		size_t k2p1 = 2 * k + 1;
+		result += sign * Pow(f, k2p1) / float(Factorial(k2p1));
+	}
+
+	return result;
+}
+
+float Cos(float f, size_t n) {
+	float result = 0.0f;
+
+	for (size_t k = 0; k < n; k++) {
+		int32_t sign = (k % 2 == 0) ? 1 : -1;
+		size_t k2 = 2 * k;
+		result += sign * Pow(f, k2) / float(Factorial(k2));
+	}
+
+	return result;
+}
+
+float Tan(float f, size_t n) {
+	float sin = Sin(f, n);
+	float cos = Cos(f, n);
+
+	return sin / cos;
 }
