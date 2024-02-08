@@ -30,10 +30,6 @@ public: //静的メンバ関数
 	//キャラクター生成
 	static Character* Create();
 
-	static void SetCartModel(Model* cartModel) {
-		cartModel_ = cartModel;
-	}
-
 public://メンバ関数
 	virtual bool Initialize() override;
 	virtual void Update() override;
@@ -60,6 +56,11 @@ public: //アクセッサ
 	//半径の取得
 	float GetRadius() const {
 		return radiusCollider_;
+	}
+
+	//ワールド変換の取得
+	const WorldTransform* GetWorldTransform() {
+		return &worldTransform_;
 	}
 
 	//スピードのセット
@@ -127,8 +128,21 @@ public: //アクセッサ
 		return hpGauge_.get();
 	}
 
+	//HPゲージの取得
+	void SetHPGauge(Gauge* hpGauge) {
+		hpGauge_.reset(hpGauge);
+	}
+
 	Cart* GetCart() const {
 		return cart_.get();
+	}
+
+	void SetCart(Cart* cart) {
+		cart_.reset(cart);
+	}
+
+	void SetCartModel(Model* cartModel) {
+		cartModel_ = cartModel;
 	}
 
 private: //静的メンバ変数
@@ -138,9 +152,6 @@ private: //静的メンバ変数
 	static Input* input_;
 	//スプライト基盤
 	static SpriteBasis* spriteBas_;
-
-	//カートモデル
-	static Model* cartModel_;
 
 public:
 	//ゲームプレイシーンの取得
@@ -319,6 +330,9 @@ private: //メンバ変数
 	//カート
 	std::unique_ptr<Cart> cart_ = nullptr;
 
+	//カートモデル
+	Model* cartModel_ = nullptr;
+
 private: //ImGui用
 	//Vector3の要素数
 	static const int kVector3Count_ = 3;
@@ -337,5 +351,5 @@ private: //ImGui用
 
 public:
 	Character() = default;
-	virtual ~Character() = default;
+	virtual ~Character();
 };

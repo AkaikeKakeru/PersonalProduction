@@ -21,7 +21,6 @@
 Input* Character::input_ = Input::GetInstance();
 CollisionManager* Character::collisionManager_ = CollisionManager::GetInstance();
 SpriteBasis* Character::spriteBas_ = SpriteBasis::GetInstance();
-Model* Character::cartModel_ = nullptr;
 
 Character* Character::Create() {
 	//オブジェクトのインスタンスを生成
@@ -47,23 +46,6 @@ bool Character::Initialize() {
 	);
 
 	collider_->SetAttribute(COLLISION_ATTR_PLAYER);
-
-#pragma region HPスプライト
-	Gauge* newHpGauge = new Gauge();
-	hpGauge_.reset(newHpGauge);
-	hpGauge_->Initialize();
-	hpGauge_->SetRestMax(life_);
-	hpGauge_->SetRest(life_);
-	hpGauge_->SetMaxTime(maxTimeHP_);
-
-	hpGauge_->SetPosition({ 64,64 });
-	hpGauge_->SetSize({ 1,1 });
-#pragma endregion
-	Cart* newCart = Cart::Create();
-	cart_.reset(newCart);
-	cart_->Initialize();
-	cart_->SetModel(cartModel_);
-	cart_->SetCamera(camera_);
 
 	return true;
 }
@@ -226,4 +208,8 @@ void Character::OverMove() {
 	if (endPositionEase_.IsEnd()) {
 		SetIsOver(true);
 	}
+}
+
+Character::~Character() {
+
 }
