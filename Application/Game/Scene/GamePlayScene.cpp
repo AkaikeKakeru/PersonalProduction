@@ -340,16 +340,6 @@ void GamePlayScene::UpdateBackground() {
 }
 void GamePlayScene::UpdateCharacter() {
 	if (player_->IsStart()) {
-		//自機弾更新
-		for (std::unique_ptr<PlayerBullet>& bullet : playerBullets_) {
-			bullet->Update();
-		}
-
-		//敵機弾更新
-		for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-			bullet->Update();
-		}
-
 		//敵機の更新
 		for (std::unique_ptr<Enemy>& enemy : enemys_) {
 			enemy->Update();
@@ -566,16 +556,6 @@ void GamePlayScene::DrawCharacter() {
 		enemy->Draw();
 	}
 
-	//自機弾描画
-	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets_) {
-		bullet->Draw();
-	}
-
-	//敵機弾描画
-	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Draw();
-	}
-
 	//自機描画
 	player_->Draw();
 }
@@ -591,17 +571,6 @@ void GamePlayScene::DrawBackground() {
 }
 
 void GamePlayScene::RemoveUniquePtr() {
-	//自機弾自壊フラグの立った弾を削除
-	playerBullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
-		return bullet->IsDead();
-		});
-
-	//敵機弾自壊フラグの立った弾を削除
-	enemyBullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
-		return bullet->IsDead();
-		});
-
-
 	//敵機をデスフラグで削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
 		return enemy->IsDead();
@@ -653,14 +622,6 @@ void GamePlayScene::PhaseChange() {
 	}
 }
 
-void GamePlayScene::AddPlayerBullet(std::unique_ptr<PlayerBullet> playerBullet) {
-	//リストに登録
-	playerBullets_.push_back(std::move(playerBullet));
-}
-void GamePlayScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet) {
-	//リストに登録
-	enemyBullets_.push_back(std::move(enemyBullet));
-}
 void GamePlayScene::AddEnemy(
 	const Vector3 pos,
 	const Vector3 rota,

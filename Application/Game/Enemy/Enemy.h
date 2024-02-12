@@ -32,7 +32,13 @@ public://メンバ関数
 	void OnCollision(const CollisionInfo& info) override;
 
 	//発射
-	void Fire();
+	void Attack() override;
+
+	//開始時移動
+	void StartMove() override;
+
+	//脱落時移動
+	void OverMove() override;
 
 	//落下
 	void Fall();

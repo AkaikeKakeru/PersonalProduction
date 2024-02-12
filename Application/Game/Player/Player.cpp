@@ -608,33 +608,38 @@ void Player::Attack() {
 
 				bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
 
-				//弾の生成、初期化
-				std::unique_ptr<PlayerBullet> newBullet =
-					std::make_unique<PlayerBullet>();
+				Character::SetBulletDamage(kGunDamage_);
+				Character::SetBulletVelocity(bulletVelocity);
 
-				newBullet->Initialize();
+				////弾の生成、初期化
+				//std::unique_ptr<PlayerBullet> newBullet =
+				//	std::make_unique<PlayerBullet>();
 
-				newBullet->SetModel(Character::GetBulletModel());
+				//newBullet->Initialize();
 
-				newBullet->SetScale(worldTransform_.scale_);
-				newBullet->SetRotation(worldTransform_.rotation_);
-				newBullet->SetPosition(Vector3{
-					worldTransform_.matWorld_.m[3][0],
-					worldTransform_.matWorld_.m[3][1],
-					worldTransform_.matWorld_.m[3][2]
-					});
+				//newBullet->SetModel(Character::GetBulletModel());
 
-				newBullet->SetVelocity(bulletVelocity);
+				//newBullet->SetScale(worldTransform_.scale_);
+				//newBullet->SetRotation(worldTransform_.rotation_);
+				//newBullet->SetPosition(Vector3{
+				//	worldTransform_.matWorld_.m[3][0],
+				//	worldTransform_.matWorld_.m[3][1],
+				//	worldTransform_.matWorld_.m[3][2]
+				//	});
 
-				newBullet->SetDamage(kGunDamage_);
+				//newBullet->SetVelocity(bulletVelocity);
 
-				newBullet->SetCamera(camera_);
+				//newBullet->SetDamage(kGunDamage_);
 
-				newBullet->SetGameScene(Character::GetGamePlayScene());
+				//newBullet->SetCamera(camera_);
 
-				newBullet->Update();
+				//newBullet->SetGameScene(Character::GetGamePlayScene());
 
-				Character::GetGamePlayScene()->AddPlayerBullet(std::move(newBullet));
+				//newBullet->Update();
+
+				//Character::GetGamePlayScene()->AddPlayerBullet(std::move(newBullet));
+
+				Character::Attack();
 
 				//発射済みの弾数を一つカウント
 				remainBulletCount_--;

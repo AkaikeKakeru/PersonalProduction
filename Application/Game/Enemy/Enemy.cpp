@@ -107,7 +107,7 @@ void Enemy::Update() {
 	fireTimer_--;
 	if (fireTimer_ <= 0) {
 		//発射
-		Fire();
+		Attack();
 		//発射タイマーを初期化
 		fireTimer_ = kFireInterval;
 	}
@@ -121,7 +121,7 @@ void Enemy::Update() {
 
 	//落下フラグで、撤退させる
 	if (isFall_) {
-		Fall();
+		OverMove();
 	}
 
 	//HPゲージの変動
@@ -183,7 +183,7 @@ void Enemy::OnCollision(const CollisionInfo& info) {
 	Character::OnCollision(info);
 }
 
-void Enemy::Fire() {
+void Enemy::Attack() {
 	assert(player_);
 
 	//弾スピード
@@ -208,32 +208,44 @@ void Enemy::Fire() {
 
 	bulletVelocity *= kBulletSpeed;
 
-	//弾の生成、初期化
-	std::unique_ptr<EnemyBullet> newBullet =
-		std::make_unique<EnemyBullet>();
+	Character::SetBulletDamage(kGunDamage_);
+	Character::SetBulletVelocity(bulletVelocity);
 
-	newBullet->Initialize();
+	////弾の生成、初期化
+	//std::unique_ptr<EnemyBullet> newBullet =
+	//	std::make_unique<EnemyBullet>();
 
-	newBullet->SetModel(Character::GetBulletModel());
+	//newBullet->Initialize();
 
-	newBullet->SetScale(worldTransform_.scale_);
-	newBullet->SetRotation(worldTransform_.rotation_);
-	newBullet->SetPosition(Vector3{
-		worldTransform_.matWorld_.m[3][0],
-		worldTransform_.matWorld_.m[3][1],
-		worldTransform_.matWorld_.m[3][2]
-		});
+	//newBullet->SetModel(Character::GetBulletModel());
 
-	newBullet->SetVelocity(bulletVelocity);
-	newBullet->SetCamera(camera_);
+	//newBullet->SetScale(worldTransform_.scale_);
+	//newBullet->SetRotation(worldTransform_.rotation_);
+	//newBullet->SetPosition(Vector3{
+	//	worldTransform_.matWorld_.m[3][0],
+	//	worldTransform_.matWorld_.m[3][1],
+	//	worldTransform_.matWorld_.m[3][2]
+	//	});
 
-	newBullet->SetBulletType(bulletType_);
+	//newBullet->SetVelocity(bulletVelocity);
+	//newBullet->SetCamera(camera_);
 
-	newBullet->SetGameScene(Character::GetGamePlayScene() );
+	//newBullet->SetBulletType(bulletType_);
 
-	newBullet->Update();
+	//newBullet->SetGameScene(Character::GetGamePlayScene() );
 
-	Character::GetGamePlayScene()->AddEnemyBullet(std::move(newBullet));
+	//newBullet->Update();
+
+	//Character::GetGamePlayScene()->AddEnemyBullet(std::move(newBullet));
+
+	Character::Attack();
+}
+
+void Enemy::OverMove() {
+	if(Character::IsOver()) {
+		Character::GetGamePlayScene()->SetIsGushing(true);
+		Character::SetIsDead(true);
+	}
 }
 
 void Enemy::Fall() {

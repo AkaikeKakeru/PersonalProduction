@@ -126,11 +126,7 @@ public://定数
 	const int kFinalPhaseIndex_ = 3;
 
 public:
-	//自機弾を追加
-	void AddPlayerBullet(std::unique_ptr<PlayerBullet> playerBullet);
 
-	//敵弾を追加
-	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
 	//敵を追加
 	void AddEnemy(const Vector3 pos,
 		const Vector3 rota,
@@ -246,14 +242,8 @@ public: //メンバ変数
 	//プレイヤー
 	std::unique_ptr<Player> player_ = nullptr;
 
-	//弾
-	std::list<std::unique_ptr<PlayerBullet>> playerBullets_;
-
 	//エネミー
 	std::list<std::unique_ptr<Enemy>> enemys_;
-
-	//エネミー弾
-	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
 
 	//今プレイヤーの与えるダメージ量
 	float nowDamagePlayer_ = 0.0f;

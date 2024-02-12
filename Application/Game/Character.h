@@ -7,6 +7,8 @@
 #include "SpriteBasis.h"
 #include <Input.h>
 
+#include "Bullet.h"
+
 #include "Cursor.h"
 #include "Ease.h"
 #include "Gauge.h"
@@ -46,6 +48,12 @@ public://メンバ関数
 
 	//脱落時移動
 	virtual void OverMove();
+
+	//攻撃
+	virtual void Attack();
+
+	//弾追加
+	virtual void AddBullet();
 
 public: //アクセッサ
 	//ゲームシーンのセット
@@ -183,6 +191,16 @@ public:
 	//シェイク後位置のセット
 	void SetShakePos(const Vector3& shakePos) {
 		shakePos_ = shakePos;
+	}
+
+	//弾速度のセット
+	void SetBulletVelocity(const Vector3& bulletVelocity) {
+		bulletVelocity_ = bulletVelocity;
+	}
+
+	//弾攻撃力のセット
+	void SetBulletDamage(const float bulletDamage) {
+		bulletDamage_ = bulletDamage;
 	}
 
 	//スピードの取得
@@ -332,6 +350,15 @@ private: //メンバ変数
 
 	//カートモデル
 	Model* cartModel_ = nullptr;
+
+	//弾
+	std::list<std::unique_ptr<Bullet>> bullets_;
+
+	//弾速度
+	Vector3 bulletVelocity_{};
+
+	//弾攻撃力
+	float bulletDamage_ = 0.0f;
 
 private: //ImGui用
 	//Vector3の要素数

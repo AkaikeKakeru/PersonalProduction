@@ -36,13 +36,13 @@ public://メンバ関数
 	void UpdateReticle(Enemy* enemy);
 
 	//発射攻撃
-	void Attack();
+	void Attack() override;
 
 	//開始時移動
-	void StartMove();
+	void StartMove() override;
 
 	//脱落時移動
-	void OverMove();
+	void OverMove() override;
 
 public: //定数
 	//調整変数グループ名
