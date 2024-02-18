@@ -1,4 +1,4 @@
-﻿/*マテリアル*/
+/*マテリアル*/
 
 #pragma once
 
@@ -56,6 +56,10 @@ public:
 	const D3D12_CPU_DESCRIPTOR_HANDLE& GetCpuHandle() { return cpuDescHandleSRV_; }
 	const D3D12_GPU_DESCRIPTOR_HANDLE& GetGpuHandle() { return gpuDescHandleSRV_; }
 
+	//ファイル拡張子の取り出し
+	void PickFileExt(
+		const std::wstring& filePath);
+
 private:
 	// テクスチャバッファ
 	ComPtr<ID3D12Resource> texbuff_;
@@ -67,6 +71,9 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV_;
 	//定数バッファマップ
 	ConstBufferDataMaterial* constMap_ = nullptr;
+
+	//ファイル拡張子
+	std::wstring fileExt_;
 
 private:
 	// コンストラクタ

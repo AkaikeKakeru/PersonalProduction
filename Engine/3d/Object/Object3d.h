@@ -1,4 +1,4 @@
-﻿/*OBJ3Dオブジェクト*/
+/*OBJ3Dオブジェクト*/
 
 #pragma once
 
@@ -99,6 +99,10 @@ public: // メンバ関数
 	//ワールド行列の取得
 	const Matrix4& GetMatWorld() {
 		return worldTransform_.matWorld_;}
+	//コライダーの取得
+	BaseCollider* GetCollider() const {
+		return collider_;
+	};
 
 	/// 座標の設定
 	void SetPosition(const Vector3& position) {

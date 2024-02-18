@@ -1,4 +1,4 @@
-﻿/*スプライト基盤*/
+/*スプライト基盤*/
 
 #pragma once
 #include "DirectXBasis.h"
@@ -56,6 +56,10 @@ private://固有関数
 	//シェーダーリソースビュー作成
 	void CreateShaderResourceView(uint32_t textureIndex);
 
+	//ファイル拡張子の取り出し
+	void PickFileExt(
+		const std::wstring& filePath);
+
 private://定数
 	//頂点レイアウトの要素数
 	static const int kInputLayoutElement = 2;
@@ -111,6 +115,9 @@ private://メンバ変数
 	static UINT incrementSize_;
 	//テクスチャ格納ディレクトリ
 	static std::string textureDhirectoryPath_;
+
+	//ファイル拡張子
+	std::wstring fileExt_;
 
 public://ゲッタ
 	ComPtr<ID3D12Device> GetDevice() { return device_; }

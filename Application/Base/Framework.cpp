@@ -70,14 +70,14 @@ void Framework::Initialize(){
 	//描画基盤(スプライト)
 	SpriteBasis* spriteBas = SpriteBasis::GetInstance();
 	spriteBas->Initialize();
-	spriteBas->LoadTexture(kSampleTextureIndex_, "texture.png");
-	spriteBas->LoadTexture(kCursorTextureIndex_, "cursor.png");
-	spriteBas->LoadTexture(kGaugeTextureIndex_, "HPgauge.png");
+	spriteBas->LoadTexture(kSampleTextureIndex_, "texture.dds");
+	spriteBas->LoadTexture(kCursorTextureIndex_, "cursor.dds");
+	spriteBas->LoadTexture(kGaugeTextureIndex_, "HPgauge.dds");
 	spriteBas->LoadTexture(kBackgroundTextureIndex_, "remains_BG.png");
 
-	spriteBas->LoadTexture(kWhiteTextureIndex_, "white.png");
-	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");
-	spriteBas->LoadTexture(kMouseTextureIndex_, "mouse.png");
+	spriteBas->LoadTexture(kWhiteTextureIndex_, "white.dds");
+	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.dds");
+	spriteBas->LoadTexture(kMouseTextureIndex_, "mouse.dds");
 
 	//パーティクルマネージャー
 	ParticleManager::StaticInitialize(dxBas_->GetDevice().Get());

@@ -1,4 +1,4 @@
-﻿/*スプライト基盤*/
+/*スプライト基盤*/
 
 #include "SpriteBasis.h"
 #include <d3d12.h>
@@ -355,11 +355,26 @@ void SpriteBasis::GenerateTextureBuffer(uint32_t textureIndex, const wchar_t* wf
 
 	TexMetadata metadata{};
 	ScratchImage scratchImg{};
-	//WICテクスチャのロード
-	result = LoadFromWICFile(
-		wfileName,
-		WIC_FLAGS_NONE,
-		&metadata, scratchImg);
+
+	PickFileExt(wfileName);
+
+	if (fileExt_ == L"dds") {
+		//DDSテクスチャのロード
+		result = LoadFromDDSFile(
+			wfileName,
+			DDS_FLAGS_NONE,
+			&metadata,
+			scratchImg);
+	}
+
+	else {
+		//WICテクスチャのロード
+		result = LoadFromWICFile(
+			wfileName,
+			WIC_FLAGS_NONE,
+			&metadata,
+			scratchImg);
+	}
 	assert(SUCCEEDED(result));
 
 	ScratchImage mipChain{};
@@ -462,4 +477,25 @@ void SpriteBasis::CreateShaderResourceView(uint32_t textureIndex) {
 SpriteBasis* SpriteBasis::GetInstance() {
 	static SpriteBasis instance;
 	return &instance;
+}
+
+void SpriteBasis::PickFileExt(
+	const std::wstring& filePath) {
+	size_t pos1;
+	std::wstring exceptExt;
+
+	//区切り文字'.'が出てくる一番最後の部分を検索
+	pos1 = filePath.rfind('.');
+	//検索がヒットしたら
+	if (pos1 != std::wstring::npos) {
+		//区切り文字の後ろをファイル拡張子として保存
+		fileExt_ = filePath.substr(pos1 + 1, filePath.size() - pos1 - 1);
+
+		//区切り文字の前までを抜き出す
+		exceptExt = filePath.substr(0, pos1);
+	}
+	else {
+		fileExt_ = L"";
+		exceptExt = filePath;
+	}
 }

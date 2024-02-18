@@ -1,4 +1,4 @@
-﻿/*スプライト*/
+/*スプライト*/
 
 #pragma once
 #include "SpriteBasis.h"
