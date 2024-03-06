@@ -33,17 +33,22 @@
 #include "PlayerBullet.h"
 #include "Enemy.h"
 #include "EnemyBullet.h"
+#include "Boss.h"
 #include "Skydome.h"
 #include "Cart.h"
 
 #include "Fade.h"
 #include "ArrangeTile.h"
 
+#include "PlaySceneStateManager.h"
+#include "AbstractPlaySceneStateFactory.h"
+
 #pragma region popLoader
 #include <sstream>
 #include <FollowCamera.h>
 #pragma endregion
 
+class BossBattleScene;
 class CollisionManager;
 
 /*ゲームプレイシーン*/
@@ -124,6 +129,7 @@ private:
 
 public://定数
 	const int kFinalPhaseIndex_ = 3;
+	const int kBossPhaseIndex_ = kFinalPhaseIndex_ + 1;
 
 public:
 
@@ -132,6 +138,8 @@ public:
 		const Vector3 rota,
 		const Vector3 scale,
 		const int bulletType);
+
+	void AddBoss();
 
 #pragma region popLoader
 	//敵発生データの読込
@@ -148,6 +156,11 @@ public:
 
 
 public:
+	//状態マネージャーの取得
+	static PlaySceneStateManager* GetStateManager() {
+		return stateManager_;
+	}
+
 	//フェーズ番号取得
 	size_t GetPhaseIndex() {
 		return phaseIndex_;
@@ -209,6 +222,9 @@ private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
 
+	//状態マネージャー
+	static PlaySceneStateManager* stateManager_;
+
 public: //メンバ変数
 	//カメラ
 	std::unique_ptr<Camera> camera_ = nullptr;
@@ -245,6 +261,9 @@ public: //メンバ変数
 	//エネミー
 	std::list<std::unique_ptr<Enemy>> enemys_;
 
+	//ボス
+	std::unique_ptr<Boss> boss_ = nullptr;
+
 	//今プレイヤーの与えるダメージ量
 	float nowDamagePlayer_ = 0.0f;
 
@@ -256,6 +275,9 @@ public: //メンバ変数
 
 	//フェーズ番号
 	int phaseIndex_ = 0;
+
+	//ボスフェーズフラグ
+	bool isBossPhase_ = false;
 
 	//デバッグカメラのオンオフ
 	bool isDebugCamera_ = false;
@@ -295,4 +317,7 @@ public: //メンバ変数
 
 	//マウススプライトリスト
 	std::vector<std::unique_ptr<Sprite>> mouseSprites_;
+
+	//ボスバトルシーン
+	BossBattleScene* bossBattle_;
 };

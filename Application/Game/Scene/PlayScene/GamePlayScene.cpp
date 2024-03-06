@@ -30,6 +30,8 @@ ObjectManager* GamePlayScene::objManager_ = ObjectManager::GetInstance();
 ImGuiManager* GamePlayScene::imGuiManager_ = ImGuiManager::GetInstance();
 #endif
 
+PlaySceneStateManager* GamePlayScene::stateManager_ = PlaySceneStateManager::GetInstance();
+
 void GamePlayScene::Finalize() {
 	SafeDelete(light_);
 	FinalizeBlackOut();
@@ -45,6 +47,8 @@ void GamePlayScene::FinalizeBackGround() {
 	skydome_->Finalize();
 }
 void GamePlayScene::FinalizeCharacter() {
+	boss_->Finalize();
+
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Finalize();
 	}
@@ -343,47 +347,45 @@ void GamePlayScene::UpdateCharacter() {
 		//敵機の更新
 		for (std::unique_ptr<Enemy>& enemy : enemys_) {
 			enemy->Update();
-			{
-			//if (!cursor_.IsLockOn()) {
-			//	enemyWorldPos_ = {
-			//		enemy->GetMatWorld().m[3][0],
-			//		enemy->GetMatWorld().m[3][1],
-			//		enemy->GetMatWorld().m[3][2]
-			//	};
 
-			//}
+			player_->UpdateReticle(enemy.get());
 
-			//if (!player_->IsDead()) {
-			//	//自機と敵機の距離(仮)
-			//	float distancePToE =
-			//		Vector3Dot(
-			//			Vector3{
-			//			enemy->GetMatWorld().m[3][0],
-			//			enemy->GetMatWorld().m[3][1],
-			//			enemy->GetMatWorld().m[3][2] },
+			if (!cursor_.IsLockOn()) {
+				enemyWorldPos_ = {
+					enemy->GetMatWorld().m[3][0],
+					enemy->GetMatWorld().m[3][1],
+					enemy->GetMatWorld().m[3][2]
+				};
 
-			//			Vector3{
-			//			player_->GetMatWorld().m[3][0],
-			//			player_->GetMatWorld().m[3][1],
-			//			player_->GetMatWorld().m[3][2] });
-
-			//	//カーソルから3Dレティクルまでの距離を設定
-			//	cursor_.SetDistance(distancePToE);
-
-			//	//マウスカーソルから、3D照準座標を取得する
-			//	LockOnTargetPos_ =
-			//		cursor_.Get3DReticlePosition(camera_.get(), enemyWorldPos_);;
-			//}
 			}
 
+			if (!player_->IsDead()) {
+				//自機と敵機の距離(仮)
+				float distancePToE =
+					Vector3Dot(
+						Vector3{
+						enemy->GetMatWorld().m[3][0],
+						enemy->GetMatWorld().m[3][1],
+						enemy->GetMatWorld().m[3][2] },
 
+						Vector3{
+						player_->GetMatWorld().m[3][0],
+						player_->GetMatWorld().m[3][1],
+						player_->GetMatWorld().m[3][2] });
+
+				//カーソルから3Dレティクルまでの距離を設定
+				cursor_.SetDistance(distancePToE);
+
+				//マウスカーソルから、3D照準座標を取得する
+				LockOnTargetPos_ =
+					cursor_.Get3DReticlePosition(camera_.get(), enemyWorldPos_);
+			}
+		}
+		if (boss_) {
+			boss_->Update();
 		}
 	}
 
-	//自機のレティクル更新
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		player_->UpdateReticle(enemy.get());
-	}
 	player_->Update();
 }
 void GamePlayScene::UpdateDamage() {
@@ -556,6 +558,11 @@ void GamePlayScene::DrawCharacter() {
 		enemy->Draw();
 	}
 
+	//ボス描画
+	if (boss_) {
+		boss_->Draw();
+	}
+
 	//自機描画
 	player_->Draw();
 }
@@ -595,18 +602,8 @@ void GamePlayScene::DebugShortCut() {
 #endif // _DEBUG
 }
 void GamePlayScene::PhaseChange() {
-	//敵機が全滅したら(コンテナが空になったら)
-	if (enemys_.size() <= 0) {
-		//ファイナルフェイズに届いてなければ
-		if (phaseIndex_ < kFinalPhaseIndex_) {
-			//次の敵の湧き位置検索
-			isWait_ = false;
-			//フェーズ番号を進める
-			phaseIndex_++;
-
-			player_->SetPhaseAdvance(true);
-		}
-		else {
+	if (isBossPhase_) {
+		if(boss_->IsDead()) {
 			if (!arrangeTile_->IsOpen()) {
 				arrangeTile_->Update();
 			}
@@ -617,6 +614,35 @@ void GamePlayScene::PhaseChange() {
 			if (arrangeTile_->IsEnd()) {
 				//シーンの切り替えを依頼
 				SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+			}
+		}
+	}
+	else {
+		//敵機が全滅したら(コンテナが空になったら)
+		if (enemys_.size() <= 0) {
+			//ファイナルフェイズに届いてなければ
+			if (phaseIndex_ < kFinalPhaseIndex_) {
+				//次の敵の湧き位置検索
+				isWait_ = false;
+				//フェーズ番号を進める
+				phaseIndex_++;
+
+				player_->SetPhaseAdvance(true);
+			}
+			else {
+				isBossPhase_ = true;
+
+				//if (!arrangeTile_->IsOpen()) {
+				//	arrangeTile_->Update();
+				//}
+				//else {
+				//	arrangeTile_->Reset(true, false);
+				//}
+
+				//if (arrangeTile_->IsEnd()) {
+				//	//シーンの切り替えを依頼
+				//	SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+				//}
 			}
 		}
 	}
@@ -654,6 +680,24 @@ void GamePlayScene::AddEnemy(
 	newEnemy->Update();
 	//リストに登録
 	enemys_.push_back(std::move(newEnemy));
+}
+
+void GamePlayScene::AddBoss() {
+	Boss* newBoss = new Boss;
+	newBoss->SetCamera(followCamera_.get());
+
+	newBoss->SetModel(
+		objManager_->GetModel(enemyModel_)
+	);
+
+	newBoss->SetBulletModel(
+		objManager_->GetModel(bulletModel_));
+	newBoss->SetCartModel(objManager_->GetModel(cartModel_));
+
+	newBoss->Initialize();
+
+	boss_.reset(newBoss);
+	boss_->Update();
 }
 
 void GamePlayScene::LoadEnemyPopData(std::string filename) {

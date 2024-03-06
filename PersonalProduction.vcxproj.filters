@@ -258,7 +258,7 @@
     <ClCompile Include="Application\Game\Scene\Manager\SceneManager.cpp">
       <Filter>ソース ファイル\Application\Game\Scene\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Game\Scene\GamePlayScene.cpp">
+    <ClCompile Include="Application\Game\Scene\PlayScene\GamePlayScene.cpp">
       <Filter>ソース ファイル\Application\Game\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Application\Game\Scene\Manager\BaseScene.cpp">
@@ -384,13 +384,40 @@
     <ClCompile Include="Application\Game\Background\TubeManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Application\Game\Boss\Boss.cpp">
+    <ClCompile Include="Application\Game\Enemy\Boss\Boss.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Engine\3d\Camera\FollowCamera.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Application\Game\Bullet\Bullet.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Game\Enemy\BaseEnemy.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Game\Enemy\Boss\WeakPoint.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Game\Scene\PlayScene\GamePlaySceneBossBattle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Game\Scene\PlayScene\Manager\BaseStatePlayScene.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateFactory.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Game\Scene\PlayScene\GamePlaySceneOpening.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Game\Scene\PlayScene\GamePlaySceneRun.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Game\Scene\PlayScene\GamePlaySceneEnding.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -413,7 +440,7 @@
     <ClInclude Include="Engine\ConstBuffer\WorldTransform.h">
       <Filter>ヘッダー ファイル\Engine\ConstBuffer</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Game\Scene\GamePlayScene.h">
+    <ClInclude Include="Application\Game\Scene\PlayScene\GamePlayScene.h">
       <Filter>ヘッダー ファイル\Application\Game\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Application\Base\Framework.h">
@@ -608,13 +635,43 @@
     <ClInclude Include="Application\Game\Background\TubeManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\Game\Boss\Boss.h">
+    <ClInclude Include="Application\Game\Enemy\Boss\Boss.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Engine\3d\Camera\FollowCamera.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Application\Game\Bullet\Bullet.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Enemy\BaseEnemy.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Enemy\Boss\WeakPoint.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Scene\PlayScene\GamePlaySceneBossBattle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Scene\PlayScene\Manager\BaseStatePlayScene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateFactory.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Scene\PlayScene\Manager\AbstractPlaySceneStateFactory.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Scene\PlayScene\GamePlaySceneOpening.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Scene\PlayScene\GamePlaySceneRun.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\Scene\PlayScene\GamePlaySceneEnding.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
