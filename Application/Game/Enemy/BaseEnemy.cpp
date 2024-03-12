@@ -1,6 +1,6 @@
 /*エネミー*/
 
-#include "Enemy.h"
+#include "BaseEnemy.h"
 
 #include "CollisionManager.h"
 #include "CollisionAttribute.h"
@@ -17,13 +17,13 @@
 #include <imgui.h>
 #endif
 
-Input* Enemy::input_ = Input::GetInstance();
-CollisionManager* Enemy::collisionManager_ = CollisionManager::GetInstance();
-SpriteBasis* Enemy::spriteBas_ = SpriteBasis::GetInstance();
+Input* BaseEnemy::input_ = Input::GetInstance();
+CollisionManager* BaseEnemy::collisionManager_ = CollisionManager::GetInstance();
+SpriteBasis* BaseEnemy::spriteBas_ = SpriteBasis::GetInstance();
 
-Enemy* Enemy::Create(Model* model) {
+BaseEnemy* BaseEnemy::Create(Model* model) {
 	//オブジェクトのインスタンスを生成
-	Enemy* instance = new Enemy();
+	BaseEnemy* instance = new BaseEnemy();
 	if (instance == nullptr) {
 		return nullptr;
 	}
@@ -44,7 +44,7 @@ Enemy* Enemy::Create(Model* model) {
 	return instance;
 }
 
-bool Enemy::Initialize() {
+bool BaseEnemy::Initialize() {
 	Character::SetGroupName(groupName_);
 	Character::SetDefaultLife(kDefaultLife_);
 
@@ -67,25 +67,10 @@ bool Enemy::Initialize() {
 	Character::SetHPGauge(newHpGauge);
 #pragma endregion
 
-#pragma region カート
-
-	Cart* newCart = Cart::Create();
-	newCart->Initialize();
-	newCart->SetModel(
-		ObjectManager::GetInstance()->
-		GetModel(
-			ObjectManager::cartModel_
-		)
-	);
-	newCart->SetCamera(camera_);
-	Character::SetCart(newCart);
-
-#pragma endregion
-
 	return true;
 }
 
-void Enemy::Update() {
+void BaseEnemy::Update() {
 
 	// 現在の座標を取得
 	Vector3 position = Object3d::GetPosition();
@@ -142,7 +127,7 @@ void Enemy::Update() {
 		* matViewPort;
 
 	posHpGauge3d = Vector3TransformCoord(posHpGauge3d, matVPV);
-	
+
 	Character::GetHPGauge()->GetRestSprite()->
 		SetColor({ 0.2f,0.7f,0.2f,5.0f });
 	Character::GetHPGauge()->SetPosition({
@@ -153,37 +138,29 @@ void Enemy::Update() {
 	Character::GetHPGauge()->DecisionFluctuation();
 	Character::GetHPGauge()->SetIsFluct(true);
 
-	Character::GetCart()->SetPosition(Vector3{
-		worldTransform_.matWorld_.m[3][0],
-		worldTransform_.matWorld_.m[3][1] + kConfigCartPosY_,
-		worldTransform_.matWorld_.m[3][2]
-		}
-	);
-
 	Character::Update();
 }
 
-void Enemy::Draw() {
+void BaseEnemy::Draw() {
 	Character::Draw();
 }
 
-void Enemy::DrawUI() {
+void BaseEnemy::DrawUI() {
 	Character::DrawUI();
 }
 
-void Enemy::DrawImgui() {
-	//Character::DrawImgui();
+void BaseEnemy::DrawImgui() {
 }
 
-void Enemy::Finalize() {
+void BaseEnemy::Finalize() {
 	Character::Finalize();
 }
 
-void Enemy::OnCollision(const CollisionInfo& info) {
+void BaseEnemy::OnCollision(const CollisionInfo& info) {
 	Character::OnCollision(info);
 }
 
-void Enemy::Attack() {
+void BaseEnemy::Attack() {
 	assert(player_);
 
 	//弾スピード
@@ -214,18 +191,18 @@ void Enemy::Attack() {
 	Character::Attack();
 }
 
-void Enemy::StartMove() {
+void BaseEnemy::StartMove() {
 	Character::StartMove();
 }
 
-void Enemy::OverMove() {
+void BaseEnemy::OverMove() {
 	if(Character::IsOver()) {
 		Character::GetGamePlayScene()->SetIsGushing(true);
 		Character::SetIsDead(true);
 	}
 }
 
-void Enemy::Fall() {
+void BaseEnemy::Fall() {
 	//Vector3 rota = GetRotation();
 
 	//Vector3 endFallRota = {
@@ -244,7 +221,7 @@ void Enemy::Fall() {
 	}
 }
 
-void Enemy::ReSetEasePos() {
+void BaseEnemy::ReSetEasePos() {
 	Character::GetStartPositionEase().Reset(
 		Ease::In_,
 		Character::GetTimerMax(),
@@ -253,19 +230,19 @@ void Enemy::ReSetEasePos() {
 			Object3d::GetPosition().y ,
 			Object3d::GetPosition() .z - 10.0f
 		},
-			Object3d::GetPosition()
-		);
+		Object3d::GetPosition()
+	);
 
 	Character::GetStartRotationEase().Reset(
 		Ease::In_,
 		Character::GetTimerMax(),
-			Object3d::GetRotation(),
+		Object3d::GetRotation(),
 		{
 			Object3d::GetRotation().x,
 			Object3d::GetRotation().y,
 			Object3d::GetRotation().z
 		}
-		);
+	);
 
 	Character::GetEndPositionEase().Reset(
 		Ease::In_,

@@ -44,6 +44,8 @@ public://メンバ関数
 	//脱落時移動
 	void OverMove() override;
 
+	void PhaseChange();
+
 public: //定数
 	//調整変数グループ名
 	const char* groupName_ = "Player";
@@ -180,6 +182,11 @@ private: //メンバ変数
 	//フェーズ進行フラグ
 	bool isPhaseAdvance_ = false;
 
+	//カーソル
+	Vector3 cursorPos_{};
+	//今受け取っているターゲットのワールド座標
+	Vector3 targetWorldPos_{};
+	
 public:
 	Player() = default;
 	~Player() = default;

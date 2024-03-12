@@ -33,7 +33,6 @@ Character* Character::Create() {
 }
 
 bool Character::Initialize() {
-
 	if (!Object3d::Initialize()) {
 		return false;
 	}
@@ -81,7 +80,7 @@ void Character::Update() {
 		position = Object3d::GetPosition();
 
 		//弾更新
-		for (std::unique_ptr<Bullet>& bullet :bullets_) {
+		for (std::unique_ptr<Bullet>& bullet : bullets_) {
 			bullet->Update();
 		}
 	}
@@ -159,8 +158,6 @@ void Character::DrawImgui() {
 void Character::Finalize() {
 	hpGauge_->Finalize();
 	cart_->Finalize();
-	//SafeDelete(cart_);
-	//SafeDelete(cartModel_);
 }
 
 void Character::OnCollision(const CollisionInfo& info) {
@@ -225,43 +222,40 @@ void Character::OverMove() {
 }
 
 void Character::Attack() {
-				//弾の生成、初期化
-				std::unique_ptr<Bullet> newBullet =
-					std::make_unique<Bullet>();
+	//弾の生成、初期化
+	std::unique_ptr<Bullet> newBullet =
+		std::make_unique<Bullet>();
 
-				newBullet->Initialize();
+	newBullet->Initialize();
 
-				newBullet->SetModel(Character::GetBulletModel());
+	newBullet->SetModel(Character::GetBulletModel());
 
-				newBullet->SetScale(worldTransform_.scale_);
-				newBullet->SetRotation(worldTransform_.rotation_);
-				newBullet->SetPosition(Vector3{
-					worldTransform_.matWorld_.m[3][0],
-					worldTransform_.matWorld_.m[3][1],
-					worldTransform_.matWorld_.m[3][2]
-					});
+	newBullet->SetScale(worldTransform_.scale_);
+	newBullet->SetRotation(worldTransform_.rotation_);
+	newBullet->SetPosition(Vector3{
+		worldTransform_.matWorld_.m[3][0],
+		worldTransform_.matWorld_.m[3][1],
+		worldTransform_.matWorld_.m[3][2]
+		});
 
-				newBullet->SetVelocity(bulletVelocity_);
+	newBullet->SetVelocity(bulletVelocity_);
 
-				newBullet->SetDamage(bulletDamage_);
+	newBullet->SetDamage(bulletDamage_);
 
-				newBullet->SetCamera(camera_);
+	newBullet->SetCamera(camera_);
 
-				newBullet->SetGameScene(Character::GetGamePlayScene());
+	newBullet->SetGameScene(Character::GetGamePlayScene());
 
-				newBullet->Update();
+	newBullet->GetCollider()->SetAttribute(Character::GetCollider()->GetAttribute());
 
-				//リストに登録
-				bullets_.push_back(std::move(newBullet));
+	newBullet->Update();
 
-				//Character::GetGamePlayScene()->AddPlayerBullet(std::move(newBullet));
+	//リストに登録
+	bullets_.push_back(std::move(newBullet));
 }
 
 void Character::AddBullet() {
-	////リストに登録
-	//bullets_.push_back(std::move(Bullet));
 }
 
 Character::~Character() {
-
 }

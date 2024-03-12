@@ -1,4 +1,4 @@
-﻿/*コライダーの共通基礎*/
+/*コライダーの共通基礎*/
 
 #pragma once
 
@@ -34,6 +34,10 @@ public: //アクセッサ
 	//属性セット
 	inline void SetAttribute(unsigned short attribute) {
 		this->attribute_ = attribute;
+	}
+	//属性取得
+	inline unsigned short GetAttribute() {
+		return this->attribute_;
 	}
 	//属性追加
 	inline void AddAtribute(unsigned short attribute) {

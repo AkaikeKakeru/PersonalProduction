@@ -63,7 +63,7 @@ bool Player::Initialize() {
 	modelActive_ = model_;
 	modelHide_ = model_;
 
-	collider_->SetAttribute(COLLISION_ATTR_PLAYER);
+	Character::collider_->SetAttribute(COLLISION_ATTR_PLAYER);
 
 	worldTransform3dReticle_.Initialize();
 
@@ -249,11 +249,11 @@ void Player::Update() {
 
 	if (Character::IsStart()) {
 		if (isPhaseAdvance_) {
-			float updateRota = ConvertToRadian(90.0f);
+			//float updateRota = ConvertToRadian(90.0f);
 
-			if (GetGamePlayScene()->GetPhaseIndex() % 2 == 1) {
-				updateRota *= -1;
-			}
+			//if (GetGamePlayScene()->GetPhaseIndex() % 2 == 1) {
+			//	updateRota *= -1;
+			//}
 
 			moveEase.Reset(
 				Ease::InOut_,
@@ -262,22 +262,22 @@ void Player::Update() {
 				{
 					Object3d::GetPosition().x,
 					Object3d::GetPosition().y,
-					Object3d::GetPosition().z/* + 50.0f*/
+					Object3d::GetPosition().z + 50.0f
 				}
 			);
 
-			rotaEase.Reset(
-				Ease::InOut_,
-				Character::GetTimerMax(),
-				Object3d::GetRotation(),
-				{
-					Object3d::GetRotation().x,
-					Object3d::GetRotation().y + updateRota,
-					Object3d::GetRotation().z
-				}
-			);
+			//rotaEase.Reset(
+			//		Ease::InOut_,
+			//		Character::GetTimerMax(),
+			//		Object3d::GetRotation(),
+			//		{
+			//			Object3d::GetRotation().x,
+			//			Object3d::GetRotation().y + updateRota,
+			//			Object3d::GetRotation().z
+			//		}
+			//	);
 
-			isPhaseAdvance_ = false;
+				isPhaseAdvance_ = false;
 		}
 
 		//入力で隠れフラグ操作
@@ -316,11 +316,11 @@ void Player::Update() {
 
 		moveEase.Update();
 		rotaEase.Update();
-		rotVector += rotaEase.GetReturn();
-		moveVector += moveEase.GetReturn();
+		rotVector = rotaEase.GetReturn();
+		moveVector = moveEase.GetReturn();
 
-		position += moveVector;
-		rot += rotVector;
+		//position += moveVector;
+		//rot += rotVector;
 
 		//ダメージフラグを確認
 		if (Character::IsDamage()) {
@@ -338,8 +338,8 @@ void Player::Update() {
 			shakePos += shake_.GetOutput();
 		}
 
-		Character::SetMovePos(position);
-		Character::SetMoveRota(rot);
+		Character::SetMovePos(moveVector);
+		Character::SetMoveRota(rotVector);
 		Character::SetShakePos(shakePos);
 	}
 
@@ -377,10 +377,6 @@ void Player::Update() {
 	//残弾数ゲージの変動
 	bulletGauge_->GetRestSprite()->
 		SetColor({ 0.2f,0.7f,0.2f,5.0f });
-	//bulletGauge_->SetPosition({
-	//	input_->GetMousePosition().x - 64.0f + 16.0f,
-	//	input_->GetMousePosition().y + 16.0f
-	//	});
 	bulletGauge_->SetPosition({
 		spriteReticle_->GetPosition().x - 64.0f + 16.0f,
 		spriteReticle_->GetPosition().y + 32.0f
@@ -404,7 +400,6 @@ void Player::Update() {
 
 #ifdef _DEBUG
 	{
-
 		position = {
 			Character::GetDebugPosition()[0],
 			Character::GetDebugPosition()[1],
@@ -420,7 +415,6 @@ void Player::Update() {
 #endif // _DEBUG
 
 	if (IsHide()) {
-
 		Character::GetCart()->SetPosition(
 			Vector3{
 				worldTransform_.matWorld_.m[3][0],
@@ -480,8 +474,6 @@ void Player::Finalize() {
 }
 
 void Player::ApplyAdjustmentVariables() {
-	//Character::ApplyAdjustmentVariables();
-
 	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
 
 	worldTransform_.position_ =
@@ -515,59 +507,44 @@ void Player::OnCollision(const CollisionInfo& info) {
 }
 
 void Player::UpdateReticle(Enemy* enemy) {
-	Vector3 targetWorldPos{};
-	Vector3 enemyWorldPos{};
+	Vector3 enemyWorldPos = {
+		enemy->GetMatWorld().m[3][0],
+		enemy->GetMatWorld().m[3][1],
+		enemy->GetMatWorld().m[3][2]
+	};
 
-	if (input_->PressMouse(2)) {
-		int a = 0;
-		a += 1;
+	//ゲームシーンから受け取った敵機から、ワールド座標を抽出
+	if (!cursor_.IsLockOn()) {
+		targetWorldPos_ = enemyWorldPos;
 	}
 
 	if (!IsDead()) {
-		//ゲームシーンから受け取った敵機から、ワールド座標を抽出
-		if (!cursor_.IsLockOn()) {
-			enemyWorldPos = {
-				enemy->GetWorldTransform()->matWorld_.m[3][0],
-				enemy->GetWorldTransform()->matWorld_.m[3][1],
-				enemy->GetWorldTransform()->matWorld_.m[3][2]
-			};
+		//自機と敵機の距離(仮)
+		float distancePToE =
+			Vector3Dot(
+				targetWorldPos_,
 
-			//自機と敵機の距離(仮)
-			float distancePToE =
-				Vector3Dot(
-					Vector3{
-						enemy->GetMatWorld().m[3][0],
-						enemy->GetMatWorld().m[3][1],
-						enemy->GetMatWorld().m[3][2] },
+				Vector3{
+					Character::GetMatWorld().m[3][0],
+					Character::GetMatWorld().m[3][1],
+					Character::GetMatWorld().m[3][2] });
 
-						Vector3{
-						Character::GetMatWorld().m[3][0],
-						Character::GetMatWorld().m[3][1],
-						Character::GetMatWorld().m[3][2] });
+		//カーソルから3Dレティクルまでの距離を設定
+		cursor_.SetDistance(distancePToE);
 
-			//カーソルから3Dレティクルまでの距離を設定
-			cursor_.SetDistance(distancePToE);
-
-			//マウスカーソルから、3D照準座標を取得する
-			targetWorldPos =
-				cursor_.Get3DReticlePosition(camera_, enemyWorldPos);
-
-		}
+		//マウスカーソルから、3D照準座標を取得する
+		cursorPos_ =
+			cursor_.Get3DReticlePosition(camera_, targetWorldPos_);
 	}
 
-	if (cursor_.IsLockOn()) {
-		int a = 0;
-		a++;
-	}
-
+	worldTransform3dReticle_.position_ = cursorPos_;
 	//3Dレティクル座標を更新
-	worldTransform3dReticle_.position_ = targetWorldPos;
 	worldTransform3dReticle_.UpdateMatrix();
 
 	//レティクルスプライトの位置
 	// エネミーのワールド座標をスクリーン座標に変換して設定
 	spriteReticle_->SetPosition(
-		cursor_.TransFromWorldToScreen(targetWorldPos)
+		cursor_.TransFromWorldToScreen(cursorPos_)
 	);
 	//ロックオン中か否かでスプライトのサイズを変える
 	if (cursor_.IsLockOn()) {
@@ -610,34 +587,6 @@ void Player::Attack() {
 
 				Character::SetBulletDamage(kGunDamage_);
 				Character::SetBulletVelocity(bulletVelocity);
-
-				////弾の生成、初期化
-				//std::unique_ptr<PlayerBullet> newBullet =
-				//	std::make_unique<PlayerBullet>();
-
-				//newBullet->Initialize();
-
-				//newBullet->SetModel(Character::GetBulletModel());
-
-				//newBullet->SetScale(worldTransform_.scale_);
-				//newBullet->SetRotation(worldTransform_.rotation_);
-				//newBullet->SetPosition(Vector3{
-				//	worldTransform_.matWorld_.m[3][0],
-				//	worldTransform_.matWorld_.m[3][1],
-				//	worldTransform_.matWorld_.m[3][2]
-				//	});
-
-				//newBullet->SetVelocity(bulletVelocity);
-
-				//newBullet->SetDamage(kGunDamage_);
-
-				//newBullet->SetCamera(camera_);
-
-				//newBullet->SetGameScene(Character::GetGamePlayScene());
-
-				//newBullet->Update();
-
-				//Character::GetGamePlayScene()->AddPlayerBullet(std::move(newBullet));
 
 				Character::Attack();
 

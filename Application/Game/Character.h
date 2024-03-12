@@ -123,6 +123,8 @@ public: //アクセッサ
 
 	//ゲームオーバーフラグの取得
 	bool IsOver() {
+
+
 		return isOver_;
 	}
 

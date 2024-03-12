@@ -1,5 +1,12 @@
+/*ボス*/
+
 #pragma once
 #include "Character.h"
+#include "WeakPoint.h"
+
+#include <vector>
+#include <List>
+#include <memory>
 
 class CollisionManager;
 
@@ -21,10 +28,24 @@ public://メンバ関数
 	void OnCollision(const CollisionInfo& info) override;
 
 	//開始時移動
-	void StartMove();
+	void StartMove() override;
 
 	//脱落時移動
-	void OverMove();
+	void OverMove() override;
+
+	void Attack() override;
+
+	void ResetWeak();
+
+public://定数
+	//発射間隔
+	static const int kFireInterval = 60 * 10;
+
+	//待機間隔
+	static const int kWaitInterval = 60 * 5;
+
+	//弱点数
+	static const int kWeakPointCount_ = 4;
 
 public: //定数
 	//調整変数グループ名
@@ -52,6 +73,24 @@ public: //定数
 private:
 	//オーバーフラグ
 	bool isOver_ = false;
+
+	//攻撃までのタイマー
+	int32_t attackTimer_;
+
+	//待機タイマー
+	int32_t waitTimer_;
+
+	//弱点
+	std::list<std::unique_ptr<WeakPoint>> weakPoint_;
+
+	//攻撃フラグ
+	bool isAttack_ = false;
+
+	//ブレイクフラグ
+	bool isBreak_ = false;
+
+	//活動フラグ
+	bool isActive_ = false;
 
 public:
 	Boss() = default;
