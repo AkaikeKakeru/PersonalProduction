@@ -3,6 +3,7 @@
 #include "PlaySceneStateManager.h"
 #include "ImGuiManager.h"
 #include <cassert>
+#include "GamePlayScene.h"
 
 void PlaySceneStateManager::Update(){
 	//次の状態の予約があるなら
@@ -22,6 +23,8 @@ void PlaySceneStateManager::Update(){
 
 		//次の状態を初期化
 		state_->Initialize();
+
+
 	}
 
 	//実行中状態の更新
@@ -33,6 +36,18 @@ void PlaySceneStateManager::Draw(){
 #ifdef _DEBUG
 	ImGuiManager::GetInstance()->Draw();
 #endif // DEBUG
+}
+
+void PlaySceneStateManager::Draw3d() {
+	state_->Draw3d();
+}
+
+void PlaySceneStateManager::Draw2d() {
+	state_->Draw2d();
+}
+
+void PlaySceneStateManager::DrawParticle() {
+	state_->DrawParticle();
 }
 
 void PlaySceneStateManager::Finalize(){

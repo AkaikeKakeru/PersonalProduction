@@ -22,6 +22,8 @@
 
 #include "Cursor.h"
 
+#include "GameMain.h"
+
 #ifdef _DEBUG
 #include "ImGuiManager.h"
 #endif
@@ -42,10 +44,10 @@
 
 #include "PlaySceneStateManager.h"
 #include "AbstractPlaySceneStateFactory.h"
+#include <FollowCamera.h>
 
 #pragma region popLoader
 #include <sstream>
-#include <FollowCamera.h>
 #pragma endregion
 
 class BossBattleScene;
@@ -320,4 +322,8 @@ public: //メンバ変数
 
 	//ボスバトルシーン
 	BossBattleScene* bossBattle_;
+
+public:
+	//状態ファクトリ―
+	AbstractPlaySceneStateFactory* stateFactory_ = nullptr;
 };

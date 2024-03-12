@@ -13,6 +13,8 @@
 #include <Framework.h>
 #pragma endregion
 
+#include "PlaySceneStateFactory.h"
+
 #include <cassert>
 
 #ifdef _DEBUG
@@ -34,6 +36,9 @@ PlaySceneStateManager* GamePlayScene::stateManager_ = PlaySceneStateManager::Get
 
 void GamePlayScene::Finalize() {
 	SafeDelete(light_);
+
+	stateManager_->Finalize();
+
 	FinalizeBlackOut();
 	FinalizeBackGround();
 	FinalizeCharacter();
@@ -162,6 +167,7 @@ void GamePlayScene::InitializeCharacter() {
 	newPlayer->Initialize();
 	player_.reset(newPlayer);
 	player_->Update();
+
 	//追従カメラの更新
 	followCamera_->SetTargetWorldTransform(player_->GetWorldTransform());
 	followCamera_->Update();
@@ -893,14 +899,26 @@ void GamePlayScene::Draw2d() {
 }
 
 void GamePlayScene::Initialize() {
+
+	stateManager_ = GameMain::GetStateManager();
+
+	//シーンファクトリーを生成し、マネージャーにセット
+	stateFactory_ = new PlaySceneStateFactory();
+	PlaySceneStateManager::GetInstance()->SetSceneFactory(stateFactory_);
+
+	//シーンマネージャーに最初のシーンをセット
+	PlaySceneStateManager::GetInstance()->ChangeState("RUN");
+
 	Initialize3d();
 	Initialize2d();
 }
 void GamePlayScene::Update() {
 	input_->Update();
 
-	Update3d();
-	Update2d();
+	stateManager_->Update();
+
+	//Update3d();
+	//Update2d();
 
 	collisionManager_->CheckAllCollisions();
 }
@@ -914,14 +932,20 @@ void GamePlayScene::Draw() {
 	imGuiManager_->End();
 #endif // DEBUG
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
-	Draw3d();
+	stateManager_->Draw3d();
+
+	//Draw3d();
 	Object3d::PostDraw();
 
 	ParticleManager::PreDraw(dxBas_->GetCommandList().Get());
-	DrawParticle();
+	stateManager_->DrawParticle();
+
+	//DrawParticle();
 	ParticleManager::PostDraw();
 
 	SpriteBasis::GetInstance()->PreDraw();
-	Draw2d();
+	stateManager_->Draw2d();
+
+	//Draw2d();
 	SpriteBasis::GetInstance()->PostDraw();
 }

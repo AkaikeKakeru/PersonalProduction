@@ -4,11 +4,20 @@
 #include"BaseStatePlayScene.h"
 #include "AbstractPlaySceneStateFactory.h"
 
+#include <memory>
+#include <List>
+
+class GamePlayScene;
+class Player;
+
 /*プレイシーン状態管理*/
 class PlaySceneStateManager final {
 public:
 	void Update();
 	void Draw();
+	void Draw3d();
+	void Draw2d();
+	void DrawParticle();
 	void Finalize();
 
 	void ChangeState(const std::string& stateName);
@@ -25,6 +34,9 @@ private:
 
 	//状態ファクトリ―(借りてくる)
 	AbstractPlaySceneStateFactory* stateFactory_ = nullptr;
+
+	//ゲームプレイシーン
+	GamePlayScene* gameScene_ = nullptr;
 
 private:
 	PlaySceneStateManager() = default;
