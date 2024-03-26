@@ -5,5 +5,4 @@
 #include "GamePlayScene.h"
 
 PlaySceneStateManager* BaseStatePlayScene::stateManager_ = GamePlayScene::GetStateManager();
-
-GamePlayScene* BaseStatePlayScene::gameScene_ = nullptr;
+Camera* BaseStatePlayScene::camera_ = PlaySceneStateManager::GetCamera();

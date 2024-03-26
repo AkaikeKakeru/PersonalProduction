@@ -7,6 +7,7 @@
 
 //前方宣言
 class PlaySceneStateManager;
+class Camera;
 
 //プレイシーン状態の基礎
 class BaseStatePlayScene {
@@ -17,6 +18,7 @@ public:
 	virtual void Draw3d() = 0;
 	virtual void Draw2d() = 0;
 	virtual void DrawParticle() = 0;
+	virtual void DrawImGui() = 0;
 
 	virtual void Finalize() = 0;
 
@@ -26,16 +28,16 @@ public:
 	virtual void SetStateManager(PlaySceneStateManager* stateManager) {
 		stateManager_ = stateManager; }
 
-	virtual void SetGamePlayScene(GamePlayScene* gameScene) {
-		gameScene_ = gameScene;
+	virtual void SetCamera(Camera* camera) {
+		camera_ = camera;
 	}
 
 private:
 	//状態マネージャ(借りてくる)
 	static PlaySceneStateManager* stateManager_;
 
-	//ゲームシーン(借りてくる)
-	static GamePlayScene* gameScene_;
+	//カメラ
+	static Camera* camera_;
 
 public:
 	virtual ~BaseStatePlayScene() = default;

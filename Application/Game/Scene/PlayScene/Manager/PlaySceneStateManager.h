@@ -4,6 +4,8 @@
 #include"BaseStatePlayScene.h"
 #include "AbstractPlaySceneStateFactory.h"
 
+#include "Camera.h"
+
 #include <memory>
 #include <List>
 
@@ -18,6 +20,7 @@ public:
 	void Draw3d();
 	void Draw2d();
 	void DrawParticle();
+	void DrawImGui();
 	void Finalize();
 
 	void ChangeState(const std::string& stateName);
@@ -25,6 +28,21 @@ public:
 	//状態ファクトリーのセット
 	void SetSceneFactory(AbstractPlaySceneStateFactory* stateFactory) {
 		stateFactory_ = stateFactory; }
+
+	//ゲームシーンのセット
+	void SetGameScene(GamePlayScene* gameScene) {
+		gameScene_ = gameScene;
+	}
+
+	//カメラのセット
+	static Camera* GetCamera() {
+		return camera_;
+	}
+
+	//カメラのセット
+	static void SetCamera(Camera& camera) {
+		camera_ = &camera;
+	}
 
 private:
 	//現在状態
@@ -37,6 +55,9 @@ private:
 
 	//ゲームプレイシーン
 	GamePlayScene* gameScene_ = nullptr;
+
+	//カメラ
+	static Camera* camera_;
 
 private:
 	PlaySceneStateManager() = default;

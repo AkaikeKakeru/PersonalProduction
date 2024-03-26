@@ -5,6 +5,9 @@
 #include <cassert>
 #include "GamePlayScene.h"
 
+//カメラ
+Camera* PlaySceneStateManager::camera_ = GamePlayScene::GetCamera();
+
 void PlaySceneStateManager::Update(){
 	//次の状態の予約があるなら
 	if (nextState_) {
@@ -24,7 +27,7 @@ void PlaySceneStateManager::Update(){
 		//次の状態を初期化
 		state_->Initialize();
 
-
+		state_->SetCamera(camera_);
 	}
 
 	//実行中状態の更新
@@ -48,6 +51,10 @@ void PlaySceneStateManager::Draw2d() {
 
 void PlaySceneStateManager::DrawParticle() {
 	state_->DrawParticle();
+}
+
+void PlaySceneStateManager::DrawImGui() {
+	state_->DrawImGui();
 }
 
 void PlaySceneStateManager::Finalize(){
