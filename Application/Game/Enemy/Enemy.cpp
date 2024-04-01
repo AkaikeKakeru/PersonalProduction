@@ -219,25 +219,10 @@ void Enemy::StartMove() {
 }
 
 void Enemy::OverMove() {
-	if(Character::IsOver()) {
-		Character::GetGamePlayScene()->SetIsGushing(true);
-		Character::SetIsDead(true);
-	}
+	Character::OverMove();
 }
 
 void Enemy::Fall() {
-	//Vector3 rota = GetRotation();
-
-	//Vector3 endFallRota = {
-	//	rota.x - ConvertToRadian(90.0f),
-	//	rota.y,
-	//	rota.z
-	//};
-
-	//Quaternion fallQua = DirectionToDirection(rota,endFallRota);
-
-	//SetRotation( RotateVector(rota, fallQua) );
-
 	if(Character::IsOver()) {
 		Character::GetGamePlayScene()->SetIsGushing(true);
 		Character::SetIsDead(true);

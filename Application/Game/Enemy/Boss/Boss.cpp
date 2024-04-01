@@ -7,6 +7,18 @@
 #include <cassert>
 #include <ObjectManager.h>
 
+#include "GamePlayScene.h"
+#include <Framework.h>
+
+#include <Quaternion.h>
+#include <Ease.h>
+
+#include <SafeDelete.h>
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif
+
 Boss* Boss::Create(
 	Model* model) {
 	//オブジェクトのインスタンスを生成
@@ -56,7 +68,7 @@ bool Boss::Initialize() {
 	Character::SetHPGauge(newHpGauge);
 #pragma endregion
 
-	ResetWeak();
+	//ResetWeak();
 
 #pragma region カート
 
@@ -73,7 +85,7 @@ bool Boss::Initialize() {
 
 #pragma endregion
 
-	return false;
+	return true;
 }
 
 void Boss::Update() {
@@ -235,7 +247,7 @@ void Boss::ResetWeak() {
 	newWeak->SetRotation(worldTransform_.rotation_);
 
 	newWeak->SetCamera(camera_);
-	newWeak->GetCollider()->SetAttribute(Character::GetCollider()->GetAttribute());
+	newWeak->GetCollider()->SetAttribute(COLLISION_ATTR_ENEMYS/*Character::GetCollider()->GetAttribute()*/);
 
 	Vector3 newWeakPos{};
 
