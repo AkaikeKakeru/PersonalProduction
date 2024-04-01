@@ -60,6 +60,11 @@ public://関数
 	void Draw3d() override;
 	void Draw2d() override;
 	void DrawParticle() override;
+	void DrawImGui() override;
+
+private:
+	void Initialize3d();
+	void InitializeParticle();
 
 	void InitializeCamera();
 	void InitializeCharacter();
@@ -67,13 +72,15 @@ public://関数
 	void UpdateCamera();
 	void UpdateCharacter();
 	void UpdateDamage();
-	void UpdateMouseUI();
+
+	void DrawCharacter();
+	void DrawCharacterUI();
+
+	void FinalizeCharacter();
 
 	void RemoveUniquePtr();
 	void DebugShortCut();
-
 	void PhaseChange();
-
 
 	//敵を追加
 	void AddEnemy(const Vector3 pos,
@@ -91,18 +98,15 @@ public://関数
 	Vector3 LoadCommandsVector3(
 		std::istringstream* line_stream,
 		std::string word);
-#pragma endregion
+#pragma endregion	
 
 private://静的変数
 	static Input* input_;
 	static ObjectManager* objManager_;
-
+	static Camera* camera_;
 private://変数
 
 /*カメラ*/
-	//カメラ
-	std::unique_ptr<Camera> camera_ = nullptr;
-
 	//カメラ(追従)
 	std::unique_ptr<FollowCamera> followCamera_;
 
@@ -125,10 +129,10 @@ private://変数
 #pragma endregion
 
 	//今プレイヤーの与えるダメージ量
-	float nowDamagePlayer_ = 0.0f;
+	float nowDamagePlayer_ = 3.0f;
 
 	//今エネミーの与えるダメージ量
-	float nowDamageEnemy_ = 0.0f;
+	float nowDamageEnemy_ = 3.0f;
 
 	//今のエネミーの弾種
 	int nowBulletTypeEnemy_ = EnemyBullet::Gun_BulletType;
@@ -161,4 +165,15 @@ private://変数
 
 	//フェーズ番号
 	int phaseIndex_ = 0;
+
+public://アクセッサ
+	//フェーズ番号取得
+	size_t GetPhaseIndex() {
+		return phaseIndex_;
+	}
+
+	//フェーズ番号セット
+	void SetPhaseIndex(const size_t& index) {
+		phaseIndex_ = (int)index;
+	}
 };

@@ -33,7 +33,9 @@ public://メンバ関数
 	void OnCollision(const CollisionInfo& info) override;
 
 	//照準更新
-	void UpdateReticle(Enemy* enemy);
+	void UpdateReticle(
+		const Vector3& lockonTagetPos,
+		const Vector2& lockonTagetPos2d);
 
 	//発射攻撃
 	void Attack() override;
@@ -45,7 +47,6 @@ public://メンバ関数
 	void OverMove() override;
 
 	void PhaseChange();
-
 public: //定数
 	//調整変数グループ名
 	const char* groupName_ = "Player";
@@ -104,6 +105,10 @@ public: //アクセッサ
 		isPhaseAdvance_ = isPhaseAdvance;
 	}
 
+	Cursor& GetCursor() {
+		return *cursor_.get();
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -125,12 +130,8 @@ private: //メンバ変数
 	//テキスト
 	std::unique_ptr<Text> textEmpty_ = nullptr;
 
-	//カーソル
-	//std::unique_ptr<Cursor> cursor{};
-	Cursor cursor_;
-
 	//3dレティクルのワールド変換
-	WorldTransform worldTransform3dReticle_;
+	WorldTransform* worldTransform3dReticle_;
 
 	//隠れフラグ
 	bool isHide_ = false;
@@ -183,6 +184,8 @@ private: //メンバ変数
 	bool isPhaseAdvance_ = false;
 
 	//カーソル
+	std::unique_ptr <Cursor> cursor_;
+	//カーソル位置
 	Vector3 cursorPos_{};
 	//今受け取っているターゲットのワールド座標
 	Vector3 targetWorldPos_{};

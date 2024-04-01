@@ -65,13 +65,17 @@ bool Player::Initialize() {
 
 	Character::collider_->SetAttribute(COLLISION_ATTR_PLAYER);
 
-	worldTransform3dReticle_.Initialize();
+	worldTransform3dReticle_ = new WorldTransform();
+	worldTransform3dReticle_->Initialize();
 
-	Sprite* newSprite = new Sprite();
-	spriteReticle_.reset(newSprite);
+	spriteReticle_ = std::make_unique<Sprite>();
 	spriteReticle_->Initialize(Framework::kCursorTextureIndex_);
 	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
+	spriteReticle_->SetPosition({ WinApp::Win_Width / 2, WinApp::Win_Height / 2 });
 	spriteReticle_->SetSize({ 64,64 });
+
+	cursor_ = std::make_unique<Cursor>();
+	cursor_->SetDistance(70.0f);
 
 #pragma region 調整項目
 	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
@@ -248,12 +252,16 @@ void Player::Update() {
 	Vector3 shakePos = Object3d::GetPosition();
 
 	if (Character::IsStart()) {
-		if (isPhaseAdvance_) {
-			//float updateRota = ConvertToRadian(90.0f);
+		static int countAdv = 0;
 
-			//if (GetGamePlayScene()->GetPhaseIndex() % 2 == 1) {
-			//	updateRota *= -1;
-			//}
+		if (isPhaseAdvance_) {
+			countAdv++;
+
+			float updateRota = ConvertToRadian(90.0f);
+
+			if (countAdv % 2 == 1) {
+				updateRota *= -1;
+			}
 
 			moveEase.Reset(
 				Ease::InOut_,
@@ -266,18 +274,18 @@ void Player::Update() {
 				}
 			);
 
-			//rotaEase.Reset(
-			//		Ease::InOut_,
-			//		Character::GetTimerMax(),
-			//		Object3d::GetRotation(),
-			//		{
-			//			Object3d::GetRotation().x,
-			//			Object3d::GetRotation().y + updateRota,
-			//			Object3d::GetRotation().z
-			//		}
-			//	);
+			rotaEase.Reset(
+				Ease::InOut_,
+				Character::GetTimerMax(),
+				Object3d::GetRotation(),
+				{
+					Object3d::GetRotation().x,
+					Object3d::GetRotation().y + updateRota,
+					Object3d::GetRotation().z
+				}
+			);
 
-				isPhaseAdvance_ = false;
+			isPhaseAdvance_ = false;
 		}
 
 		//入力で隠れフラグ操作
@@ -469,7 +477,7 @@ void Player::DrawImgui() {
 
 void Player::Finalize() {
 	bulletGauge_->Finalize();
-
+	SafeDelete(worldTransform3dReticle_);
 	Character::Finalize();
 }
 
@@ -506,56 +514,32 @@ void Player::OnCollision(const CollisionInfo& info) {
 	Character::OnCollision(info);
 }
 
-void Player::UpdateReticle(Enemy* enemy) {
-	Vector3 enemyWorldPos = {
-		enemy->GetMatWorld().m[3][0],
-		enemy->GetMatWorld().m[3][1],
-		enemy->GetMatWorld().m[3][2]
-	};
-
-	//ゲームシーンから受け取った敵機から、ワールド座標を抽出
-	if (!cursor_.IsLockOn()) {
-		targetWorldPos_ = enemyWorldPos;
-	}
-
-	if (!IsDead()) {
-		//自機と敵機の距離(仮)
-		float distancePToE =
-			Vector3Dot(
-				targetWorldPos_,
-
-				Vector3{
-					Character::GetMatWorld().m[3][0],
-					Character::GetMatWorld().m[3][1],
-					Character::GetMatWorld().m[3][2] });
-
-		//カーソルから3Dレティクルまでの距離を設定
-		cursor_.SetDistance(distancePToE);
-
-		//マウスカーソルから、3D照準座標を取得する
-		cursorPos_ =
-			cursor_.Get3DReticlePosition(camera_, targetWorldPos_);
-	}
-
-	worldTransform3dReticle_.position_ = cursorPos_;
+void Player::UpdateReticle(const Vector3& lockonTagetPos,
+	const Vector2& lockonTagetPos2d) {
+	worldTransform3dReticle_->position_ = lockonTagetPos;
 	//3Dレティクル座標を更新
-	worldTransform3dReticle_.UpdateMatrix();
+	worldTransform3dReticle_->UpdateMatrix();
 
 	//レティクルスプライトの位置
 	// エネミーのワールド座標をスクリーン座標に変換して設定
 	spriteReticle_->SetPosition(
-		cursor_.TransFromWorldToScreen(cursorPos_)
+		lockonTagetPos2d
 	);
+
+	Vector2 size2d{};
+	Vector4 color2d{};
 	//ロックオン中か否かでスプライトのサイズを変える
-	if (cursor_.IsLockOn()) {
-		spriteReticle_->SetSize({ 80,80 });
-		spriteReticle_->SetColor({ 0.7f,0.2f,0.2f,0.8f });
+	if (cursor_->IsLockOn()) {
+		size2d = { 80,80 };
+		color2d = { 0.7f,0.2f,0.2f,0.8f };
 	}
 	else {
-		spriteReticle_->SetSize({ 64,64 });
-		spriteReticle_->SetColor({ 1,1,1,1 });
+		size2d = { 64,64 };
+		color2d = { 1,1,1,1 };
 	}
 
+	spriteReticle_->SetSize(size2d);
+	spriteReticle_->SetColor(color2d);
 	spriteReticle_->Update();
 }
 
@@ -566,24 +550,26 @@ void Player::Attack() {
 		if (input_->TriggerMouse(0)) {
 			if (bulletCooltime_ <= 0) {
 				//弾スピード
-				const float kBulletSpeed = 17.5f;
+				const float kBulletSpeed = 10.5f;
 				//毎フレーム弾が前進する速度
 				Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
 
 				//速度ベクトルを自機の向きに合わせて回転させる
 				//bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
-				bulletVelocity =
+				bulletVelocity = 
 					Vector3{
-					worldTransform3dReticle_.matWorld_.m[3][0],
-					worldTransform3dReticle_.matWorld_.m[3][1],
-					worldTransform3dReticle_.matWorld_.m[3][2]
-				} - Vector3{
-						worldTransform_.matWorld_.m[3][0],
-						worldTransform_.matWorld_.m[3][1],
-						worldTransform_.matWorld_.m[3][2]
+					worldTransform3dReticle_->matWorld_.m[3][0],
+					worldTransform3dReticle_->matWorld_.m[3][1],
+					worldTransform3dReticle_->matWorld_.m[3][2]
+				}
+			- Vector3{
+					Character::GetMatWorld().m[3][0],
+					Character::GetMatWorld().m[3][1],
+					Character::GetMatWorld().m[3][2]
 				};
 
-				bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
+				bulletVelocity = Vector3Normalize(bulletVelocity);
+				bulletVelocity *= kBulletSpeed;
 
 				Character::SetBulletDamage(kGunDamage_);
 				Character::SetBulletVelocity(bulletVelocity);
