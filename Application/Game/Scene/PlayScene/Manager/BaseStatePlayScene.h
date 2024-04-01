@@ -39,6 +39,8 @@ private:
 	//カメラ
 	static Camera* camera_;
 
+
+
 public:
 	virtual ~BaseStatePlayScene() = default;
 };

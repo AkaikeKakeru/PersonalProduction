@@ -227,9 +227,10 @@ private: //静的メンバ変数
 	//状態マネージャー
 	static PlaySceneStateManager* stateManager_;
 
-public: //メンバ変数
 	//カメラ
-	std::unique_ptr<Camera> camera_ = nullptr;
+	static Camera* camera_;
+
+public: //メンバ変数
 
 	//カメラ(レール)
 	std::unique_ptr<RailCamera> railCamera_;
@@ -326,4 +327,8 @@ public: //メンバ変数
 public:
 	//状態ファクトリ―
 	AbstractPlaySceneStateFactory* stateFactory_ = nullptr;
+
+	static Camera* GetCamera() {
+		return camera_;
+	};
 };

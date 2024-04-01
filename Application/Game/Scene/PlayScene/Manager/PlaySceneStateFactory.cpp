@@ -16,9 +16,9 @@ BaseStatePlayScene* PlaySceneStateFactory::CreateState(
 		if (stateName == "RUN") {
 		newState = new GamePlaySceneRun();
 	}
-	//else if (stateName == "BOSSBATTLE") {
-	//	newState = new GamePlaySceneBossBattle();
-	//}
+	else if (stateName == "BOSSBATTLE") {
+		newState = new GamePlaySceneBossBattle();
+	}
 	//else if (stateName == "ENDING") {
 	//	newState = new GamePlaySceneEnding();
 	//}
