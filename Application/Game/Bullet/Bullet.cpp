@@ -81,8 +81,9 @@ void Bullet::Finalize() {
 void Bullet::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
 
-	//ダメージ量の設定
-	gameScene_->SetNowDamagePlayer(damage_);
-
 	isDead_ = true;
+}
+
+void Bullet::SetAttribute(unsigned short attr) {
+	collider_->SetAttribute(attr);
 }

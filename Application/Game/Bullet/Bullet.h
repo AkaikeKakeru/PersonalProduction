@@ -65,6 +65,9 @@ public: //アクセッサ
 		return isDead_;
 	}
 
+	//衝突属性のセット
+	void SetAttribute(unsigned short attr);
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
