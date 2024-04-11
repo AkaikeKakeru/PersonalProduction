@@ -14,7 +14,7 @@ void ObjectManager::CreateModelList() {
 	models_.push_back(std::move(newModel));
 	newModel.reset(Model::LoadFromOBJ("human-hide", true));
 	models_.push_back(std::move(newModel));
-	newModel.reset(Model::LoadFromOBJ("planeEnemy", true));
+	newModel.reset(Model::LoadFromOBJ("humanEnemy", true));
 	models_.push_back(std::move(newModel));
 	newModel.reset(Model::LoadFromOBJ("skydome", false));
 	models_.push_back(std::move(newModel));
