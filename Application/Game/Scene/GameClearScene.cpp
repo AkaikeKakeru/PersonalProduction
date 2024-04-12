@@ -245,11 +245,8 @@ void GameClearScene::Update() {
 		//}
 	}
 
-	Vector3 playerWorldPos = {
-		playerObj_->GetMatWorld().m[3][0],
-		playerObj_->GetMatWorld().m[3][1],
-		playerObj_->GetMatWorld().m[3][2]
-	};
+	Vector3 playerWorldPos = 
+		playerObj_->GetPosWorld();
 
 	const float distance = 100.0f;
 	Vector3 posPlayer = playerWorldPos;
@@ -374,11 +371,8 @@ void GameClearScene::Introduction() {
 		doorR_->SetPosition(pos);
 	}
 
-	Vector3 playerWorldPos = {
-		playerObj_->GetMatWorld().m[3][0],
-		playerObj_->GetMatWorld().m[3][1],
-		playerObj_->GetMatWorld().m[3][2]
-	};
+	Vector3 playerWorldPos = 
+		playerObj_->GetPosWorld();
 
 	Vector3 posPlayer = playerWorldPos;
 

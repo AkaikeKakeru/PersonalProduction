@@ -166,17 +166,11 @@ void BaseEnemy::Attack() {
 	//弾スピード
 	const float kBulletSpeed = 6.0f;
 
-	Vector3 worldPos = {
-		worldTransform_.matWorld_.m[3][0],
-		worldTransform_.matWorld_.m[3][1],
-		worldTransform_.matWorld_.m[3][2]
-	};
+	Vector3 worldPos = 
+		worldTransform_.posWorld_;
 
-	Vector3 worldPosPlayer = {
-		player_->GetMatWorld().m[3][0],
-		player_->GetMatWorld().m[3][1],
-		player_->GetMatWorld().m[3][2],
-	};
+	Vector3 worldPosPlayer = 
+		player_->GetPosWorld();
 
 	//毎フレーム弾が前進する速度
 	Vector3 bulletVelocity = worldPosPlayer - worldPos ;

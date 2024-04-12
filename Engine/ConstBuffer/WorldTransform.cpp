@@ -1,4 +1,4 @@
-﻿/*ワールド変換*/
+/*ワールド変換*/
 
 #include "WorldTransform.h"
 #include "DirectXBasis.h"
@@ -71,4 +71,10 @@ void WorldTransform::UpdateMatrix() {
 	if (parent_) {
 		matWorld_ *= parent_->matWorld_;
 	}
+
+	posWorld_ = {
+		matWorld_.m[3][0],
+		matWorld_.m[3][1],
+		matWorld_.m[3][2]
+	};
 }
