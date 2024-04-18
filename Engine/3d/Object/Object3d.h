@@ -99,6 +99,9 @@ public: // メンバ関数
 	//ワールド行列の取得
 	const Matrix4& GetMatWorld() {
 		return worldTransform_.matWorld_;}
+	//ワールド変換後の位置の取得
+	const Vector3& GetPosWorld() {
+		return worldTransform_.posWorld_;}
 	//コライダーの取得
 	BaseCollider* GetCollider() const {
 		return collider_;
