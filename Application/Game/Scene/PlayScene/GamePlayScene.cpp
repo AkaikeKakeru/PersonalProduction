@@ -4,7 +4,6 @@
 #include "SafeDelete.h"
 #include "Quaternion.h"
 #include "CollisionManager.h"
-#include "SceneManager.h"
 #include "Random.h"
 #include "Cursor.h"
 
@@ -13,7 +12,13 @@
 #include <Framework.h>
 #pragma endregion
 
+#include "LevelLoader.h"
+
+#include "SceneManager.h"
 #include "PlaySceneStateFactory.h"
+
+
+#include "GameMain.h"
 
 #include <cassert>
 
@@ -55,7 +60,6 @@ void GamePlayScene::FinalizeBackGround() {
 	skydome_->Finalize();
 }
 void GamePlayScene::FinalizeCharacter() {
-	boss_->Finalize();
 }
 void GamePlayScene::FinalizeBlackOut() {
 	blackOut_->Finalize();
@@ -142,6 +146,8 @@ void GamePlayScene::InitializeCharacter() {
 void GamePlayScene::InitializeMouseUI() {
 	float size = 64.0f;
 	float texSize = 64.0f;
+	float kCenterAnchorPoint_ = 0.5f;
+
 	std::unique_ptr<Sprite> mouseL =
 		std::make_unique<Sprite>();
 	mouseL->Initialize(Framework::kMouseTextureIndex_);
@@ -150,8 +156,8 @@ void GamePlayScene::InitializeMouseUI() {
 		WinApp::Win_Height - (texSize * 2) });
 	mouseL->SetSize({ size, size * 2 });
 	mouseL->SetAnchorPoint({
-		0.5f,
-		0.5f });
+		kCenterAnchorPoint_,
+		kCenterAnchorPoint_ });
 	mouseL->SetTextureSize({
 		texSize,
 		(texSize * 2) });
@@ -168,8 +174,8 @@ void GamePlayScene::InitializeMouseUI() {
 		WinApp::Win_Height - (texSize * 2) });
 	mouseR->SetSize({ size, size * 2 });
 	mouseR->SetAnchorPoint({
-		0.5f,
-		0.5f });
+		kCenterAnchorPoint_,
+		kCenterAnchorPoint_ });
 	mouseR->SetTextureSize({
 		texSize,
 		(texSize * 2) });
@@ -186,8 +192,8 @@ void GamePlayScene::InitializeMouseUI() {
 		WinApp::Win_Height - (texSize * 2) });
 	mouseW->SetSize({ size, size });
 	mouseW->SetAnchorPoint({
-		0.5f,
-		0.5f });
+		kCenterAnchorPoint_,
+		kCenterAnchorPoint_ });
 	mouseW->SetTextureSize({
 		texSize,
 		texSize });
@@ -204,8 +210,8 @@ void GamePlayScene::InitializeMouseUI() {
 		WinApp::Win_Height - (texSize * 1.5f) });
 	mouseTS->SetSize({ size, size / 2 });
 	mouseTS->SetAnchorPoint({
-		0.5f,
-		0.5f });
+		kCenterAnchorPoint_,
+		kCenterAnchorPoint_ });
 	mouseTS->SetTextureSize({
 		texSize,
 		texSize / 2 });
@@ -222,8 +228,8 @@ void GamePlayScene::InitializeMouseUI() {
 		WinApp::Win_Height - (texSize * 1.5f) });
 	mouseTH->SetSize({ size, size / 2 });
 	mouseTH->SetAnchorPoint({
-		0.5f,
-		0.5f });
+		kCenterAnchorPoint_,
+		kCenterAnchorPoint_ });
 	mouseTH->SetTextureSize({
 		texSize,
 		texSize / 2 });
@@ -348,227 +354,6 @@ void GamePlayScene::DrawBackground() {
 #pragma endregion
 }
 
-void GamePlayScene::RemoveUniquePtr() {
-	//敵機をデスフラグで削除
-	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) {
-		return enemy->IsDead();
-		});
-}
-void GamePlayScene::DebugShortCut() {
-	if (player_->IsStart()) {
-#ifdef _DEBUG
-		if (input_->TriggerKey(DIK_K)) {
-			//敵機のダメージ処理
-			for (std::unique_ptr<Enemy>& enemy : enemys_) {
-				enemy->SetIsDead(true);
-			}
-		}
-#endif // _DEBUG
-	}
-}
-void GamePlayScene::PhaseChange() {
-	if (isBossPhase_) {
-		if(boss_->IsDead()) {
-			if (!arrangeTile_->IsOpen()) {
-				arrangeTile_->Update();
-			}
-			else {
-				arrangeTile_->Reset(true, false);
-			}
-
-			if (arrangeTile_->IsEnd()) {
-				//シーンの切り替えを依頼
-				SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-			}
-		}
-	}
-	else {
-		//敵機が全滅したら(コンテナが空になったら)
-		if (enemys_.size() <= 0) {
-			//ファイナルフェイズに届いてなければ
-			if (phaseIndex_ < kFinalPhaseIndex_) {
-				//次の敵の湧き位置検索
-				isWait_ = false;
-				//フェーズ番号を進める
-				phaseIndex_++;
-
-				player_->SetPhaseAdvance(true);
-			}
-			else {
-				isBossPhase_ = true;
-			}
-		}
-	}
-}
-
-void GamePlayScene::AddEnemy(
-	const Vector3 pos,
-	const Vector3 rota,
-	const Vector3 scale,
-	const int bulletType) {
-	std::unique_ptr<Enemy> newEnemy =
-		std::make_unique<Enemy>();
-	newEnemy->SetCamera(camera_);
-	newEnemy->SetModel(objManager_->GetModel(enemyModel_));
-	newEnemy->SetBulletModel(objManager_->GetModel(bulletModel_));
-	newEnemy->SetCartModel(objManager_->GetModel(cartModel_));
-	newEnemy->Initialize();
-	newEnemy->SetGamePlayScene(this);
-	newEnemy->SetPlayer(player_.get());
-
-	newEnemy->SetScale(scale);
-	newEnemy->SetRotation(rota);
-	newEnemy->SetPosition(pos);
-
-	newEnemy->ReSetEasePos();
-
-	newEnemy->SetBulletType(bulletType);
-
-	newEnemy->SetFireTimer(
-		static_cast<int32_t>(
-			RandomOutput(3.0f, 7.0f)
-			)
-	);
-
-	newEnemy->Update();
-	//リストに登録
-	enemys_.push_back(std::move(newEnemy));
-}
-
-void GamePlayScene::AddBoss() {
-	Boss* newBoss = new Boss;
-	newBoss->SetCamera(followCamera_.get());
-
-	newBoss->SetModel(
-		objManager_->GetModel(enemyModel_)
-	);
-
-	newBoss->SetBulletModel(
-		objManager_->GetModel(bulletModel_));
-	newBoss->SetCartModel(objManager_->GetModel(cartModel_));
-
-	newBoss->Initialize();
-
-	boss_.reset(newBoss);
-	boss_->Update();
-}
-
-void GamePlayScene::LoadEnemyPopData(std::string filename) {
-	std::ifstream file;
-
-	//ディレクトリパス
-	std::string Directory = "Resource/csv/";
-	//フォーマットを今回はcsvに
-	std::string format = ".csv";
-	//フルパスを得る
-	std::string fullpath = Directory + filename + format;
-
-	//フルパスでオープン
-	file.open(fullpath);
-	assert(file.is_open());
-
-	//ファイルの内容を文字列ストリームにコピー
-	enemyPopCommands_ << file.rdbuf();
-
-	//ファイルを閉じる
-	file.close();
-}
-void GamePlayScene::UpdateEnemyPopCommands() {
-	//待機処理
-	if (isWait_) {
-		return;
-	}
-
-	// 1行分の文字列を入れる変数
-	std::string line;
-
-	Vector3 position{};
-	Vector3 rotation{};
-	Vector3 scale{};
-	float radian = 0.0f;
-
-	//コマンド実行ループ
-	while (getline(enemyPopCommands_, line)) {
-		// 1行分の文字列をストリームに変換して解析しやすくする
-		std::istringstream line_stream(line);
-
-		std::string word;
-
-		//区切りで行の先頭文字列を取得
-		getline(line_stream, word, ',');
-
-		// "//"から始まる行はコメント
-		if (word.find("//") == 0) {
-			// コメント行を飛ばす
-			continue;
-		}
-
-		//POSITIONコマンド
-		if (word.find("POSITION") == 0) {
-			position = LoadCommandsVector3(
-				&line_stream,
-				word);
-		}
-
-		//ROTATIONコマンド
-		if (word.find("ROTATION") == 0) {
-			rotation = LoadCommandsVector3(
-				&line_stream,
-				word);
-
-			getline(line_stream, word, ',');
-			radian = (float)std::atof(word.c_str());
-		}
-
-		//SCALEコマンド
-		if (word.find("SCALE") == 0) {
-			scale = LoadCommandsVector3(
-				&line_stream,
-				word);
-		}
-
-		//POPコマンド
-		if (word.find("POP") == 0) {
-			//敵を発生させる
-			AddEnemy(
-				position,
-				CreateRotationVector(
-					rotation,
-					ConvertToRadian(radian)
-				),
-				scale,
-				Enemy::Gun_BulletType);
-		}
-
-		//WAITコマンド
-		else if (word.find("WAIT") == 0) {
-			//待機時間
-			isWait_ = true;
-			//ループ抜け
-			break;
-		}
-	}
-}
-Vector3 GamePlayScene::LoadCommandsVector3(
-	std::istringstream* line_stream,
-	std::string word) {
-	Vector3 result{};
-
-	//x
-	getline(*line_stream, word, ',');
-	result.x = (float)std::atof(word.c_str());
-
-	//y
-	getline(*line_stream, word, ',');
-	result.y = (float)std::atof(word.c_str());
-
-	//z
-	getline(*line_stream, word, ',');
-	result.z = (float)std::atof(word.c_str());
-
-	return result;
-}
-
 void GamePlayScene::Initialize3d() {
 	InitializeCamera();
 	InitializeBackground();
@@ -580,6 +365,9 @@ void GamePlayScene::Initialize3d() {
 	Object3d::SetLight(light_);
 }
 void GamePlayScene::Initialize2d() {
+	pauseScreen_ = std::make_unique<PauseScreen>();
+	pauseScreen_->Initialize();
+
 	InitializeMouseUI();
 	InitializeBlackOut();
 }
@@ -601,6 +389,8 @@ void GamePlayScene::Draw3d() {
 	DrawBackground();
 }
 void GamePlayScene::Draw2d() {
+	pauseScreen_->Draw();
+
 	DrawMouseUI();
 	DrawBlackOut();
 }
@@ -622,12 +412,27 @@ void GamePlayScene::Initialize() {
 void GamePlayScene::Update() {
 	input_->Update();
 
-	stateManager_->Update();
+	if(input_->TriggerMouse(2)) {
+		if (pauseScreen_->IsRun()) {
+			pauseScreen_->ResetEase_Remove();
+			pauseScreen_->SetIsRemove(true);
+		}
+		else {
+			pauseScreen_->ResetEase_Run();
+		}
+	}
 
-	Update3d();
-	Update2d();
+	if (pauseScreen_->IsRun()) {
+		pauseScreen_->Update();
+	}
+	else {
+		stateManager_->Update();
 
-	collisionManager_->CheckAllCollisions();
+		Update3d();
+		Update2d();
+
+		collisionManager_->CheckAllCollisions();
+	}
 }
 void GamePlayScene::Draw() {
 #ifdef _DEBUG

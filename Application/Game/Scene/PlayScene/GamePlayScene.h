@@ -15,14 +15,11 @@
 #include "TubeManager.h"
 
 #include "Camera.h"
-#include "RailCamera.h"
 #include "DebugCamera.h"
 
 #include "LightGroup.h"
-
 #include "Cursor.h"
-
-#include "GameMain.h"
+#include "PauseScreen.h"
 
 #ifdef _DEBUG
 #include "ImGuiManager.h"
@@ -125,77 +122,16 @@ private:
 	void FinalizeCharacter();
 	void FinalizeBlackOut();
 
-	void RemoveUniquePtr();
-	void DebugShortCut();
-	void PhaseChange();
-
 public://定数
 	const int kFinalPhaseIndex_ = 3;
 	const int kBossPhaseIndex_ = kFinalPhaseIndex_ + 1;
 
 public:
 
-	//敵を追加
-	void AddEnemy(const Vector3 pos,
-		const Vector3 rota,
-		const Vector3 scale,
-		const int bulletType);
-
-	void AddBoss();
-
-#pragma region popLoader
-	//敵発生データの読込
-	void LoadEnemyPopData(std::string filename);
-
-	//敵発生コマンドの実行
-	void UpdateEnemyPopCommands();
-
-	//発生コマンドの読込
-	Vector3 LoadCommandsVector3(
-		std::istringstream* line_stream,
-		std::string word);
-#pragma endregion
-
-
 public:
 	//状態マネージャーの取得
 	static PlaySceneStateManager* GetStateManager() {
 		return stateManager_;
-	}
-
-	//フェーズ番号取得
-	size_t GetPhaseIndex() {
-		return phaseIndex_;
-	}
-
-	//今プレイヤーの与えるダメージ量の取得
-	float GetNowDamagePlayer() {
-		return nowDamagePlayer_;
-	}
-
-	//今プレイヤーの与えるダメージ量のセット
-	void SetNowDamagePlayer(float damage) {
-		nowDamagePlayer_ = damage;
-	}
-
-	//今エネミーの与えるダメージ量の取得
-	float GetNowDamageEnemy() {
-		return nowDamageEnemy_;
-	}
-
-	//今エネミーの与えるダメージ量のセット
-	void SetNowDamageEnemy(float damage) {
-		nowDamageEnemy_ = damage;
-	}
-
-	//今エネミーの弾種の取得
-	int GetNowBulletTypeEnemy() {
-		return nowBulletTypeEnemy_;
-	}
-
-	//今エネミーの弾種のセット
-	void SetNowBulletTypeEnemy(int bulletType) {
-		nowBulletTypeEnemy_ = bulletType;
 	}
 
 	//カーソルの取得
@@ -258,40 +194,8 @@ public: //メンバ変数
 	//パーティクルマネージャー
 	std::unique_ptr<ParticleManager> pm_ = nullptr;
 
-	//プレイヤー
-	std::unique_ptr<Player> player_ = nullptr;
-
-	//エネミー
-	std::list<std::unique_ptr<Enemy>> enemys_;
-
-	//ボス
-	std::unique_ptr<Boss> boss_ = nullptr;
-
-	//今プレイヤーの与えるダメージ量
-	float nowDamagePlayer_ = 0.0f;
-
-	//今エネミーの与えるダメージ量
-	float nowDamageEnemy_ = 0.0f;
-
-	//今のエネミーの弾種
-	int nowBulletTypeEnemy_ = EnemyBullet::Gun_BulletType;
-
-	//フェーズ番号
-	int phaseIndex_ = 0;
-
-	//ボスフェーズフラグ
-	bool isBossPhase_ = false;
-
 	//デバッグカメラのオンオフ
 	bool isDebugCamera_ = false;
-
-#pragma region popLoader
-	//敵発生コマンド
-	std::stringstream enemyPopCommands_;
-
-	//発生待機フラグ
-	bool isWait_ = false;
-#pragma endregion
 
 	//画面の暗幕
 	std::unique_ptr<Fade> blackOut_ = nullptr;
@@ -321,8 +225,11 @@ public: //メンバ変数
 	//マウススプライトリスト
 	std::vector<std::unique_ptr<Sprite>> mouseSprites_;
 
-	//ボスバトルシーン
-	BossBattleScene* bossBattle_;
+	//ポーズスクリーン
+	std::unique_ptr<PauseScreen> pauseScreen_;
+	
+	//ポーズフラグ
+	bool isPause_ = false;
 
 public:
 	//状態ファクトリ―
