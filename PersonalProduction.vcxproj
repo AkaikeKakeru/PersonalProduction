@@ -137,6 +137,7 @@
     <ClCompile Include="Application\Game\AdjustmentVariables.cpp" />
     <ClCompile Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateFactory.cpp" />
     <ClCompile Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateManager.cpp" />
+    <ClCompile Include="Application\Game\Scene\PlayScene\PauseScreen.cpp" />
     <ClCompile Include="Application\Math\MyMath.cpp" />
     <ClCompile Include="Application\Math\Quaternion.cpp" />
     <ClCompile Include="Engine\2d\PostEffect.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="Application\Game\Scene\PlayScene\GamePlaySceneOpening.h" />
     <ClInclude Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateFactory.h" />
     <ClInclude Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateManager.h" />
+    <ClInclude Include="Application\Game\Scene\PlayScene\PauseScreen.h" />
     <ClInclude Include="Application\Math\MyMath.h" />
     <ClInclude Include="Application\Math\Quaternion.h" />
     <ClInclude Include="Engine\2d\PostEffect.h" />
