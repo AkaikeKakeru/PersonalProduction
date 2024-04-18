@@ -1,4 +1,4 @@
-﻿/*ポストエフェクト*/
+/*ポストエフェクト*/
 
 #pragma once
 #include "SpriteBasis.h"
@@ -74,6 +74,10 @@ public://構造体
 		rootParam_SubTexture
 	};
 
+public:
+	//static PostEffect* LoadTexture(
+	//	const std::string& postEffectName);
+
 public://メンバ関数
 	//初期化
 	void Initialize();
@@ -125,7 +129,10 @@ public://メンバ関数
 	//DSV作成
 	void CreateDSV();
 
+	//テクスチャ
+	//void LoadFromTextureInternal(const std::string& postEffectName);
 public://アクセッサ
+
 	   //非表示フラグを取得
 	bool GetIsInvisible() const {
 		return texture_.isInvisible_;
@@ -135,6 +142,8 @@ public://アクセッサ
 	void SetIsInvisible(bool isInvisible) {
 		texture_.isInvisible_ = isInvisible;
 	}
+
+	
 
 private:
 	//頂点数
