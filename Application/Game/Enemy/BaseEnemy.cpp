@@ -64,6 +64,7 @@ bool BaseEnemy::Initialize() {
 	newHpGauge->Initialize();
 	newHpGauge->SetPosition({ 64,64 });
 	newHpGauge->SetSize({ 1,0.5f });
+	newHpGauge->SetIsInvisible(true);
 	Character::SetHPGauge(newHpGauge);
 #pragma endregion
 
@@ -71,6 +72,13 @@ bool BaseEnemy::Initialize() {
 }
 
 void BaseEnemy::Update() {
+
+	if(player_->IsStart()) {
+		Character::GetHPGauge()->SetIsInvisible(false);
+	}
+	else {
+		Character::GetHPGauge()->SetIsInvisible(true);
+	}
 
 	// 現在の座標を取得
 	Vector3 position = Object3d::GetPosition();
@@ -82,7 +90,7 @@ void BaseEnemy::Update() {
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
 
-	moveVector = { 0.0f,0.0f,Character::GetSpeed()};
+	moveVector = { 0.0f,0.0f,Character::GetSpeed() };
 	moveVector = Vector3CrossMatrix4(moveVector, worldTransform_.matWorld_);
 
 	Character::SetMovePos(position);
@@ -131,7 +139,7 @@ void BaseEnemy::Update() {
 	Character::GetHPGauge()->GetRestSprite()->
 		SetColor({ 0.2f,0.7f,0.2f,5.0f });
 	Character::GetHPGauge()->SetPosition({
-		posHpGauge3d.x - 64.0f+ 16.0f,
+		posHpGauge3d.x - 64.0f + 16.0f,
 		posHpGauge3d.y - 32.0f
 		});
 
@@ -166,14 +174,14 @@ void BaseEnemy::Attack() {
 	//弾スピード
 	const float kBulletSpeed = 6.0f;
 
-	Vector3 worldPos = 
+	Vector3 worldPos =
 		worldTransform_.posWorld_;
 
-	Vector3 worldPosPlayer = 
+	Vector3 worldPosPlayer =
 		player_->GetPosWorld();
 
 	//毎フレーム弾が前進する速度
-	Vector3 bulletVelocity = worldPosPlayer - worldPos ;
+	Vector3 bulletVelocity = worldPosPlayer - worldPos;
 
 	bulletVelocity = Vector3Normalize(bulletVelocity);
 
@@ -190,26 +198,11 @@ void BaseEnemy::StartMove() {
 }
 
 void BaseEnemy::OverMove() {
-	if(Character::IsOver()) {
-		Character::GetGamePlayScene()->SetIsGushing(true);
-		Character::SetIsDead(true);
-	}
+	Character::OverMove();
 }
 
 void BaseEnemy::Fall() {
-	//Vector3 rota = GetRotation();
-
-	//Vector3 endFallRota = {
-	//	rota.x - ConvertToRadian(90.0f),
-	//	rota.y,
-	//	rota.z
-	//};
-
-	//Quaternion fallQua = DirectionToDirection(rota,endFallRota);
-
-	//SetRotation( RotateVector(rota, fallQua) );
-
-	if(Character::IsOver()) {
+	if (Character::IsOver()) {
 		Character::GetGamePlayScene()->SetIsGushing(true);
 		Character::SetIsDead(true);
 	}
@@ -222,7 +215,7 @@ void BaseEnemy::ReSetEasePos() {
 		{
 			Object3d::GetPosition().x,
 			Object3d::GetPosition().y ,
-			Object3d::GetPosition() .z - 10.0f
+			Object3d::GetPosition().z - 10.0f
 		},
 		Object3d::GetPosition()
 	);
@@ -254,7 +247,7 @@ void BaseEnemy::ReSetEasePos() {
 		60,
 		Object3d::GetRotation(),
 		{
-			Object3d::GetRotation().x  - ConvertToRadian(90.0f),
+			Object3d::GetRotation().x - ConvertToRadian(90.0f),
 			Object3d::GetRotation().y,
 			Object3d::GetRotation().z
 		}

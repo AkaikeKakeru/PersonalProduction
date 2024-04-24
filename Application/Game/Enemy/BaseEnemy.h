@@ -3,6 +3,12 @@
 #pragma once
 #include "Character.h"
 
+#include "Particle.h"
+#include "ParticleManager.h"
+
+#include <memory>
+#include <List>
+
 class GamePlayScene;
 class Player;
 class CollisionManager;
@@ -81,6 +87,11 @@ public: //アクセッサ
 		player_ = player;
 	}
 
+	//発射タイマーのセット(フレーム単位)
+	void SetFireTimer(int32_t timerFrame) {
+		fireTimer_ = timerFrame * 60;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -107,6 +118,9 @@ private: //メンバ変数
 
 	//発射タイマー
 	int32_t fireTimer_ = 0;
+
+	//アクティブフラグ
+	bool isActive_ = false;
 
 public:
 	BaseEnemy() = default;
