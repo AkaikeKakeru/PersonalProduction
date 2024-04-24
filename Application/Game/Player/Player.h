@@ -14,6 +14,9 @@ class CollisionManager;
 //プレイヤー
 class Player
 	: public Character {
+private:
+	const int cBossPhaseIndex_ = 3;
+
 public: //静的メンバ関数
 	//オブジェクト生成
 	static Player* Create(Model* model = nullptr);
@@ -34,8 +37,10 @@ public://メンバ関数
 
 	//照準更新
 	void UpdateReticle(
-		const Vector3& lockonTagetPos,
-		const Vector2& lockonTagetPos2d);
+		const Vector3& lockonTargetPos
+		, float distance);
+	//,
+		//const Vector2& lockonTargetPos2d);
 
 	//発射攻撃
 	void Attack() override;
@@ -101,12 +106,19 @@ public: //アクセッサ
 	};
 
 	//フェーズ進行フラグのセット
-	void SetPhaseAdvance(bool isPhaseAdvance) {
+	void SetPhaseAdvance(
+		const bool isPhaseAdvance,
+		const int phaseIndex) {
 		isPhaseAdvance_ = isPhaseAdvance;
+		countAdv_ = phaseIndex;
 	}
 
 	Cursor& GetCursor() {
 		return *cursor_.get();
+	}
+
+	bool IsPhaseAdvance() {
+		return isPhaseAdvance_;
 	}
 
 private: //静的メンバ変数
@@ -183,13 +195,19 @@ private: //メンバ変数
 	//フェーズ進行フラグ
 	bool isPhaseAdvance_ = false;
 
+	//進行回数
+	int countAdv_ = 0;
+
 	//カーソル
 	std::unique_ptr <Cursor> cursor_;
 	//カーソル位置
 	Vector3 cursorPos_{};
 	//今受け取っているターゲットのワールド座標
 	Vector3 targetWorldPos_{};
-	
+
+	//ターゲット中の敵機
+	Vector3 easeRotaS_{};
+
 public:
 	Player() = default;
 	~Player() = default;
