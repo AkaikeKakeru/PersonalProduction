@@ -1,54 +1,57 @@
-﻿#include "Ease.h"
+#include "Ease.h"
 
 void Ease::Update() {
-	//タイム
-	float time = (float)timer_ / timerMax_;
+	if (is_) {
+		//タイム
+		timeRatio_ = (float)timer_ / timerMax_;
 
-	switch (type_) {
-	case Default_:
-		nowVec_ = Lerp(
-			startVec_,
-			endVec_,
-			time
-		);
-		break;
+		switch (type_) {
+		case Default_:
+			nowVec_ = Lerp(
+				startVec_,
+				endVec_,
+				timeRatio_
+			);
+			break;
 
-	case In_:
-		nowVec_ = EaseIn(
-			startVec_,
-			endVec_,
-			time
-		);
-		break;
+		case In_:
+			nowVec_ = EaseIn(
+				startVec_,
+				endVec_,
+				timeRatio_
+			);
+			break;
 
-	case Out_:
-		nowVec_ = EaseOut(
-			startVec_,
-			endVec_,
-			time
-		);
-		break;
+		case Out_:
+			nowVec_ = EaseOut(
+				startVec_,
+				endVec_,
+				timeRatio_
+			);
+			break;
 
-	case InOut_:
-		nowVec_ = EaseInOut(
-			startVec_,
-			endVec_,
-			time
-		);
-		break;
+		case InOut_:
+			nowVec_ = EaseInOut(
+				startVec_,
+				endVec_,
+				timeRatio_
+			);
+			break;
 
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 
-	//タイマーを進める
-	if (timer_ < timerMax_) {
-		timer_++;
-	}
-	//最大値を超えたら、現在値を最大値に
-	else {
-		timer_ = timerMax_;
-		isEnd_ = true;
+		//タイマーを進める
+		if (timer_ < timerMax_) {
+			timer_++;
+		}
+		//最大値を超えたら、現在値を最大値に
+		else {
+			timer_ = timerMax_;
+			isEnd_ = true;
+			is_ = false;
+		}
 	}
 }
 
