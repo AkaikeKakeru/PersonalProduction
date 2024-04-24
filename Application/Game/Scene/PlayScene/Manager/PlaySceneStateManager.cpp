@@ -4,6 +4,7 @@
 #include "ImGuiManager.h"
 #include <cassert>
 #include "GamePlayScene.h"
+#include <SafeDelete.h>
 
 //カメラ
 Camera* PlaySceneStateManager::camera_ = GamePlayScene::GetCamera();
@@ -60,7 +61,8 @@ void PlaySceneStateManager::DrawImGui() {
 void PlaySceneStateManager::Finalize(){
 	//最後の状態の終了と解放
 	state_->Finalize();
-	delete state_;
+	SafeDelete(state_);
+	SafeDelete(nextState_);
 }
 
 void PlaySceneStateManager::ChangeState(const std::string& stateName) {
