@@ -37,6 +37,14 @@ public:
 		kTextTextureIndex_ = 100,
 		//白塗りテクスチャ番号
 		kWhiteTextureIndex_ = 200,
+		//ポーズ画面用テクスチャ番号
+		kPauseTextureIndex_ = 201,
+	};
+
+	//ポストエフェクト番号
+	enum PostEffectIndex {
+		//ビネットポストエフェクト番号
+		kVignetteIndex_ = 0
 	};
 
 public:
@@ -64,7 +72,7 @@ public:
 	}
 	//ポストエフェクトの取得
 	PostEffect* GetPostEffect() const {
-		return postEffect_;
+		return postEffect_.get();
 	}
 	//シーンマネージャーの取得
 	static SceneManager* GetSceneManager() {
@@ -72,6 +80,11 @@ public:
 	}
 
 public: //定数
+
+private:
+	//ポストエフェクト
+	std::unique_ptr<PostEffect> postEffect_;
+
 private:
 	//ウィンドウアプリ
 	WinApp* winApp_ = nullptr;
@@ -96,10 +109,6 @@ private:
 	//ImGuiマネージャー
 	ImGuiManager* imGuiManager_ = nullptr;
 #endif
-
-	//ポストエフェクト
-	PostEffect* postEffect_ = nullptr;
-
 	bool isEndRequest_ = false;
 
 public:
