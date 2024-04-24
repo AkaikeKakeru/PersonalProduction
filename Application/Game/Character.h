@@ -231,6 +231,24 @@ public:
 	Ease& GetEndRotationEase() {
 		return endRotationEase_;
 	}
+
+	//開始Pos用イーズの取得
+	void SetStartPositionEase(Ease& ease) {
+		startPositionEase_ = ease;
+	}
+	//開始Rota用イーズの取得
+	void SetStartRotationEase(Ease& ease) {
+		startRotationEase_ = ease;
+	}
+	//終了Pos用イーズの取得
+	void SetEndPositionEase(Ease& ease) {
+		endPositionEase_ = ease;
+	}
+	//終了Rota用イーズの取得
+	void SetEndRotationEase(Ease& ease) {
+		endRotationEase_ = ease;
+	}
+
 	//グループ名の取得
 	void SetGroupName(const char* groupName) {
 		groupName_ = groupName;
