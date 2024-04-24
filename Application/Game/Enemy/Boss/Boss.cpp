@@ -14,6 +14,7 @@
 #include <Ease.h>
 
 #include <SafeDelete.h>
+#include <Random.h>
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -46,14 +47,29 @@ Boss* Boss::Create(
 bool Boss::Initialize() {
 	Character::SetGroupName(groupName_);
 	Character::SetDefaultLife(kDefaultLife_);
-	Character::SetScale({
-		20,
-		20,
-		20
-		});
+	Character::SetScale(Object3d::GetScale());
 	Character::SetSpeed(0.2f);
 
+	const int timerMax = 50;
+
+	moveEase_.Reset(
+		Ease::InOut_,
+		timerMax,
+		Character::GetPosition(),
+		{
+			kMoveEaseRangeX_,
+			kMoveEaseRangeY_,
+			kDefaultPosZ_
+		}
+	);
+
 	Character::Initialize();
+
+	//半径分だけ足元から浮いた座標を球の中心にする
+	SetCollider(new SphereCollider(
+		Vector3{ 0.0f,radiusCollider_,0.0f },
+		radiusCollider_)
+	);
 
 	collider_->SetAttribute(COLLISION_ATTR_ENEMYS);
 
@@ -63,8 +79,9 @@ bool Boss::Initialize() {
 	newHpGauge->SetRest(kDefaultLife_);
 	newHpGauge->SetMaxTime(kMaxTimeHP_);
 	newHpGauge->Initialize();
-	newHpGauge->SetPosition({ 64,64 });
+	newHpGauge->SetPosition({ 0,32 });
 	newHpGauge->SetSize({ 1,0.5f });
+	newHpGauge->SetIsInvisible(true);
 	Character::SetHPGauge(newHpGauge);
 #pragma endregion
 
@@ -80,6 +97,7 @@ bool Boss::Initialize() {
 			ObjectManager::cartModel_
 		)
 	);
+	newCart->SetPosition({ 0.0f,-200.0f,0.0f });
 	newCart->SetCamera(camera_);
 	Character::SetCart(newCart);
 
@@ -89,24 +107,47 @@ bool Boss::Initialize() {
 }
 
 void Boss::Update() {
-	//ブレイクフラグの立った弱点を削除
-	weakPoint_.remove_if([](std::unique_ptr<WeakPoint>& weak) {
-		return weak->IsBreak();
-		});
-
 	if (weakPoint_.size() <= 0) {
 		isBreak_ = true;
 	}
 
 	// 現在の座標を取得
-	Vector3 position = Object3d::GetPosition();
+	Vector3 positionBoss = Object3d::GetPosition();
 	// 現在の回転を取得
-	Vector3 rot = Object3d::GetRotation();
+	Vector3 rotaBoss = Object3d::GetRotation();
 
-	Character::SetMovePos(position);
-	Character::SetMoveRota(rot);
+	Vector3 updatePos{};
+	Vector3 updateRota{};
+
+	ResetNextEase();
+
+	if (isMoveBoot_) {
+		moveEase_.Update();
+		positionBoss = moveEase_.GetReturn();
+
+		rotaEase_.Update();
+		rotaBoss = rotaEase_.GetReturn();
+	}
+	else {
+
+		stayTimer_--;
+
+		if (stayTimer_ <= 0) {
+			isMoveBoot_ = true;
+
+			stayTimer_ = kStayTimer_;
+		}
+	}
+
+	Character::SetMovePos(positionBoss);
+	Character::SetMoveRota(rotaBoss);
 
 	if (isActive_) {
+		//ブレイクフラグの立った弱点を削除
+		weakPoint_.remove_if([](std::unique_ptr<WeakPoint>& weak) {
+			return weak->IsBreak();
+			});
+
 		if (isBreak_) {
 			isActive_ = false;
 		}
@@ -119,6 +160,10 @@ void Boss::Update() {
 				//攻撃
 				Attack();
 				isActive_ = false;
+
+				for (std::unique_ptr<WeakPoint>& weak : weakPoint_) {
+					weak->SetIsBreak(true);
+				}
 			}
 		}
 	}
@@ -135,6 +180,8 @@ void Boss::Update() {
 			//攻撃タイマーを初期化
 			attackTimer_ = kFireInterval;
 			waitTimer_ = kWaitInterval;
+
+			isActive_ = true;
 		}
 	}
 
@@ -151,12 +198,6 @@ void Boss::Update() {
 	}
 
 	//HPゲージの変動
-	Vector3 posHpGauge3d = {
-		worldTransform_.matWorld_.m[3][0],
-		worldTransform_.matWorld_.m[3][1],
-		worldTransform_.matWorld_.m[3][2]
-	};
-
 	Matrix4 matViewPort = Matrix4Identity();
 	matViewPort.m[0][0] = static_cast<float>(WinApp::Win_Width) / 2;
 	matViewPort.m[1][1] = static_cast<float>(-(WinApp::Win_Height)) / 2;
@@ -166,36 +207,28 @@ void Boss::Update() {
 	Matrix4 matVPV = camera_->GetViewMatrix()
 		* camera_->GetProjectionMatrix()
 		* matViewPort;
-
-	posHpGauge3d = Vector3TransformCoord(posHpGauge3d, matVPV);
-
 	Character::GetHPGauge()->GetRestSprite()->
 		SetColor({ 0.2f,0.7f,0.2f,5.0f });
-	Character::GetHPGauge()->SetPosition({
-		posHpGauge3d.x - 64.0f + 16.0f,
-		posHpGauge3d.y - 32.0f
-		});
-
 	Character::GetHPGauge()->DecisionFluctuation();
 	Character::GetHPGauge()->SetIsFluct(true);
-
+	Character::GetHPGauge()->SetIsInvisible(true);
 	Character::Update();
 
+
 	for (std::unique_ptr<WeakPoint>& weak : weakPoint_) {
-		Vector3 updatePos = weak->GetPosition();
-
-		updatePos += position;
-
-		weak->SetPosition(updatePos);
-
-		weak->Update();
+		if (weak) {
+			weak->SetPosition(Object3d::GetPosition());
+			weak->Update();
+		}
 	}
 }
 
 void Boss::Draw() {
 	Character::Draw();
 	for (std::unique_ptr<WeakPoint>& weak : weakPoint_) {
-		weak->Draw();
+		if (weak) {
+			weak->Draw();
+		}
 	}
 }
 
@@ -213,13 +246,12 @@ void Boss::Finalize() {
 
 void Boss::OnCollision(
 	const CollisionInfo& info) {
-	for (std::unique_ptr<WeakPoint>& weak : weakPoint_) {
-		weak->OnCollision(info);
-	}
 	Character::OnCollision(info);
 }
 
 void Boss::StartMove() {
+	Character::GetHPGauge()->SetIsInvisible(false);
+
 	Character::StartMove();
 }
 
@@ -236,52 +268,147 @@ void Boss::ResetWeak() {
 
 	for (int i = 0; i < kWeakPointCount_; i++) {
 
-	//弱点位置初期化用
-	std::unique_ptr<WeakPoint> newWeak =
-		std::make_unique<WeakPoint>();
+		//弱点位置初期化用
+		std::unique_ptr<WeakPoint> newWeak =
+			std::make_unique<WeakPoint>();
 
-	newWeak->Initialize();
-	newWeak->SetModel(Character::GetBulletModel());
+		newWeak->Initialize();
+		newWeak->SetModel(
+			ObjectManager::GetInstance()->
+			GetModel(ObjectManager::bulletModel_)
+		);
 
-	newWeak->SetScale((worldTransform_.scale_ / 20));
-	newWeak->SetRotation(worldTransform_.rotation_);
+		newWeak->SetScale((worldTransform_.scale_));
+		newWeak->SetRotation(worldTransform_.rotation_);
 
-	newWeak->SetCamera(camera_);
-	newWeak->GetCollider()->SetAttribute(COLLISION_ATTR_ENEMYS/*Character::GetCollider()->GetAttribute()*/);
+		newWeak->SetIsBreak(false);
 
-	Vector3 newWeakPos{};
+		newWeak->SetCamera(camera_);
+		newWeak->GetCollider()->SetAttribute(
+			COLLISION_ATTR_ENEMYS
+			//Character::GetCollider()->GetAttribute()
+		);
 
-	Vector3 pos = worldTransform_.position_;
+		Vector3 newWeakPos{};
 
-	//弱点位置オフセット(Vector3)
-	Vector3 offsetVec3{};
-	//弱点位置オフセット(Int)
-	int offsetInt = 10;
+		Vector3 pos = worldTransform_.position_;
 
-		float convertI = (float)i;
+		//弱点位置オフセット(Vector3)
+		Vector3 offsetVec3{};
+		//弱点位置オフセット(Int)
+		float offsetFloat = 10.0f;
 
-		//2点ほどマイナス側に
-		if (i < kWeakPointCount_ / 2) {
-			offsetVec3 = {
-				convertI * offsetInt,
-				convertI * offsetInt,
-				0
-			};
+		switch (i) {
+		case 0:
+			offsetVec3.x = -offsetFloat;
+			offsetVec3.y = offsetFloat;
+			break;
+		case 1:
+			offsetVec3.x = -offsetFloat;
+			offsetVec3.y = -offsetFloat;
+			break;
+		case 2:
+			offsetVec3.x = offsetFloat;
+			offsetVec3.y = offsetFloat;
+			break;
+		case 3:
+			offsetVec3.x = offsetFloat;
+			offsetVec3.y = -offsetFloat;
+			break;
+
+		default:
+			break;
 		}
-		//2点ほどプラス側に
-		else {
-			offsetVec3 = {
-				(convertI - 2) * -offsetInt,
-				(convertI - 2) * -offsetInt,
-				0
-			};
-		};
 
-		newWeakPos =
-			pos + offsetVec3;
+		newWeak->SetOffset(offsetVec3);
 
 		newWeak->SetPosition(newWeakPos);
 
+		newWeak->Update();
+
 		weakPoint_.push_back(std::move(newWeak));
+	}
+}
+
+void Boss::ResetNextEase() {
+
+	//横移動イーズを、エンドフラグを起点にリセット
+	if (moveEase_.IsEnd()) {
+		Vector3 rand{};
+		while (true) {
+
+			rand = {
+				RandomOutputFloat(-1.0f, 1.0f),
+				RandomOutputFloat(-1.0f, 1.0f),
+				RandomOutputFloat(-1.0f, 0.0f)
+			};
+
+			//-1.0f or 0.0f or 1.0f　のどれかにする。
+			SortingSign(rand.x);
+			SortingSign(rand.y);
+			SortingSign(rand.z);
+
+			//前回と同じ出力なら抽選し直し
+			if (moveEaseVec_.x != rand.x
+				|| moveEaseVec_.y != rand.y
+				|| moveEaseVec_.z != rand.z) {
+				break;
+			}
+		}
+
+#pragma region 横移動イーズのリセット
+		Vector3 endMovePos = {
+			kMoveEaseRangeX_ * moveEaseVec_.x,
+			kMoveEaseRangeY_ * moveEaseVec_.y,
+			kMoveEaseRangeZ_ * moveEaseVec_.z,
+		};
+
+		moveEase_.Reset(
+			Ease::InOut_,
+			kMoveEaseTimerMax_,
+			Character::GetPosition(),
+			endMovePos
+		);
+#pragma endregion
+
+#pragma region 回転イーズのリセット
+		Vector3 axisZ = Vector3Normalize(targetPos_ - endMovePos);
+		Vector3 axisX = Vector3Normalize(Vector3Cross({ 0.0f,1.0f,0.0f }, axisZ));
+		Vector3 axisY = Vector3Cross(axisZ, axisX);
+
+		//回転行列
+		Matrix4 matRot = {
+			axisX.x,axisX.y,axisX.z,0,
+			axisY.x,axisY.y,axisY.z,0,
+			axisZ.x,axisZ.y,axisZ.z,0,
+			0,0,0,1
+		};
+
+		rotaEase_.Reset(
+			Ease::InOut_,
+			kMoveEaseTimerMax_,
+			Character::GetRotation(),
+			{
+				-Vector3TransformCoord(axisZ, matRot).y,
+				Vector3TransformCoord(axisZ, matRot).x,
+				0.0f
+			}
+		);
+#pragma endregion
+		moveEaseVec_ = rand;
+
+		isMoveBoot_ = false;
+	}
+}
+
+void Boss::SortingSign(float& f) {
+	if (f < -0.7f) {
+		f = -1.0f;
+	}
+	else if (f > 0.3f) {
+		f = 1.0f;
+	}
+	else {
+		f = 0.0f;
 	}
 }

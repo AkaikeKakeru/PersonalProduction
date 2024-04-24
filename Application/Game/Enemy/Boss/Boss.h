@@ -9,6 +9,7 @@
 #include <memory>
 
 class CollisionManager;
+class Player;
 
 class Boss
 	: public Character {
@@ -35,7 +36,16 @@ public://メンバ関数
 
 	void Attack() override;
 
+	void ResetNextEase();
+
 	void ResetWeak();
+
+	void SetTargetPos(const Vector3& targetPos) {
+		targetPos_ = targetPos;
+	}
+
+private:
+	void SortingSign(float& f);
 
 public://定数
 	//発射間隔
@@ -68,8 +78,18 @@ public: //定数
 	//デフォルトY座標
 	const float kDefaultPosY_ = 0.0f;
 	//デフォルトZ座標
-	const float kDefaultPosZ_ = 0.0f;
+	const float kDefaultPosZ_ = -50.0f;
 
+	//横移動エーズ
+	const float kMoveEaseRangeX_ = 10.0f;
+	const float kMoveEaseRangeY_ = 10.0f;
+	const float kMoveEaseRangeZ_ = 10.0f;
+
+	//移動イーズのタイマー最大値
+	const int kMoveEaseTimerMax_ = 80;
+
+	//横移動待機タイマー
+	const int kStayTimer_ = 120;
 private:
 	//オーバーフラグ
 	bool isOver_ = false;
@@ -83,14 +103,32 @@ private:
 	//弱点
 	std::list<std::unique_ptr<WeakPoint>> weakPoint_;
 
+#pragma region 攻撃用
 	//攻撃フラグ
 	bool isAttack_ = false;
-
 	//ブレイクフラグ
 	bool isBreak_ = false;
-
 	//活動フラグ
 	bool isActive_ = false;
+#pragma endregion
+
+#pragma region 移動用
+	Ease moveEase_;
+	Ease rotaEase_;
+	int32_t stayTimer_ = kStayTimer_;
+	Vector3 moveEaseVec_ = {
+		+1.0f,
+		+1.0f,
+		+1.0f
+	};
+	bool isMoveBoot_ = true;
+#pragma endregion
+
+	//半径
+	float radiusCollider_ = 1.0f;
+
+	//ターゲットの位置座標(主に回転など用)
+	Vector3 targetPos_{};
 
 public:
 	Boss() = default;

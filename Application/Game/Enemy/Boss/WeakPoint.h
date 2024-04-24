@@ -17,6 +17,11 @@ public:
 	//衝突時コールバック関数
 	virtual void OnCollision(const CollisionInfo& info) override;
 
+	void SetOffset(const Vector3& offset) {
+		Vector3 v = offset;
+		offsetPos_ = v;
+	}
+
 public:
 	bool IsBreak() {
 		return isBreak_;
@@ -32,4 +37,7 @@ private:
 
 	//ブレイクフラグ
 	bool isBreak_;
+
+	//位置のオフセット
+	Vector3 offsetPos_{};
 };

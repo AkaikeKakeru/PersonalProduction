@@ -40,10 +40,14 @@ bool WeakPoint::Initialize() {
 
 	collider_->SetAttribute(COLLISION_ATTR_ENEMYS);
 
+	worldTransform_.position_ += offsetPos_;
+
 	return true;
 }
 
 void WeakPoint::Update() {
+	worldTransform_.position_ = worldTransform_.position_ + offsetPos_;
+
 	Object3d::Update();
 }
 
@@ -54,7 +58,7 @@ void WeakPoint::Draw() {
 void WeakPoint::OnCollision(const CollisionInfo& info) {
 	CollisionInfo colInfo = info;
 
-	if (!isBreak_) {
-		SetIsBreak(true);
+	if(collider_->GetAttribute() != info.collider_->GetAttribute()) {
+	isBreak_ = true;
 	}
 }
