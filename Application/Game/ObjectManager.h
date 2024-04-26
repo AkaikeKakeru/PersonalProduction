@@ -34,7 +34,7 @@ public:
 	void CreateObjectList();
 
 	//モデル取得
-	Model* GetModel(int32_t modelName) {
+	Model* GetModel(int32_t modelName) const {
 		return models_[modelName].get();
 	}
 
