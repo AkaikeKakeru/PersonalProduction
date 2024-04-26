@@ -30,13 +30,13 @@ public:
 	static const int cMaxTimeEase_ = 10;
 
 public:
-	enum mouseSpriteIndex {
-		mouseSpriteL_,
-		mouseSpriteR_,
-		mouseSpriteWheel_,
-		mouseSpriteTextS_,
-		mouseSpriteTextH_,
-	};
+	//enum mouseSpriteIndex {
+	//	mouseSpriteL_,
+	//	mouseSpriteR_,
+	//	mouseSpriteWheel_,
+	//	mouseSpriteTextS_,
+	//	mouseSpriteTextH_,
+	//};
 
 public:
 	void Initialize();
@@ -80,7 +80,11 @@ public: //メンバ変数
 	std::unique_ptr<Sprite> windowSprite_;
 
 	//マウススプライトリスト
-	std::vector<std::unique_ptr<Sprite>> mouseSprites_;
+	std::unique_ptr<Sprite> pauseLogoSprite_;
+
+
+	////マウススプライトリスト
+	//std::vector<std::unique_ptr<Sprite>> mouseSprites_;
 
 	//size用イーズ
 	Ease sizeEase_;
