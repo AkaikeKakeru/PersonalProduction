@@ -237,6 +237,36 @@ void GamePlayScene::InitializeMouseUI() {
 		texSize,
 		(texSize * 2) + (texSize / 2) });
 	mouseSprites_.push_back(std::move(mouseTH));
+
+	float textSize = 2.5f;
+	//ボタン
+	Button* newButton = new Button();
+	newButton->Initialize(0);
+	newButton->SetTelop("pause");
+	newButton->SetPosition({ WinApp::Win_Width - (texSize * 3.0f) ,texSize * 2.0f });
+	newButton->SetSize({ 200.0f,48.0f });
+	newButton->SetColor({ 1.0f,1.0f,1.0f,0.0f });
+	newButton->GetText()->
+		SetSize({ textSize,textSize });
+	newButton->GetText()->SetSize({ 0.0f,0.0f });
+
+	buttonPause_.reset(newButton);
+
+	std::unique_ptr<Sprite> mouseTP =
+		std::make_unique<Sprite>();
+	mouseTP->Initialize(Framework::kMouseTextureIndex_);
+	mouseTP->SetPosition(buttonPause_->GetPosition());
+	mouseTP->SetSize({ size * 1.5f, size / 2 });
+	mouseTP->SetAnchorPoint({
+		kCenterAnchorPoint_,
+		kCenterAnchorPoint_ });
+	mouseTP->SetTextureSize({
+		texSize * 1.5f,
+		texSize / 2 });
+	mouseTP->SetTextureLeftTop({
+		texSize,
+		(texSize * 2) + (texSize / 2) + (texSize / 2)  });
+	mouseSprites_.push_back(std::move(mouseTP));
 }
 void GamePlayScene::InitializeBlackOut() {
 	//暗幕
@@ -309,9 +339,11 @@ void GamePlayScene::UpdateMouseUI() {
 	else {
 		colR = col;
 	}
-
 	mouseSprites_[mouseSpriteL_]->SetColor(colL);
+	mouseSprites_[mouseSpriteTextS_]->SetColor(colL);
+	
 	mouseSprites_[mouseSpriteR_]->SetColor(colR);
+	mouseSprites_[mouseSpriteTextH_]->SetColor(colR);
 	for (std::unique_ptr<Sprite>& mouse : mouseSprites_) {
 		mouse->Update();
 	}
@@ -390,6 +422,7 @@ void GamePlayScene::Draw3d() {
 }
 void GamePlayScene::Draw2d() {
 	pauseScreen_->Draw();
+	buttonPause_->Draw();
 
 	DrawMouseUI();
 	DrawBlackOut();
@@ -405,14 +438,20 @@ void GamePlayScene::Initialize() {
 	PlaySceneStateManager::GetInstance()->SetSceneFactory(stateFactory_);
 
 	//シーンマネージャーに最初のシーンをセット
-	PlaySceneStateManager::GetInstance()->ChangeState("RUN");
+	PlaySceneStateManager::GetInstance()->ChangeState("BOSSBATTLE");
 
 	Initialize2d();
 }
 void GamePlayScene::Update() {
 	input_->Update();
 
-	if(input_->TriggerMouse(2)) {
+	buttonPause_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+	
+	if (buttonPause_->ChackClick(input_->PressMouse(0))) {
+		buttonPause_->SetColor({ 0.4f,0.4f,0.4f,1.0f });
+	}
+
+	if (buttonPause_->ChackClick(input_->ReleaseMouse(0))) {
 		if (pauseScreen_->IsRun()) {
 			pauseScreen_->ResetEase_Remove();
 			pauseScreen_->SetIsRemove(true);
@@ -431,8 +470,12 @@ void GamePlayScene::Update() {
 		Update3d();
 		Update2d();
 
-		collisionManager_->CheckAllCollisions();
+		if (stateManager_) {
+			collisionManager_->CheckAllCollisions();
+		}
 	}
+
+	buttonPause_->Update();
 }
 void GamePlayScene::Draw() {
 #ifdef _DEBUG
@@ -443,17 +486,17 @@ void GamePlayScene::Draw() {
 	imGuiManager_->End();
 #endif // DEBUG
 	Object3d::PreDraw(dxBas_->GetCommandList().Get());
-	Draw3d();
 	stateManager_->Draw3d();
+	Draw3d();
 	Object3d::PostDraw();
 
 	ParticleManager::PreDraw(dxBas_->GetCommandList().Get());
-	DrawParticle();
 	stateManager_->DrawParticle();
+	DrawParticle();
 	ParticleManager::PostDraw();
 
 	SpriteBasis::GetInstance()->PreDraw();
-	Draw2d();
 	stateManager_->Draw2d();
+	Draw2d();
 	SpriteBasis::GetInstance()->PostDraw();
 }

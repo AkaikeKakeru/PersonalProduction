@@ -45,6 +45,7 @@
 
 #pragma region popLoader
 #include <sstream>
+#include <Button.h>
 #pragma endregion
 
 class BossBattleScene;
@@ -78,6 +79,7 @@ public:
 		mouseSpriteWheel_,
 		mouseSpriteTextS_,
 		mouseSpriteTextH_,
+		mouseSpriteTextP_,
 	};
 
 public:
@@ -169,7 +171,7 @@ private: //静的メンバ変数
 public: //メンバ変数
 
 	//カメラ(レール)
-	std::unique_ptr<RailCamera> railCamera_;
+	//std::unique_ptr<RailCamera> railCamera_;
 
 	//カメラ(追従)
 	std::unique_ptr<FollowCamera> followCamera_;
@@ -224,6 +226,9 @@ public: //メンバ変数
 
 	//マウススプライトリスト
 	std::vector<std::unique_ptr<Sprite>> mouseSprites_;
+
+	//ポーズボタン
+	std::unique_ptr<Button> buttonPause_ = nullptr;
 
 	//ポーズスクリーン
 	std::unique_ptr<PauseScreen> pauseScreen_;
