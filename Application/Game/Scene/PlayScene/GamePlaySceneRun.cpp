@@ -11,6 +11,7 @@
 #include <Random.h>
 
 #include "PlaySceneStateManager.h"
+#include "SceneManager.h"
 
 Input* GamePlaySceneRun::input_ = Input::GetInstance();
 ObjectManager* GamePlaySceneRun::objManager_ = ObjectManager::GetInstance();
@@ -19,7 +20,7 @@ Camera* GamePlaySceneRun::camera_ = GamePlayScene::GetCamera();
 void GamePlaySceneRun::InitializeCamera() {
 	//カメラ生成
 	camera_ = GamePlayScene::GetCamera();
-	
+
 	camera_->SetEye({ 0.0f,10.0f,-20.0f });
 	camera_->SetTarget({ 0.0f,0.0f,0.0f });
 	camera_->SetUp({ 0.0f,1.0f,0.0f });
@@ -50,12 +51,49 @@ void GamePlaySceneRun::InitializeCharacter() {
 	newPlayer->SetCamera(camera_);
 	//newPlayer->SetGamePlayScene(this);
 	newPlayer->Initialize();
-	player_.reset(newPlayer);
-	player_->Update();
 
+	Ease ease;
+	ease.Reset(
+		Ease::In_,
+		50,
+		{
+			0.0f,
+			newPlayer->kDefaultPosY_,
+			0.0f
+		},
+		{
+			0.0f,
+			newPlayer->kDefaultPosY_,
+			newPlayer->kDefaultPosZ_
+		}
+		);
+	newPlayer->SetStartPositionEase(ease);
+
+	ease.Reset(
+		Ease::In_,
+		50,
+		newPlayer->GetRotation(),
+		{
+			newPlayer->GetRotation().x,
+			newPlayer->GetRotation().y,
+			newPlayer->GetRotation().z
+		}
+	);
+	newPlayer->SetStartRotationEase(ease);
+	player_.reset(newPlayer);
 	//追従カメラの更新
 	followCamera_->SetTargetWorldTransform(player_->GetWorldTransform());
+	followCamera_->SetEye({
+		player_->GetPosition().x,
+		player_->GetPosition().y,
+		player_->GetPosition().z + 10.0f }
+	);
 	followCamera_->Update();
+	camera_->SetEye(followCamera_->GetEye());
+	camera_->SetTarget(followCamera_->GetTarget());
+	camera_->SetUp(followCamera_->GetUp());
+
+	camera_->Update();
 #pragma endregion
 
 #pragma region Enemy
@@ -65,12 +103,36 @@ void GamePlaySceneRun::InitializeCharacter() {
 
 void GamePlaySceneRun::UpdateCamera() {
 	if (player_->IsStart()) {
+		if (player_->GetLife() <= 0) {
+			Vector3 keep{};
+			keep = followCamera_->GetEye();
+			followCamera_->SetEye(keep);
+
+			keep = followCamera_->GetTarget();
+			followCamera_->SetTarget(keep);
+		}
+		else {
+			followCamera_->SetEye({
+				player_->GetPosition().x,
+				player_->GetPosition().y,
+				player_->GetPosition().z + 30.0f }
+			);
+		}
+
 		followCamera_->Update();
+
+		camera_->SetEye(followCamera_->GetEye());
+		camera_->SetTarget(followCamera_->GetTarget());
+		camera_->SetUp(followCamera_->GetUp());
 	}
 	else {
 		Vector3 startCameraMove = followCamera_->GetWorldTransform()->position_;
 		startCameraMove += {0.0f, 0.0f, -0.2f};
 		followCamera_->GetWorldTransform()->position_ = startCameraMove;
+
+		camera_->SetEye(followCamera_->GetEye());
+		camera_->SetTarget(followCamera_->GetTarget());
+		camera_->SetUp(followCamera_->GetUp());
 	}
 
 	//デバッグカメラが起動中なら
@@ -81,76 +143,55 @@ void GamePlaySceneRun::UpdateCamera() {
 		camera_->SetTarget(debugCamera_->GetTarget());
 		camera_->SetUp(debugCamera_->GetUp());
 	}
-	else {
-		camera_->SetEye(followCamera_->GetEye());
-		camera_->SetTarget(followCamera_->GetTarget());
-		camera_->SetUp(followCamera_->GetUp());
-	}
-
 	camera_->Update();
 }
 void GamePlaySceneRun::UpdateCharacter() {
-	Vector2 cursorPos2d{}; 
+	Vector2 cursorPos2d{};
 	if (player_->IsStart()) {
 
-	Vector3 playerWorldPos = Vector3{
-		player_->GetMatWorld().m[3][0],
-		player_->GetMatWorld().m[3][1],
-		player_->GetMatWorld().m[3][2]
-	};
+		Vector3 playerWorldPos =
+			player_->GetPosWorld();
 
 		//敵機の更新
 		for (std::unique_ptr<Enemy>& enemy : enemys_) {
 			enemy->Update();
 
 			if (!cursor_.IsLockOn()) {
-				enemyWorldPos_ = {
-					enemy->GetMatWorld().m[3][0],
-					enemy->GetMatWorld().m[3][1],
-					enemy->GetMatWorld().m[3][2]
-				};
+				enemyWorldPos_ =
+					enemy->GetPosWorld();
 			}
-			
-			float PToE_x =
-				(enemyWorldPos_.x - playerWorldPos.x)
-				* (enemyWorldPos_.x - playerWorldPos.x);
-			float PToE_y =
-				(enemyWorldPos_.y - playerWorldPos.y)
-				* (enemyWorldPos_.y - playerWorldPos.y);
-			float PToE_z =
-				(enemyWorldPos_.z - playerWorldPos.z)
-				* (enemyWorldPos_.z - playerWorldPos.z);
-
-			float PtoE_sum =
-				PToE_x + PToE_y + PToE_z;
-
-			float PtoE_sqrt = 0;
-			double i = 0.0;
-			while (i < PtoE_sum) {
-				PtoE_sqrt = PtoE_sqrt + 1;
-				i = PtoE_sqrt * PtoE_sqrt;
-				if (PtoE_sum == i) {
-
-					break;
-				}
-			}
-
-			//自機と敵機の距離(仮)
-			float distancePToE = PtoE_sqrt;
-
-			//カーソルから3Dレティクルまでの距離を設定
-			cursor_.SetDistance(distancePToE);
-
-			//マウスカーソルから、3D照準座標を取得する
-			LockOnTargetPos_ =
-				cursor_.Get3DReticlePosition(camera_, enemyWorldPos_);
-
-			cursorPos2d = cursor_.TransFromWorldToScreen(LockOnTargetPos_);
-			
 		}
+
+		float CameraToEnemy_x =
+			(enemyWorldPos_.x - camera_->GetEye().x)
+			* (enemyWorldPos_.x - camera_->GetEye().x);
+		float CameraToEnemy_y =
+			(enemyWorldPos_.y - camera_->GetEye().y)
+			* (enemyWorldPos_.y - camera_->GetEye().y);
+		float CameraToEnemy_z =
+			(enemyWorldPos_.z - camera_->GetEye().z)
+			* (enemyWorldPos_.z - camera_->GetEye().z);
+
+		float CameraToEnemy_sum =
+			CameraToEnemy_x + CameraToEnemy_y + CameraToEnemy_z;
+
+		double CameraToEnemy_sqrt = 0;
+		double i = 0.0;
+
+		while (i < CameraToEnemy_sum) {
+			CameraToEnemy_sqrt = CameraToEnemy_sqrt + 0.1;
+			i = CameraToEnemy_sqrt * CameraToEnemy_sqrt;
+			if (CameraToEnemy_sum == i) {
+
+				break;
+			}
+		}
+
+		//自機と敵機の距離(仮)
+		float distanceCameraToEnemy = (float)CameraToEnemy_sqrt;
 		//自機のレティクル更新
 		player_->
-			UpdateReticle(LockOnTargetPos_,cursorPos2d);
+			UpdateReticle(LockOnTargetPos_, distanceCameraToEnemy);//,cursorPos2d);
 	}
 
 	player_->Update();
@@ -168,44 +209,10 @@ void GamePlaySceneRun::UpdateDamage() {
 				enemy->SetLife(life);
 
 				enemy->SetIsDamage(false);
-
-				pm_->Active(
-					{
-						enemy->GetMatWorld().m[3][0],
-						enemy->GetMatWorld().m[3][1],
-						enemy->GetMatWorld().m[3][2] },
-					{ 2.0f ,2.0f,2.0f },
-					{ 2.0f ,2.0f,2.0f },
-
-					{ 5.0f,5.0f,5.0f },
-					{ 5.0f,5.0f,5.0f },
-
-					{ 0.0f,0.001f,0.0f },
-					100,
-					2.0f,
-					0.0f,
-					10
-					);
 			}
 
 			if (isGushing_) {
-				pm_->Active(
-					{
-						enemy->GetMatWorld().m[3][0],
-						enemy->GetMatWorld().m[3][1],
-						enemy->GetMatWorld().m[3][2] },
-					{ 2.0f,0.0f,2.0f },
-					{ -2.0f,0.0f,-2.0f },
-
-					{ 3.0f,10.0f,3.0f },
-					{ -3.0f,0.0f,-3.0f },
-					{ 0.0f,0.001f,0.0f },
-					1000,
-					5.0f,
-					0.0f,
-					20
-					);
-			}
+		}
 
 			isGushing_ = false;
 		}
@@ -243,23 +250,6 @@ void GamePlaySceneRun::UpdateDamage() {
 
 			player_->SetIsDamage(false);
 
-			pm_->Active(
-				{
-					player_->GetMatWorld().m[3][0],
-					player_->GetMatWorld().m[3][1],
-					player_->GetMatWorld().m[3][2] },
-				{ 2.0f ,2.0f,2.0f },
-				{ 2.0f ,2.0f,2.0f },
-
-				{ 5.0f,5.0f,5.0f },
-				{ 5.0f,5.0f,5.0f },
-
-				{ 0.0f,0.001f,0.0f },
-				100,
-				3.0f,
-				0.0f,
-				10
-				);
 		}
 	}
 }
@@ -274,7 +264,6 @@ void GamePlaySceneRun::DrawCharacter() {
 	player_->Draw();
 }
 void GamePlaySceneRun::DrawParticle() {
-	pm_->Draw();
 }
 void GamePlaySceneRun::DrawCharacterUI() {
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
@@ -294,12 +283,12 @@ void GamePlaySceneRun::RemoveUniquePtr() {
 }
 void GamePlaySceneRun::DebugShortCut() {
 #ifdef _DEBUG
-		if (input_->TriggerKey(DIK_K)) {
-			//敵機のダメージ処理
-			for (std::unique_ptr<Enemy>& enemy : enemys_) {
-				enemy->SetIsDead(true);
-			}
+	if (input_->TriggerKey(DIK_K)) {
+		//敵機のダメージ処理
+		for (std::unique_ptr<Enemy>& enemy : enemys_) {
+			enemy->SetIsDead(true);
 		}
+	}
 #endif // _DEBUG
 
 #ifdef _DEBUG
@@ -310,6 +299,11 @@ void GamePlaySceneRun::DebugShortCut() {
 }
 
 void GamePlaySceneRun::PhaseChange() {
+	if (player_->IsOver()) {
+		//シーンの切り替えを依頼
+		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+	}
+
 	//敵機が全滅したら(コンテナが空になったら)
 	if (enemys_.size() <= 0) {
 		//ファイナルフェイズに届いてなければ
@@ -319,7 +313,7 @@ void GamePlaySceneRun::PhaseChange() {
 			//フェーズ番号を進める
 			phaseIndex_++;
 
-			player_->SetPhaseAdvance(true);
+			player_->SetPhaseAdvance(true, phaseIndex_);
 		}
 		else {
 			//シーンの切り替えを依頼
@@ -332,15 +326,6 @@ void GamePlaySceneRun::Initialize3d() {
 }
 
 void GamePlaySceneRun::InitializeParticle() {
-	//パーティクル
-	Particle* newParticle = Particle::LoadFromObjModel("particle.png");
-	particle_.reset(newParticle);
-
-	ParticleManager* newPM = ParticleManager::Create();
-	pm_.reset(newPM);
-	pm_->SetCamera(camera_);
-	pm_->SetParticleModel(particle_.get());
-	pm_->SetColor({ 0.7f,0.4f,0.1f,0.7f });
 }
 
 void GamePlaySceneRun::Initialize() {
@@ -375,8 +360,6 @@ void GamePlaySceneRun::Update3d() {
 
 	UpdateCharacter();
 	UpdateCamera();
-
-	pm_->Update();
 }
 
 void GamePlaySceneRun::Update2d() {
@@ -490,7 +473,7 @@ void GamePlaySceneRun::UpdateEnemyPopCommands() {
 				),
 				scale,
 				Enemy::Gun_BulletType);
-		}
+	}
 
 		//WAITコマンド
 		else if (word.find("WAIT") == 0) {
@@ -546,7 +529,7 @@ void GamePlaySceneRun::AddEnemy(
 
 	newEnemy->SetFireTimer(
 		static_cast<int32_t>(
-			RandomOutput(3.0f, 7.0f)
+			RandomOutputFloat(3.0f, 7.0f)
 			)
 	);
 
