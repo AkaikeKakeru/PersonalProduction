@@ -46,37 +46,86 @@ void GamePlaySceneBossBattle::InitializeCharacter() {
 		objManager_->GetModel(playerHideModel_));
 	newPlayer->SetCartModel(objManager_->GetModel(cartModel_));
 	newPlayer->SetCamera(camera_);
-	//newPlayer->SetGamePlayScene(this);
 	newPlayer->Initialize();
+
+	Ease ease;
+	ease.Reset(
+		Ease::In_,
+		50,{
+			0.0f,
+			newPlayer->kDefaultPosY_,
+			0.0f
+		},{
+			0.0f,
+			newPlayer->kDefaultPosY_,
+			newPlayer->kDefaultPosZ_
+		});
+	newPlayer->SetStartPositionEase(ease);
+
+	ease.Reset(
+		Ease::In_,
+		50,
+		newPlayer->GetRotation(),{
+			newPlayer->GetRotation().x,
+			newPlayer->GetRotation().y + ConvertToRadian(180.0f),
+			newPlayer->GetRotation().z
+		});
+	newPlayer->SetStartRotationEase(ease);
 	player_.reset(newPlayer);
+
+	const int bossPhaseIndex = 100;
+
+	player_->SetPhaseAdvance(true, bossPhaseIndex);
 	player_->Update();
 
 	//追従カメラの更新
 	followCamera_->SetTargetWorldTransform(player_->GetWorldTransform());
+	followCamera_->SetEye({
+		player_->GetPosition().x,
+		player_->GetPosition().y,
+		player_->GetPosition().z - 30.0f }
+	);
 	followCamera_->Update();
 #pragma endregion
 
 	Boss* newBoss = Boss::Create(objManager_->GetModel(enemyModel_));
 	newBoss->SetCamera(camera_);
-	newBoss->Initialize();
-	newBoss->SetPosition({ 0,20,100 });
+	newBoss->SetPosition({ 0,20,150 });
 	newBoss->SetRotation({ 0,0,0 });
-	newBoss->SetScale({ 5,5,5 });
+	newBoss->SetScale({ 50,50,50 });
 	newBoss->SetIsStart(true);
-	newBoss->ResetWeak();
+	newBoss->SetTargetPos(
+		player_->GetPosWorld());
+	newBoss->Initialize();
+
+	ease.Reset(
+		Ease::In_,
+		50,{
+			0.0f,
+			newBoss->kDefaultPosY_,
+			0.0f
+		},{
+			newBoss->kDefaultPosX_,
+			newBoss->kDefaultPosY_,
+			newBoss->kDefaultPosZ_
+		});
+	newBoss->SetStartPositionEase(ease);
+
 	boss_.reset(newBoss);
 	boss_->Update();
 }
 
 void GamePlaySceneBossBattle::UpdateCamera() {
 	if (player_->IsStart()) {
-		followCamera_->Update();
+
 	}
 	else {
 		Vector3 startCameraMove = followCamera_->GetWorldTransform()->position_;
 		startCameraMove += {0.0f, 0.0f, -0.2f};
 		followCamera_->GetWorldTransform()->position_ = startCameraMove;
 	}
+
+	followCamera_->Update();
 
 	//デバッグカメラが起動中なら
 	if (isDebugCamera_) {
@@ -95,47 +144,54 @@ void GamePlaySceneBossBattle::UpdateCamera() {
 	camera_->Update();
 }
 void GamePlaySceneBossBattle::UpdateCharacter() {
+	Vector2 cursorPos2d{}; 
+
+	Vector3 playerWorldPos =
+		player_->GetPosWorld();
+
 	if (player_->IsStart()) {
+		boss_->SetTargetPos(playerWorldPos);
+
 		//敵機の更新
 		boss_->Update();
 
-		//player_->UpdateReticle(boss_.get()->GetMatWorld());
+			if (!cursor_.IsLockOn()) {
+				enemyWorldPos_ =
+					boss_->GetPosWorld();
+			}
+		
 
-		//if (!cursor_.IsLockOn()) {
-		//	enemyWorldPos_ = {
-		//		boss_->GetMatWorld().m[3][0],
-		//		boss_->GetMatWorld().m[3][1],
-		//		boss_->GetMatWorld().m[3][2]
-		//	};
+		float CameraToEnemy_x =
+			(enemyWorldPos_.x - camera_->GetEye().x)
+			* (enemyWorldPos_.x - camera_->GetEye().x);
+		float CameraToEnemy_y =
+			(enemyWorldPos_.y - camera_->GetEye().y)
+			* (enemyWorldPos_.y - camera_->GetEye().y);
+		float CameraToEnemy_z =
+			(enemyWorldPos_.z - camera_->GetEye().z)
+			* (enemyWorldPos_.z - camera_->GetEye().z);
 
-		//}
+		float CameraToEnemy_sum =
+			CameraToEnemy_x + CameraToEnemy_y + CameraToEnemy_z;
 
-		if (!player_->IsDead()) {
-		//	//自機と敵機の距離(仮)
-		//	float distancePToE =
-		//		Vector3Dot(
-		//			Vector3{
-		//				boss_->GetMatWorld().m[3][0],
-		//				boss_->GetMatWorld().m[3][1],
-		//				boss_->GetMatWorld().m[3][2] },
+		double CameraToEnemy_sqrt = 0;
+		double i = 0.0;
 
-		//				Vector3{
-		//				player_->GetMatWorld().m[3][0],
-		//				player_->GetMatWorld().m[3][1],
-		//				player_->GetMatWorld().m[3][2] });
+		while (i < CameraToEnemy_sum) {
+			CameraToEnemy_sqrt = CameraToEnemy_sqrt + 0.1;
+			i = CameraToEnemy_sqrt * CameraToEnemy_sqrt;
+			if (CameraToEnemy_sum == i) {
 
-		//	//カーソルから3Dレティクルまでの距離を設定
-		//	cursor_.SetDistance(distancePToE);
-
-		//	//マウスカーソルから、3D照準座標を取得する
-		//	LockOnTargetPos_ =
-		//		cursor_.Get3DReticlePosition(camera_, enemyWorldPos_);
-
-		//player_->UpdateReticle(boss_->GetMatWorld());
+				break;
+			}
 		}
+		//自機と敵機の距離(仮)
+		float distanceCameraToEnemy = (float)CameraToEnemy_sqrt;
 
+		//自機のレティクル更新
+		player_->
+			UpdateReticle(LockOnTargetPos_, distanceCameraToEnemy);//,cursorPos2d);
 	}
-	//player_->UpdateReticle(cursor_);
 	player_->Update();
 }
 void GamePlaySceneBossBattle::UpdateDamage() {
