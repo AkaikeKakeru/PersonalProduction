@@ -29,11 +29,6 @@ public:
 	void SetSceneFactory(AbstractPlaySceneStateFactory* stateFactory) {
 		stateFactory_ = stateFactory; }
 
-	//ゲームシーンのセット
-	void SetGameScene(GamePlayScene* gameScene) {
-		gameScene_ = gameScene;
-	}
-
 	//カメラのセット
 	static Camera* GetCamera() {
 		return camera_;
@@ -52,9 +47,6 @@ private:
 
 	//状態ファクトリ―(借りてくる)
 	AbstractPlaySceneStateFactory* stateFactory_ = nullptr;
-
-	//ゲームプレイシーン
-	GamePlayScene* gameScene_ = nullptr;
 
 	//カメラ
 	static Camera* camera_;
