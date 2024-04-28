@@ -43,13 +43,15 @@ Camera* GamePlayScene::camera_ = GamePlayScene::GetCamera();
 
 void GamePlayScene::Finalize() {
 	SafeDelete(light_);
-
 	SafeDelete(camera_);
+	SafeDelete(buttonPause_);
 
 	stateManager_->Finalize();
 
 	FinalizeBlackOut();
 	FinalizeBackGround();
+
+	delete stateFactory_;
 }
 
 void GamePlayScene::FinalizeBackGround() {
@@ -237,36 +239,6 @@ void GamePlayScene::InitializeMouseUI() {
 		texSize,
 		(texSize * 2) + (texSize / 2) });
 	mouseSprites_.push_back(std::move(mouseTH));
-
-	float textSize = 2.5f;
-	//ボタン
-	Button* newButton = new Button();
-	newButton->Initialize(0);
-	newButton->SetTelop("pause");
-	newButton->SetPosition({ WinApp::Win_Width - (texSize * 3.0f) ,texSize * 2.0f });
-	newButton->SetSize({ 200.0f,48.0f });
-	newButton->SetColor({ 1.0f,1.0f,1.0f,0.0f });
-	newButton->GetText()->
-		SetSize({ textSize,textSize });
-	newButton->GetText()->SetSize({ 0.0f,0.0f });
-
-	buttonPause_.reset(newButton);
-
-	std::unique_ptr<Sprite> mouseTP =
-		std::make_unique<Sprite>();
-	mouseTP->Initialize(Framework::kMouseTextureIndex_);
-	mouseTP->SetPosition(buttonPause_->GetPosition());
-	mouseTP->SetSize({ size * 1.5f, size / 2 });
-	mouseTP->SetAnchorPoint({
-		kCenterAnchorPoint_,
-		kCenterAnchorPoint_ });
-	mouseTP->SetTextureSize({
-		texSize * 1.5f,
-		texSize / 2 });
-	mouseTP->SetTextureLeftTop({
-		texSize,
-		(texSize * 2) + (texSize / 2) + (texSize / 2)  });
-	mouseSprites_.push_back(std::move(mouseTP));
 }
 void GamePlayScene::InitializeBlackOut() {
 	//暗幕
@@ -302,6 +274,43 @@ void GamePlayScene::InitializeBlackOut() {
 		},
 		(int)(width * height)
 	);
+}
+
+void GamePlayScene::InitializePause() {
+	pauseScreen_ = std::make_unique<PauseScreen>();
+	pauseScreen_->Initialize();
+
+	float size = 64.0f;
+	float texSize = 64.0f;
+	float kCenterAnchorPoint_ = 0.5f;
+	float textSize = 2.5f;
+	//ボタン
+	buttonPause_ = new Button();
+	buttonPause_->Initialize(0);
+	buttonPause_->SetTelop("pause");
+	buttonPause_->SetPosition({
+		WinApp::Win_Width - (texSize * 3.0f) ,texSize * 2.0f });
+	buttonPause_->SetSize({ 200.0f,48.0f });
+	buttonPause_->SetColor({ 1.0f,1.0f,1.0f,0.0f });
+	buttonPause_->GetText()->
+		SetSize({ textSize,textSize });
+	buttonPause_->GetText()->SetSize({ 0.0f,0.0f });
+
+	std::unique_ptr<Sprite> mouseTP =
+		std::make_unique<Sprite>();
+	mouseTP->Initialize(Framework::kMouseTextureIndex_);
+	mouseTP->SetPosition(buttonPause_->GetPosition());
+	mouseTP->SetSize({ size * 1.5f, size / 2 });
+	mouseTP->SetAnchorPoint({
+		kCenterAnchorPoint_,
+		kCenterAnchorPoint_ });
+	mouseTP->SetTextureSize({
+		texSize * 1.5f,
+		texSize / 2 });
+	mouseTP->SetTextureLeftTop({
+		texSize,
+		(texSize * 2) + (texSize / 2) + (texSize / 2)  });
+	mouseSprites_.push_back(std::move(mouseTP));
 }
 
 void GamePlayScene::UpdateCamera() {
@@ -360,6 +369,26 @@ void GamePlayScene::UpdateBlackOut() {
 	}
 }
 
+void GamePlayScene::UpdatePause() {
+	buttonPause_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+
+	if (buttonPause_->ChackClick(input_->PressMouse(0))) {
+		buttonPause_->SetColor({ 0.4f,0.4f,0.4f,1.0f });
+	}
+
+	if (buttonPause_->ChackClick(input_->ReleaseMouse(0))) {
+		if (pauseScreen_->IsRun()) {
+			pauseScreen_->ResetEase_Remove();
+			pauseScreen_->SetIsRemove(true);
+		}
+		else {
+			pauseScreen_->ResetEase_Run();
+		}
+	}
+
+	isPause_ = pauseScreen_->IsRun();
+}
+
 void GamePlayScene::DrawParticle() {
 }
 void GamePlayScene::DrawMouseUI() {
@@ -372,6 +401,10 @@ void GamePlayScene::DrawCharacterUI() {
 void GamePlayScene::DrawBlackOut() {
 	blackOut_->Draw();
 	arrangeTile_->Draw();
+}
+void GamePlayScene::DrawPause(){
+	pauseScreen_->Draw();
+	buttonPause_->Draw();
 }
 void GamePlayScene::DrawCharacter() {
 }
@@ -397,8 +430,7 @@ void GamePlayScene::Initialize3d() {
 	Object3d::SetLight(light_);
 }
 void GamePlayScene::Initialize2d() {
-	pauseScreen_ = std::make_unique<PauseScreen>();
-	pauseScreen_->Initialize();
+	InitializePause();
 
 	InitializeMouseUI();
 	InitializeBlackOut();
@@ -421,9 +453,7 @@ void GamePlayScene::Draw3d() {
 	DrawBackground();
 }
 void GamePlayScene::Draw2d() {
-	pauseScreen_->Draw();
-	buttonPause_->Draw();
-
+	DrawPause();
 	DrawMouseUI();
 	DrawBlackOut();
 }
@@ -438,30 +468,16 @@ void GamePlayScene::Initialize() {
 	PlaySceneStateManager::GetInstance()->SetSceneFactory(stateFactory_);
 
 	//シーンマネージャーに最初のシーンをセット
-	PlaySceneStateManager::GetInstance()->ChangeState("BOSSBATTLE");
+	PlaySceneStateManager::GetInstance()->ChangeState("RUN");
 
 	Initialize2d();
 }
 void GamePlayScene::Update() {
 	input_->Update();
 
-	buttonPause_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
-	
-	if (buttonPause_->ChackClick(input_->PressMouse(0))) {
-		buttonPause_->SetColor({ 0.4f,0.4f,0.4f,1.0f });
-	}
+	UpdatePause();
 
-	if (buttonPause_->ChackClick(input_->ReleaseMouse(0))) {
-		if (pauseScreen_->IsRun()) {
-			pauseScreen_->ResetEase_Remove();
-			pauseScreen_->SetIsRemove(true);
-		}
-		else {
-			pauseScreen_->ResetEase_Run();
-		}
-	}
-
-	if (pauseScreen_->IsRun()) {
+	if (isPause_) {
 		pauseScreen_->Update();
 	}
 	else {

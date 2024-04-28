@@ -98,6 +98,7 @@ private:
 
 	void InitializeMouseUI();
 	void InitializeBlackOut();
+	void InitializePause();
 
 	void Update3d();
 	void Update2d();
@@ -109,6 +110,7 @@ private:
 
 	void UpdateMouseUI();
 	void UpdateBlackOut();
+	void UpdatePause();
 
 	void Draw3d();
 	void Draw2d();
@@ -119,6 +121,7 @@ private:
 	void DrawMouseUI();
 	void DrawCharacterUI();
 	void DrawBlackOut();
+	void DrawPause();
 
 	void FinalizeBackGround();
 	void FinalizeCharacter();
@@ -169,9 +172,6 @@ private: //静的メンバ変数
 	static Camera* camera_;
 
 public: //メンバ変数
-
-	//カメラ(レール)
-	//std::unique_ptr<RailCamera> railCamera_;
 
 	//カメラ(追従)
 	std::unique_ptr<FollowCamera> followCamera_;
@@ -228,7 +228,7 @@ public: //メンバ変数
 	std::vector<std::unique_ptr<Sprite>> mouseSprites_;
 
 	//ポーズボタン
-	std::unique_ptr<Button> buttonPause_ = nullptr;
+	Button* buttonPause_ = nullptr;
 
 	//ポーズスクリーン
 	std::unique_ptr<PauseScreen> pauseScreen_;
