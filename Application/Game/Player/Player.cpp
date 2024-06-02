@@ -79,6 +79,7 @@ bool Player::Initialize() {
 
 	cursor_ = std::make_unique<Cursor>();
 	cursor_->SetDistance(70.0f);
+	cursor_->Initialize();
 
 #pragma region 調整項目
 	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
@@ -395,8 +396,10 @@ void Player::Draw() {
 
 void Player::DrawUI() {
 	bulletGauge_->Draw();
-	spriteReticle_->Draw();
+	//spriteReticle_->Draw();
 	textEmpty_->DrawAll();
+
+	cursor_->Draw();
 
 	Character::DrawUI();
 }
@@ -456,56 +459,11 @@ void Player::OnCollision(const CollisionInfo& info) {
 void Player::UpdateReticle(
 	const Vector3& lockonTargetPos
 	, float distance
-	//	const Vector2& lockonTagetPos2d
 ) {
-		//float CameraToEnemy_x =
-		//	(lockonTargetPos.x - camera_->GetEye().x)
-		//	* (lockonTargetPos.x - camera_->GetEye().x);
-		//float CameraToEnemy_y =
-		//	(lockonTargetPos.y - camera_->GetEye().y)
-		//	* (lockonTargetPos.y - camera_->GetEye().y);
-		//float CameraToEnemy_z =
-		//	(lockonTargetPos.z - camera_->GetEye().z)
-		//	* (lockonTargetPos.z - camera_->GetEye().z);
-
-		//float CameraToEnemy_sum =
-		//	CameraToEnemy_x + CameraToEnemy_y + CameraToEnemy_z;
-
-		//double CameraToEnemy_sqrt = 0;
-		//double i = 0.0;
-
-		//while (i < CameraToEnemy_sum) {
-		//	CameraToEnemy_sqrt = CameraToEnemy_sqrt + 0.1;
-		//	i = CameraToEnemy_sqrt * CameraToEnemy_sqrt;
-		//	if (CameraToEnemy_sum == i) {
-
-		//		break;
-		//	}
-		//}
-
-		////自機と敵機の距離(仮)
-		//float distanceCameraToEnemy = (float)CameraToEnemy_sqrt;
-
-		////カーソルから3Dレティクルまでの距離を設定
-		//cursor_->SetDistance(distanceCameraToEnemy);
-		
 		cursor_->SetDistance(distance);
 
-	
-		//マウスカーソルから、3D照準座標を取得する
-		cursorPos_ =
-			//cursor_->Get3DReticlePosition(camera_, lockonTargetPos);
-
-			cursor_->Get3DReticlePosition(camera_, lockonTargetPos)
-			;
-			//+ Vector3{ 0.0f,Character::kConfigCartPosY_,0.0f };
-
-		if(cursor_->IsLockOn()){
-
-		}
-
-		worldTransform3dReticle_->position_ = cursorPos_;
-		//worldTransform3dReticle_->position_ = lockonTargetPos;
+		cursor_->Update();
+		worldTransform3dReticle_->position_ = lockonTargetPos;
 		//3Dレティクル座標を更新
 		worldTransform3dReticle_->UpdateMatrix();
 
@@ -624,19 +582,35 @@ void Player::PhaseChange() {
 
 	Vector3 startRota{};
 	Vector3 endRota{};
-		float updateRota = ConvertToRadian(90.0f);
+		float updateRota = ConvertToRadian(180.0f);
 		if (countAdv_ % 2 == 1) {
 			updateRota *= -1;
 		}
+		if(countAdv_ == 1) {
 
-	if (countAdv_ < cBossPhaseIndex_) {
+			startPos = Character::GetPosition();
+			endPos = {
+				Character::GetPosition().x,
+				Character::GetPosition().y,
+				Character::GetPosition().z +50.0f
+			};
+
+			startRota = easeRotaS_ ;
+			endRota = {
+				Character::GetRotation().x,
+				+ updateRota / 2,
+				Character::GetRotation().z
+			};
+		}
+	else if (countAdv_ < cBossPhaseIndex_) {
 		//countAdv_++;
-		startPos = Character::GetPosition();
-		endPos = {
-			Character::GetPosition().x,
-			Character::GetPosition().y,
-			Character::GetPosition().z + 50.0f
-		};
+
+			startPos = Character::GetPosition();
+			endPos = {
+				Character::GetPosition().x,
+				Character::GetPosition().y,
+				Character::GetPosition().z +50.0f
+			};
 
 		startRota = easeRotaS_ ;
 		endRota = {
@@ -646,12 +620,13 @@ void Player::PhaseChange() {
 		};
 	}
 	else {
-		startPos = Character::GetPosition();
-		endPos = {
-			Character::GetPosition().x,
-			Character::GetPosition().y,
-			Character::GetPosition().z + 50.0f
-		};
+
+			startPos = Character::GetPosition();
+			endPos = {
+				Character::GetPosition().x,
+				Character::GetPosition().y,
+				Character::GetPosition().z +50.0f
+			};
 
 		startRota = easeRotaS_ ;
 		endRota = {
@@ -660,6 +635,7 @@ void Player::PhaseChange() {
 			Character::GetRotation().z
 		};
 	}
+
 
 	moveEase.Reset(
 		Ease::InOut_,
