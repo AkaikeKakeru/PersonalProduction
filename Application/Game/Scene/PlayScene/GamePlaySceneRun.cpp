@@ -99,6 +99,8 @@ void GamePlaySceneRun::InitializeCharacter() {
 #pragma region Enemy
 	LoadEnemyPopData("enemyPop");
 #pragma endregion
+
+	player_->GetCursor().SetCamera(*camera_);
 }
 
 void GamePlaySceneRun::UpdateCamera() {
@@ -146,56 +148,43 @@ void GamePlaySceneRun::UpdateCamera() {
 	camera_->Update();
 }
 void GamePlaySceneRun::UpdateCharacter() {
+//	Cursor c;
+//	c.SetCamera(*camera_);
+
 	Vector2 cursorPos2d{};
 	if (player_->IsStart()) {
-
-		Vector3 playerWorldPos =
-			player_->GetPosWorld();
 
 		//敵機の更新
 		for (std::unique_ptr<Enemy>& enemy : enemys_) {
 			enemy->Update();
 
-			if (!cursor_.IsLockOn()) {
-				enemyWorldPos_ =
-					enemy->GetPosWorld();
-			}
+			Vector3 playerWorldPos =
+				player_->GetPosWorld();
+
+			float distanceCameraToEnemy =
+				enemy->GetPosWorld().z - camera_->GetEye().z;
+
+
+			Vector3 curPosEx =
+				enemy->GetPosWorld();
+
+			//c.SetDistance(distanceCameraToEnemy);
+
+			//c.Update();
+			//if (c.IsLockOn()) {
+
+			//	enemyWorldPos_ = curPosEx;
+			//}
+
+			//自機のレティクル更新
+			player_->
+				UpdateReticle(enemyWorldPos_, distanceCameraToEnemy);
 		}
 
-		float CameraToEnemy_x =
-			(enemyWorldPos_.x - camera_->GetEye().x)
-			* (enemyWorldPos_.x - camera_->GetEye().x);
-		float CameraToEnemy_y =
-			(enemyWorldPos_.y - camera_->GetEye().y)
-			* (enemyWorldPos_.y - camera_->GetEye().y);
-		float CameraToEnemy_z =
-			(enemyWorldPos_.z - camera_->GetEye().z)
-			* (enemyWorldPos_.z - camera_->GetEye().z);
-
-		float CameraToEnemy_sum =
-			CameraToEnemy_x + CameraToEnemy_y + CameraToEnemy_z;
-
-		double CameraToEnemy_sqrt = 0;
-		double i = 0.0;
-
-		while (i < CameraToEnemy_sum) {
-			CameraToEnemy_sqrt = CameraToEnemy_sqrt + 0.1;
-			i = CameraToEnemy_sqrt * CameraToEnemy_sqrt;
-			if (CameraToEnemy_sum == i) {
-
-				break;
-			}
-		}
-
-		//自機と敵機の距離(仮)
-		float distanceCameraToEnemy = (float)CameraToEnemy_sqrt;
-		//自機のレティクル更新
-		player_->
-			UpdateReticle(LockOnTargetPos_, distanceCameraToEnemy);//,cursorPos2d);
 	}
-
 	player_->Update();
 }
+
 void GamePlaySceneRun::UpdateDamage() {
 	if (player_->IsStart()) {
 		//敵機のダメージ処理
@@ -212,7 +201,7 @@ void GamePlaySceneRun::UpdateDamage() {
 			}
 
 			if (isGushing_) {
-		}
+			}
 
 			isGushing_ = false;
 		}
@@ -420,6 +409,7 @@ void GamePlaySceneRun::UpdateEnemyPopCommands() {
 	Vector3 position{};
 	Vector3 rotation{};
 	Vector3 scale{};
+	int32_t bulletType = 0;
 	float radian = 0.0f;
 
 	//コマンド実行ループ
@@ -461,7 +451,14 @@ void GamePlaySceneRun::UpdateEnemyPopCommands() {
 				&line_stream,
 				word);
 		}
-
+/**/
+		//SCALEコマンド
+		if (word.find("BULLET") == 0) {
+			bulletType = LoadCommandsInt32_t(
+				&line_stream,
+				word);
+		}
+/**/
 		//POPコマンド
 		if (word.find("POP") == 0) {
 			//敵を発生させる
@@ -472,8 +469,8 @@ void GamePlaySceneRun::UpdateEnemyPopCommands() {
 					ConvertToRadian(radian)
 				),
 				scale,
-				Enemy::Gun_BulletType);
-	}
+				bulletType);
+		}
 
 		//WAITコマンド
 		else if (word.find("WAIT") == 0) {
@@ -500,6 +497,18 @@ Vector3 GamePlaySceneRun::LoadCommandsVector3(
 	//z
 	getline(*line_stream, word, ',');
 	result.z = (float)std::atof(word.c_str());
+
+	return result;
+}
+
+int32_t GamePlaySceneRun::LoadCommandsInt32_t(
+	std::istringstream* line_stream,
+	std::string word) {
+	int32_t result;
+
+	//x
+	getline(*line_stream, word, ',');
+	result = (int32_t)std::atof(word.c_str());
 
 	return result;
 }

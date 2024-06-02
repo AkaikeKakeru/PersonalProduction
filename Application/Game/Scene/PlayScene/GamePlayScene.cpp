@@ -50,7 +50,7 @@ void GamePlayScene::Finalize() {
 
 	FinalizeBlackOut();
 	FinalizeBackGround();
-
+	
 	delete stateFactory_;
 }
 
@@ -372,10 +372,6 @@ void GamePlayScene::UpdateBlackOut() {
 void GamePlayScene::UpdatePause() {
 	buttonPause_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
 
-	if (buttonPause_->ChackClick(input_->PressMouse(0))) {
-		buttonPause_->SetColor({ 0.4f,0.4f,0.4f,1.0f });
-	}
-
 	if (buttonPause_->ChackClick(input_->ReleaseMouse(0))) {
 		if (pauseScreen_->IsRun()) {
 			pauseScreen_->ResetEase_Remove();
@@ -430,10 +426,9 @@ void GamePlayScene::Initialize3d() {
 	Object3d::SetLight(light_);
 }
 void GamePlayScene::Initialize2d() {
-	InitializePause();
-
 	InitializeMouseUI();
 	InitializeBlackOut();
+	InitializePause();
 }
 
 void GamePlayScene::Update3d() {

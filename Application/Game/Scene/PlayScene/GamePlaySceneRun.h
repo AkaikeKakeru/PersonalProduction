@@ -36,14 +36,6 @@ public://構造体など
 		doorModel_ = ObjectManager::doorModel_,
 	};
 
-	enum mouseSpriteIndex {
-		mouseSpriteL_,
-		mouseSpriteR_,
-		mouseSpriteWheel_,
-		mouseSpriteTextS_,
-		mouseSpriteTextH_,
-	};
-
 public://定数
 	const int kFinalPhaseIndex_ = 3;
 	const int kBossPhaseIndex_ = kFinalPhaseIndex_ + 1;
@@ -96,6 +88,10 @@ private:
 
 	//発生コマンドの読込
 	Vector3 LoadCommandsVector3(
+		std::istringstream* line_stream,
+		std::string word);
+
+	int32_t LoadCommandsInt32_t(
 		std::istringstream* line_stream,
 		std::string word);
 #pragma endregion	

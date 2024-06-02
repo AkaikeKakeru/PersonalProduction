@@ -93,9 +93,13 @@ void GamePlaySceneBossBattle::InitializeCharacter() {
 	newBoss->SetPosition({ 0,20,150 });
 	newBoss->SetRotation({ 0,0,0 });
 	newBoss->SetScale({ 50,50,50 });
+	newBoss->SetBulletModel(
+		objManager_->GetModel(bulletModel_));
 	newBoss->SetIsStart(true);
 	newBoss->SetTargetPos(
 		player_->GetPosWorld());
+
+	newBoss->SetLife(200.0f);
 	newBoss->Initialize();
 
 	ease.Reset(
@@ -145,52 +149,46 @@ void GamePlaySceneBossBattle::UpdateCamera() {
 }
 void GamePlaySceneBossBattle::UpdateCharacter() {
 	Vector2 cursorPos2d{}; 
-
-	Vector3 playerWorldPos =
-		player_->GetPosWorld();
-
 	if (player_->IsStart()) {
+
+		Vector3 playerWorldPos =
+			player_->GetPosWorld();
+
 		boss_->SetTargetPos(playerWorldPos);
 
 		//敵機の更新
 		boss_->Update();
 
-			if (!cursor_.IsLockOn()) {
-				enemyWorldPos_ =
-					boss_->GetPosWorld();
-			}
-		
 
-		float CameraToEnemy_x =
-			(enemyWorldPos_.x - camera_->GetEye().x)
-			* (enemyWorldPos_.x - camera_->GetEye().x);
-		float CameraToEnemy_y =
-			(enemyWorldPos_.y - camera_->GetEye().y)
-			* (enemyWorldPos_.y - camera_->GetEye().y);
-		float CameraToEnemy_z =
-			(enemyWorldPos_.z - camera_->GetEye().z)
-			* (enemyWorldPos_.z - camera_->GetEye().z);
+		//for (std::unique_ptr<WeakPoint>& weak : w) {
+		//	if (weak) {
+		//		weak->SetPosition(Object3d::GetPosition());
+		//		weak->Update();
+		//	}
+		//}
 
-		float CameraToEnemy_sum =
-			CameraToEnemy_x + CameraToEnemy_y + CameraToEnemy_z;
+		//float distanceCameraToEnemy =
+		//	boss_->GetPosWorld().z - camera_->GetEye().z;
 
-		double CameraToEnemy_sqrt = 0;
-		double i = 0.0;
 
-		while (i < CameraToEnemy_sum) {
-			CameraToEnemy_sqrt = CameraToEnemy_sqrt + 0.1;
-			i = CameraToEnemy_sqrt * CameraToEnemy_sqrt;
-			if (CameraToEnemy_sum == i) {
+		//for (int i = 0; i < boss_->kWeakPointCount_; i++) {
+		//	Cursor c;
+		//	Vector3 curPosEx =
+		//	boss_->GetWeakPos()[i];
 
-				break;
-			}
-		}
-		//自機と敵機の距離(仮)
-		float distanceCameraToEnemy = (float)CameraToEnemy_sqrt;
+		//	c.SetDistance(distanceCameraToEnemy);
 
-		//自機のレティクル更新
-		player_->
-			UpdateReticle(LockOnTargetPos_, distanceCameraToEnemy);//,cursorPos2d);
+		//	c.Get3DReticlePosition(camera_, curPosEx);
+		//	if(c.IsLockOn()) {
+		//		
+		//		enemyWorldPos_ = curPosEx;
+		//	}
+		//}
+
+		////自機のレティクル更新
+		//player_->
+		//	UpdateReticle(enemyWorldPos_, distanceCameraToEnemy);//,cursorPos2d);
+		//	//UpdateReticle(curPosEx, distanceCameraToEnemy);//,cursorPos2d);
 	}
 	player_->Update();
 }
@@ -271,6 +269,7 @@ void GamePlaySceneBossBattle::Update() {
 void GamePlaySceneBossBattle::Draw() {
 }
 void GamePlaySceneBossBattle::Finalize() {
+	followCamera_->Finalize();
 	boss_->Finalize();
 	player_->Finalize();
 }
@@ -305,6 +304,6 @@ void GamePlaySceneBossBattle::Draw2d() {
 }
 
 void GamePlaySceneBossBattle::DrawImGui() {
-	boss_->DrawImgui();
-	player_->DrawImgui();
+	//boss_->DrawImgui();
+	//player_->DrawImgui();
 }
