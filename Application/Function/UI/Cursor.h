@@ -1,33 +1,54 @@
 /*カーソルやレティクルの座標を求める*/
-/*カーソルやレティクルの座標を求める*/
 
 #pragma once
 #include "Vector2.h"
 #include "Matrix4.h"
 
+#include "Sprite.h"
 #include "Object3d.h"
 #include "Camera.h"
 #include "Ease.h"
+
+#include <List>
+#include <memory>
 
 /*カーソルやレティクルの座標を求める*/
 class Cursor {
 public://定数
 	//ロックオンの範囲
-	const float kLockOnRange_ = 50.0f;
+	const float kLockOnRange_ = 60.0f;
 
 	//ロックオン時、イージングタイマーの最大値
 	const int32_t kEaseTimerLockOn_ = 6;
 	//リリース時、イージングタイマーの最大値
 	const int32_t kEaseTimerRelease_ = 3;
 
+	void Initialize();
+	void Update();
+	void Draw();
+	void Finalize();
+
+
 public: //アクセッサ
+	//カメラのセット
+	void SetCamera(const Camera& camera) {
+		Camera c = camera;
+
+		camera_ = &c;
+	};
+
 	/// <summary>
 	/// 3Dレティクル位置取得
 	/// </summary>
 	/// <param name="camera">カメラ</param>
 	/// <param name="targetWorldPos">標的のワールド座標(MatWorld.m[3][0]～m.[3][2])</param>
 	/// <returns>レティクルのワールド座標</returns>
-	Vector3& Get3DReticlePosition(Camera* camera,const Vector3 targetWorldPos);
+	Vector3& Get3DReticlePositionD(
+		Camera* camera,const Vector3 targetWorldPos);
+
+	Vector3& Get3DReticlePosition() {
+		return reticlePos_;
+	};
 
 	/// <summary>
 	///スクリーン座標から、ワールド座標へ変換 
@@ -56,6 +77,11 @@ public: //アクセッサ
 		return isLockOn_;
 	}
 
+	void SetIsLockOn(const bool is) {
+		bool b = &is;
+		isLockOn_ = b;
+	}
+
 private: //固有関数
 	//ビュープロジェクションビューポート行列生成
 	void CreateMatrixVPV();
@@ -71,6 +97,12 @@ private: //固有関数
 	void LockOn(const Vector3& targetWorldPos);
 
 	/// <summary>
+	///ロックオン
+	/// </summary>
+	/// <param name="targetWorldPos">標的のワールド座標(MatWorld.m[3][0]～m.[3][2])</param>
+	void LockOns(const Vector3& targetWorldPos);
+
+	/// <summary>
 	/// イージングで位置を移動させる
 	/// </summary>
 	void EasePosition();
@@ -78,6 +110,12 @@ private: //固有関数
 private: //メンバ変数
 	//カメラ
 	static Camera* camera_;
+
+	//ターゲット位置
+	Vector3 targetPos_{};
+
+	//レティクルのスプライト
+	std::unique_ptr< Sprite > spriteReticle_;
 
 	//ビュープロジェクションビューポート行列
 	Matrix4 matVPV_ = Matrix4Identity();
