@@ -33,7 +33,7 @@ public:
 
 private:
 	//半径
-	float radiusCollider_ = 1.0f;
+	float radiusCollider_ = 2.0f;
 
 	//ブレイクフラグ
 	bool isBreak_;

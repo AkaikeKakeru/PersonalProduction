@@ -44,6 +44,10 @@ public://メンバ関数
 		targetPos_ = targetPos;
 	}
 
+	const Vector3* GetWeakPos(){
+		return weakPosContainer_;
+	}
+
 private:
 	void SortingSign(float& f);
 
@@ -90,6 +94,10 @@ public: //定数
 
 	//横移動待機タイマー
 	const int kStayTimer_ = 120;
+
+	//デスボーダー
+	const float kDeadBorder_ = -80.0f;
+
 private:
 	//オーバーフラグ
 	bool isOver_ = false;
@@ -129,6 +137,9 @@ private:
 
 	//ターゲットの位置座標(主に回転など用)
 	Vector3 targetPos_{};
+
+	//弱点部位位置のコンテナ
+	Vector3 weakPosContainer_[kWeakPointCount_];
 
 public:
 	Boss() = default;

@@ -81,7 +81,7 @@ bool Boss::Initialize() {
 	newHpGauge->Initialize();
 	newHpGauge->SetPosition({ 0,32 });
 	newHpGauge->SetSize({ 1,0.5f });
-	newHpGauge->SetIsInvisible(true);
+	newHpGauge->SetIsInvisible(false);
 	Character::SetHPGauge(newHpGauge);
 #pragma endregion
 
@@ -103,6 +103,30 @@ bool Boss::Initialize() {
 
 #pragma endregion
 
+	//Character::Update();
+
+	Character::GetEndPositionEase().Reset(
+		Ease::In_,
+		60,
+		Object3d::GetPosition(),
+		{
+			Object3d::GetPosition().x,
+			kDeadBorder_,
+			Object3d::GetPosition().z - 20.0f
+		}
+	);
+
+	Character::GetEndRotationEase().Reset(
+		Ease::In_,
+		60,
+		Object3d::GetRotation(),
+		{
+			Object3d::GetRotation().x - ConvertToRadian(90.0f),
+			Object3d::GetRotation().y,
+			Object3d::GetRotation().z
+		}
+	);
+
 	return true;
 }
 
@@ -110,6 +134,11 @@ void Boss::Update() {
 	if (weakPoint_.size() <= 0) {
 		isBreak_ = true;
 	}
+
+	//ブレイクフラグの立った弱点を削除
+	weakPoint_.remove_if([](std::unique_ptr<WeakPoint>& weak) {
+		return weak->IsBreak();
+		});
 
 	// 現在の座標を取得
 	Vector3 positionBoss = Object3d::GetPosition();
@@ -143,10 +172,10 @@ void Boss::Update() {
 	Character::SetMoveRota(rotaBoss);
 
 	if (isActive_) {
-		//ブレイクフラグの立った弱点を削除
-		weakPoint_.remove_if([](std::unique_ptr<WeakPoint>& weak) {
-			return weak->IsBreak();
-			});
+		////ブレイクフラグの立った弱点を削除
+		//weakPoint_.remove_if([](std::unique_ptr<WeakPoint>& weak) {
+		//	return weak->IsBreak();
+		//	});
 
 		if (isBreak_) {
 			isActive_ = false;
@@ -168,7 +197,7 @@ void Boss::Update() {
 		}
 	}
 	else {
-		isAttack_ = false;
+		//isAttack_ = false;
 
 		waitTimer_--;
 
@@ -211,16 +240,33 @@ void Boss::Update() {
 		SetColor({ 0.2f,0.7f,0.2f,5.0f });
 	Character::GetHPGauge()->DecisionFluctuation();
 	Character::GetHPGauge()->SetIsFluct(true);
-	Character::GetHPGauge()->SetIsInvisible(true);
+	Character::GetHPGauge()->SetIsInvisible(false);
+
+	Character::GetHPGauge()->SetPosition({
+		WinApp::Win_Width / 2, 20.0f
+		});
+
+	float l = Character::GetLife();
+	l -= 0.1f;
+	Character::SetLife(l);
+
 	Character::Update();
 
 
 	for (std::unique_ptr<WeakPoint>& weak : weakPoint_) {
-		if (weak) {
+		int32_t now = 0;
+
+	//	if (weak) {
 			weak->SetPosition(Object3d::GetPosition());
 			weak->Update();
-		}
+	//	}
+
+		weakPosContainer_[now] = weak->GetPosition();
+
+		now++;
 	}
+
+
 }
 
 void Boss::Draw() {
@@ -260,7 +306,30 @@ void Boss::OverMove() {
 }
 
 void Boss::Attack() {
-	isAttack_ = true;
+//	isAttack_ = true;
+
+	//弾スピード
+	const float kBulletSpeed = 6.0f;
+
+	Vector3 worldPos =
+		worldTransform_.posWorld_;
+
+	Vector3 worldPosPlayer =
+		//player_->GetPosWorld();
+
+		targetPos_;
+
+	//毎フレーム弾が前進する速度
+	Vector3 bulletVelocity = worldPosPlayer - worldPos;
+
+	bulletVelocity = Vector3Normalize(bulletVelocity);
+
+	bulletVelocity *= kBulletSpeed;
+
+	Character::SetBulletDamage(kGunDamage_);
+	Character::SetBulletVelocity(bulletVelocity);
+
+	Character::Attack();
 }
 
 void Boss::ResetWeak() {

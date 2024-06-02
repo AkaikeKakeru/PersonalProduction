@@ -73,7 +73,6 @@ public: //アクセッサ
 
 private: //メンバ変数
 
-
 	//弾種
 	int bulletType_ = Gun_BulletType;
 
