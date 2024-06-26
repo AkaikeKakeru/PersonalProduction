@@ -36,6 +36,8 @@
 #include "Skydome.h"
 #include "Cart.h"
 
+#include "StageField.h"
+
 #include "Fade.h"
 #include "ArrangeTile.h"
 
@@ -184,6 +186,9 @@ public: //メンバ変数
 
 	//天球
 	std::unique_ptr<Skydome> skydome_ = nullptr;
+
+	//ステージフィールド
+	std::unique_ptr<StageField> stageField_ = nullptr;
 
 	//扉の位置
 	Vector3 doorPos_{};
