@@ -28,6 +28,11 @@ private: // エイリアス
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public: // サブクラス
+	//定数バッファ用データ構造体(マテリアル)
+	struct ConstBufferColor {
+		Vector4 color; //色(RGBA)
+	};
+
 		// パイプラインセット
 	struct PipelineSet {
 		// ルートシグネチャ
@@ -106,6 +111,10 @@ public: // メンバ関数
 	BaseCollider* GetCollider() const {
 		return collider_;
 	};
+	//色の取得
+	const Vector4& GetColor() const {
+		return model_->GetColor();
+	}
 
 	/// 座標の設定
 	void SetPosition(const Vector3& position) {
@@ -127,6 +136,10 @@ public: // メンバ関数
 		camera_ = camera; }
 	//コライダーのセット
 	void SetCollider(BaseCollider* collider);
+	//色のセット
+	void SetColor(const Vector4& color) {
+		model_->SetColor(color);
+	}
 
 protected: // メンバ変数
 		   //ワールドトランスフォーム
@@ -134,6 +147,9 @@ protected: // メンバ変数
 
 	//モデル
 	Model* model_ = nullptr;
+
+	//色用定数バッファ
+	ConstBufferColor* constMapColor = nullptr;
 
 	//カメラ
 	Camera* camera_ = nullptr;

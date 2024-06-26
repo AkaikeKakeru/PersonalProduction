@@ -29,11 +29,19 @@ void Material::Initialize() {
 }
 
 void Material::Update(){
+	Vector3 keepAmb = ambient_;
+	float keepAlp = alpha_;
+	ambient_ = Vector3Cross(ambient_,Vector3( color_.x,color_.y,color_.z));
+	alpha_ = alpha_ * color_.w;
+
 	// 定数バッファへデータ転送
 	constMap_->ambient = ambient_;
 	constMap_->diffuse = diffuse_;
 	constMap_->specular = specular_;
 	constMap_->alpha = alpha_;
+
+	ambient_ = keepAmb;
+	alpha_ = keepAlp;
 }
 
 void Material::CreateConstBuffer(){

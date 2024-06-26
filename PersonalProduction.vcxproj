@@ -112,6 +112,7 @@
     <ClCompile Include="Application\Function\UI\Gauge.cpp" />
     <ClCompile Include="Application\Function\System\Shake.cpp" />
     <ClCompile Include="Application\Game\Background\Skydome.cpp" />
+    <ClCompile Include="Application\Game\Background\StageField.cpp" />
     <ClCompile Include="Application\Game\Background\Tube.cpp" />
     <ClCompile Include="Application\Game\Background\TubeManager.cpp" />
     <ClCompile Include="Application\Game\Enemy\BaseEnemy.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="Application\Function\Collider\SphereCollider.h" />
     <ClInclude Include="Application\Function\System\Shake.h" />
     <ClInclude Include="Application\Game\Background\Skydome.h" />
+    <ClInclude Include="Application\Game\Background\StageField.h" />
     <ClInclude Include="Application\Game\Background\Tube.h" />
     <ClInclude Include="Application\Game\Background\TubeManager.h" />
     <ClInclude Include="Application\Game\Enemy\BaseEnemy.h" />

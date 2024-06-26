@@ -1,4 +1,4 @@
-﻿/*OBJモデル*/
+/*OBJモデル*/
 
 #include "Model.h"
 #include <cassert>
@@ -224,6 +224,7 @@ void Model::LoadFromOBJInternal(const std::string& modelname, bool smoothing) {
 
 	// マテリアルの数値を定数バッファに反映
 	for (auto& m : materials_) {
+		m.second->SetColor(color_);
 		m.second->Update();
 	}
 }

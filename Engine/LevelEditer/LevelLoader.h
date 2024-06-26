@@ -1,4 +1,4 @@
-﻿/*レベルエディター*/
+/*レベルエディター*/
 #pragma once
 
 #include "json.hpp"
@@ -8,8 +8,15 @@
 #include <Object3d.h>
 #include <Model.h>
 
+
+
 /*レベルエディター*/
 class LevelLoader {
+public:
+	//デフォルトディレクトリ
+	static const std::string kDefaultBaseDirectory_;
+	// ファイル拡張子
+	static const std::string kExtension;
 public:
 	// 構造体
 	struct LevelData {
@@ -23,7 +30,6 @@ public:
 		std::vector<ObjectData> objects_;
 	};
 
-public:
 	//Jsonファイルの読込
 	void LoadFileJson(const std::string fileName,Camera* camera);
 
@@ -36,10 +42,8 @@ public:
 	}
 
 private:
-	static const std::string kDefaultBaseDirectory_;
-
 	//モデルデータコンテナ
-	std::map <std::string, Model*> models;
+	std::map <std::string, Model*> models_;
 
 	//オブジェクトデータコンテナ
 	std::vector<Object3d*> objects_;

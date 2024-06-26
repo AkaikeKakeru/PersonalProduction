@@ -1,4 +1,4 @@
-﻿/*OBJモデル*/
+/*OBJモデル*/
 
 #pragma once
 #include "Mesh.h"
@@ -47,6 +47,15 @@ public://メンバ関数
 	//描画
 	void Draw(ID3D12GraphicsCommandList* cmdList);
 
+	//色の取得
+	const Vector4& GetColor() const {
+		return color_;
+	}
+	//色のセット
+	void SetColor(const Vector4& color) {
+		color_ = color;
+	}
+
 private:
 	//デバイス
 	static ComPtr<ID3D12Device> device_;
@@ -64,6 +73,9 @@ private:
 	std::unordered_map<std::string, Material*> materials_;
 	// デフォルトマテリアル
 	Material* defaultMaterial_ = nullptr;
+
+	//色
+	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
 
 	// デスクリプタヒープ
 	ComPtr<ID3D12DescriptorHeap> descHeap_;
