@@ -10,6 +10,7 @@
 
 #include "LevelLoader.h"
 #include <map>
+#include <vector>
 
 struct LevelData;
 
@@ -24,10 +25,8 @@ public:
     void Finalize();
 
 public:
-    void SetCamera(const Camera& camera) {
-        Camera c = camera;
-
-        camera_ = &c;
+    void SetCamera(Camera* camera) {
+        camera_ = camera;
     };
 
     std::vector<Object3d*> GetObjectVector() {
@@ -40,6 +39,9 @@ public:
 
 private:
     Camera* camera_;
+
+    //オブジェクトデータコンテナ
+    std::vector<Object3d*> objects_;
 
     //レベルローダー
     LevelLoader* levelLoader_;

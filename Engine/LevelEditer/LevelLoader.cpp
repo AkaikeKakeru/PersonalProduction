@@ -121,6 +121,8 @@ void LevelLoader::LoadFileJson(const std::string fileName,Camera* camera) {
 
 		newObject->SetColor({ 1.0f,1.0f,1.0f,1.0f });
 
+		newObject->Update();
+
 		//配列に登録
 		objects_.push_back(newObject);
 	}

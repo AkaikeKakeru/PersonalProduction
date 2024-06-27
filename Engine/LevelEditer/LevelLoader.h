@@ -8,8 +8,6 @@
 #include <Object3d.h>
 #include <Model.h>
 
-
-
 /*レベルエディター*/
 class LevelLoader {
 public:
