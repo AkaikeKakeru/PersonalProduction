@@ -1,41 +1,29 @@
 /*カーソルやレティクルの座標を求める*/
+/*カーソルやレティクルの座標を求める*/
 
 #pragma once
 #include "Vector2.h"
 #include "Matrix4.h"
 
-#include "Sprite.h"
 #include "Object3d.h"
 #include "Camera.h"
 #include "Ease.h"
-
-#include <List>
-#include <memory>
 
 /*カーソルやレティクルの座標を求める*/
 class Cursor {
 public://定数
 	//ロックオンの範囲
-	const float kLockOnRange_ = 60.0f;
-
+	const float kLockOnRange_ = 50.0f;
+	
 	//ロックオン時、イージングタイマーの最大値
 	const int32_t kEaseTimerLockOn_ = 6;
 	//リリース時、イージングタイマーの最大値
 	const int32_t kEaseTimerRelease_ = 3;
 
-	void Initialize();
-	void Update();
-	void Draw();
-	void Finalize();
-
-
 public: //アクセッサ
-	//カメラのセット
-	void SetCamera(const Camera& camera) {
-		Camera c = camera;
 
-		camera_ = &c;
-	};
+	void Initialize();
+
 
 	/// <summary>
 	/// 3Dレティクル位置取得
@@ -43,12 +31,7 @@ public: //アクセッサ
 	/// <param name="camera">カメラ</param>
 	/// <param name="targetWorldPos">標的のワールド座標(MatWorld.m[3][0]～m.[3][2])</param>
 	/// <returns>レティクルのワールド座標</returns>
-	Vector3& Get3DReticlePositionD(
-		Camera* camera,const Vector3 targetWorldPos);
-
-	Vector3& Get3DReticlePosition() {
-		return reticlePos_;
-	};
+	Vector3& Get3DReticlePosition(Camera* camera,const Vector3 targetWorldPos);
 
 	/// <summary>
 	///スクリーン座標から、ワールド座標へ変換 
@@ -77,14 +60,15 @@ public: //アクセッサ
 		return isLockOn_;
 	}
 
-	void SetIsLockOn(const bool is) {
-		bool b = &is;
-		isLockOn_ = b;
+	void SetCamera(const Camera& camera) {
+		Camera c = camera;
+
+		camera_ = &c;
+
+		CreateMatrixInverseVPV();
 	}
 
 private: //固有関数
-	//ビュープロジェクションビューポート行列生成
-	void CreateMatrixVPV();
 	//ビュープロジェクションビューポート行列の逆行列生成
 	void CreateMatrixInverseVPV();
 	//レイの方向を確認
@@ -100,7 +84,7 @@ private: //固有関数
 	///ロックオン
 	/// </summary>
 	/// <param name="targetWorldPos">標的のワールド座標(MatWorld.m[3][0]～m.[3][2])</param>
-	void LockOns(const Vector3& targetWorldPos);
+	void LockOnBef(const Vector3& targetWorldPos);
 
 	/// <summary>
 	/// イージングで位置を移動させる
@@ -109,16 +93,11 @@ private: //固有関数
 
 private: //メンバ変数
 	//カメラ
-	static Camera* camera_;
-
-	//ターゲット位置
-	Vector3 targetPos_{};
-
-	//レティクルのスプライト
-	std::unique_ptr< Sprite > spriteReticle_;
+	Camera* camera_;
 
 	//ビュープロジェクションビューポート行列
 	Matrix4 matVPV_ = Matrix4Identity();
+
 	//ビュープロジェクションビューポートの逆行列
 	Matrix4 matInverseVPV_ = Matrix4Identity();
 

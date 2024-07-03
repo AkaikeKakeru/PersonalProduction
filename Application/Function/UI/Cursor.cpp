@@ -2,72 +2,52 @@
 
 #include "Cursor.h"
 #include "Input.h"
-
-#include "Framework.h"
 #include <WinApp.h>
 #include <cassert>
-#include <SafeDelete.h>
 
-Camera* Cursor::camera_ = nullptr;
-
-void Cursor::Initialize() {
-	float kCenterAnchorPoint_ = 0.5f;
-
-	spriteReticle_ = std::make_unique<Sprite>();
-	spriteReticle_->Initialize(Framework::kCursorTextureIndex_);
-	spriteReticle_->SetAnchorPoint({
-		kCenterAnchorPoint_, kCenterAnchorPoint_ });
-	spriteReticle_->SetPosition({ WinApp::Win_Width / 2, WinApp::Win_Height / 2 });
-	spriteReticle_->SetSize({ 64,64 });
-	spriteReticle_->Update();
-}
-
-void Cursor::Update() {
-	CreateMatrixVPV();
+void Cursor::Initialize(){
 	CreateMatrixInverseVPV();
-
-	CheckRayDirection();
-
-	LockOn(targetPos_);
-
-	EasePosition();
-
-	reticlePos_ = reticleMove_;
-
-	Vector2 sP = spriteReticle_->GetPosition();
-
-	sP = TransFromWorldToScreen(reticlePos_);
-
-	spriteReticle_->SetPosition(sP);
-
-	spriteReticle_->Update();
 }
 
-void Cursor::Draw() {
-	spriteReticle_->Draw();
+Vector3& Cursor::Get3DReticlePosition(Camera* camera, const Vector3 targetWorldPos) {
+	//CheckRayDirection();
+	//LockOn(targetWorldPos);
+
+	//EasePosition();
+
+	//reticlePos_ = reticleMove_;
+
+	//return reticlePos_;
 }
 
-void Cursor::Finalize() {
+void Cursor::CreateMatrixInverseVPV() {
+	//ビューポート行列
+	Matrix4 matViewPort = Matrix4Identity();
+	matViewPort.m[0][0] = static_cast<float>(WinApp::Win_Width) / 2;
+	matViewPort.m[1][1] = static_cast<float>(-(WinApp::Win_Height)) / 2;
+	matViewPort.m[3][0] = static_cast<float>(WinApp::Win_Width) / 2;
+	matViewPort.m[3][1] = static_cast<float>(WinApp::Win_Height) / 2;
+
+	//ビュープロジェクションビューポート行列の更新
+	matVPV_ = camera_->GetViewMatrix()
+		* camera_->GetProjectionMatrix()
+		* matViewPort;
+
+	//上を逆行列化
+	matInverseVPV_ = Matrix4Inverse(matVPV_);
 }
 
-Vector3& Cursor::Get3DReticlePositionD(Camera* camera, const Vector3 targetWorldPos) {
-	camera_ = camera;
+void Cursor::CheckRayDirection() {
+	//マウスの座標を取得
+	Vector2 mousePosition_ =
+		Input::GetInstance()->GetMousePosition();
 
-	CreateMatrixVPV();
-	CreateMatrixInverseVPV();
-
-	CheckRayDirection();
-
-	LockOn(targetWorldPos);
-
-	EasePosition();
-
-	reticlePos_ = reticleMove_;
-
-	return reticlePos_;
+	//照準位置を書き換え
+	reticlePos_ = TransFromScreenToWorld(mousePosition_);
 }
 
-void Cursor::LockOns(const Vector3& targetWorldPos) {
+
+void Cursor::LockOn(const Vector3& targetWorldPos) {
 	//最終結果保存用
 	Vector3 result{};
 
@@ -166,6 +146,120 @@ void Cursor::LockOns(const Vector3& targetWorldPos) {
 	}
 }
 
+
+
+void Cursor::LockOnBef(const Vector3& targetWorldPos) {
+	//最終結果保存用
+	Vector3 result{};
+
+	//標的ワールド位置を、スクリーン座標に変換
+	Vector2 screenOfTargetWorldPos = TransFromWorldToScreen(targetWorldPos);
+	//レティクル位置を、スクリーン座標に変換
+	Vector2 screenPosOfReticle = TransFromWorldToScreen(reticlePos_);
+
+	//ロックオン中なら、リリースするタイミングをうかがう
+	if (isLockOn_) {
+		if (isStand_) {
+			//スクリーン座標における、二者の位置関係を確認する
+			//※このifにおけるレティクル位置は、ロックオン範囲分を画面外側にずらして考えるものとする
+			//全て通るなら、リリースを行う
+			if (/*レティクルが標的より外側にいるかどうか*/
+				screenOfTargetWorldPos.x > screenPosOfReticle.x + kLockOnRange_
+				|| screenOfTargetWorldPos.x < screenPosOfReticle.x - kLockOnRange_
+				|| screenOfTargetWorldPos.y > screenPosOfReticle.y + kLockOnRange_
+				|| screenOfTargetWorldPos.y < screenPosOfReticle.y - kLockOnRange_) {
+				isLockOn_ = false;
+				isStand_ = false;
+
+				{
+					//イージングの開始位置を、標的のスクリーン座標に設定
+					//※標的のスクリーン座標をワールド座標に変換しなおす
+					easeStartPos_ = TransFromScreenToWorld({
+						screenOfTargetWorldPos.x,
+						screenOfTargetWorldPos.y });
+
+					//イージングの終了位置を、レティクルのスクリーン座標に設定
+					//※レティクルのスクリーン座標を、ワールド座標に変換しなおす
+					easeEndPos_ = TransFromScreenToWorld({
+						screenPosOfReticle.x,
+						screenPosOfReticle.y
+						}
+					);
+
+					//イージングをリセット
+					ease_.Reset(Ease::InOut_, kEaseTimerRelease_, easeStartPos_, easeEndPos_);
+					ease_.SetIs(true);
+				}
+			}
+		}
+	}
+	//ちがうなら、ロックオンのタイミングをうかがう
+	else {
+		if (isStand_) {
+			//スクリーン座標における、二者の位置関係を確認する
+			//※このifにおけるレティクル位置は、ロックオン範囲分を画面外側にずらして考えるものとする
+			//全て通るなら、ロックオンを行う
+			if (/*標的がレティクルより左にいるかどうか*/
+				screenOfTargetWorldPos.x <= screenPosOfReticle.x + kLockOnRange_
+				/*標的がレティクルより右にいるかどうか*/
+				&& screenOfTargetWorldPos.x >= screenPosOfReticle.x - kLockOnRange_
+				/*標的がレティクルより上にいるかどうか*/
+				&& screenOfTargetWorldPos.y <= screenPosOfReticle.y + kLockOnRange_
+				/*標的がレティクルより下にいるかどうか*/
+				&& screenOfTargetWorldPos.y >= screenPosOfReticle.y - kLockOnRange_) {
+				isLockOn_ = true;
+				isStand_ = false;
+
+				{
+					//イージングの開始位置を、レティクルのスクリーン座標に設定
+					//※レティクルのスクリーン座標をワールド座標に変換しなおす
+					easeStartPos_ = TransFromScreenToWorld({
+						screenPosOfReticle.x,
+						screenPosOfReticle.y });
+
+					//イージングの終了位置を、標的のスクリーン座標に設定
+					//※標的のスクリーン座標を、ワールド座標に変換しなおす
+					easeEndPos_ = TransFromScreenToWorld({
+						screenOfTargetWorldPos.x,
+						screenOfTargetWorldPos.y
+						}
+					);
+
+					//イージングをリセット
+					ease_.Reset(Ease::InOut_, kEaseTimerLockOn_, easeStartPos_, easeEndPos_);
+					ease_.SetIs(true);
+				}
+			}
+		}
+
+		//レティクルのスクリーン座標を、標的スクリーン座標の位置に移動させる
+		result = {
+			screenPosOfReticle.x,
+			screenPosOfReticle.y,
+			0.0f };
+
+		//レティクルのスクリーン座標を、ワールド座標に変換しなおす
+		reticleMove_ = TransFromScreenToWorld({
+			result.x,
+			result.y
+			}
+		);
+	}
+}
+
+void Cursor::EasePosition() {
+	//イーズ終わりで、待機中にする
+	if (ease_.IsEnd()) {
+		isStand_ = true;
+	}
+
+	//待機中でなければイージングでレティクルの座標を更新
+	if (!isStand_) {
+		ease_.Update();
+		reticleMove_ = ease_.GetReturn();
+	}
+}
+
 Vector3& Cursor::TransFromScreenToWorld(const Vector2& screenPos) {
 	//最終結果保存用
 	static Vector3 result{};
@@ -204,94 +298,4 @@ Vector2& Cursor::TransFromWorldToScreen(const Vector3& worldPos) {
 	result = { process.x,process.y };
 
 	return result;
-}
-
-void Cursor::CreateMatrixVPV() {
-	//ビューポート行列
-	Matrix4 matViewPort = Matrix4Identity();
-	matViewPort.m[0][0] = static_cast<float>(WinApp::Win_Width) / 2;
-	matViewPort.m[1][1] = static_cast<float>(-(WinApp::Win_Height)) / 2;
-	matViewPort.m[3][0] = static_cast<float>(WinApp::Win_Width) / 2;
-	matViewPort.m[3][1] = static_cast<float>(WinApp::Win_Height) / 2;
-
-	//ビュープロジェクションビューポート行列の更新
-	matVPV_ = camera_->GetViewMatrix()
-		* camera_->GetProjectionMatrix()
-		* matViewPort;
-}
-
-void Cursor::CreateMatrixInverseVPV() {
-	//上を逆行列化
-	matInverseVPV_ = Matrix4Inverse(matVPV_);
-}
-
-void Cursor::CheckRayDirection() {
-	//マウスの座標を取得
-	Vector2 mousePosition_ =
-		Input::GetInstance()->GetMousePosition();
-
-	//照準位置を書き換え
-	reticlePos_ = TransFromScreenToWorld(mousePosition_);
-}
-
-void Cursor::LockOn(const Vector3& targetWorldPos) {
-	//最終結果保存用
-	Vector3 result{};
-
-	//標的ワールド位置を、スクリーン座標に変換
-	Vector2 screenOfTargetWorldPos = TransFromWorldToScreen(targetWorldPos);
-	//レティクル位置を、スクリーン座標に変換
-	Vector2 screenPosOfReticle = TransFromWorldToScreen(reticlePos_);
-
-	//ロックオン中なら、リリースするタイミングをうかがう
-	if (isLockOn_) {
-		reticlePos_ = targetWorldPos;
-	}
-
-	////ちがうなら、ロックオンのタイミングをうかがう
-	else {
-		//スクリーン座標における、二者の位置関係を確認する
-		//※このifにおけるレティクル位置は、ロックオン範囲分を画面外側にずらして考えるものとする
-		//全て通るなら、ロックオンを行う
-		if (/*標的がレティクルより左にいるかどうか*/
-			screenOfTargetWorldPos.x <= screenPosOfReticle.x + kLockOnRange_
-			/*標的がレティクルより右にいるかどうか*/
-			&& screenOfTargetWorldPos.x >= screenPosOfReticle.x - kLockOnRange_
-			/*標的がレティクルより上にいるかどうか*/
-			&& screenOfTargetWorldPos.y <= screenPosOfReticle.y + kLockOnRange_
-			/*標的がレティクルより下にいるかどうか*/
-			&& screenOfTargetWorldPos.y >= screenPosOfReticle.y - kLockOnRange_) {
-
-			reticlePos_ = targetWorldPos;
-
-			isLockOn_ = true;
-
-		}
-	}
-
-	//レティクルのスクリーン座標を、標的スクリーン座標の位置に移動させる
-	result = {
-		screenPosOfReticle.x,
-		screenPosOfReticle.y,
-		0.0f };
-
-	//レティクルのスクリーン座標を、ワールド座標に変換しなおす
-	reticleMove_ = TransFromScreenToWorld({
-		result.x,
-		result.y
-		}
-	);
-}
-
-void Cursor::EasePosition() {
-	//イーズ終わりで、待機中にする
-	if (ease_.IsEnd()) {
-		isStand_ = true;
-	}
-
-	//待機中でなければイージングでレティクルの座標を更新
-	if (!isStand_) {
-		ease_.Update();
-		reticleMove_ = ease_.GetReturn();
-	}
 }
