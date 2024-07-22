@@ -140,9 +140,17 @@ void GamePlaySceneBossBattle::UpdateCamera() {
 		camera_->SetUp(debugCamera_->GetUp());
 	}
 	else {
-		camera_->SetEye(followCamera_->GetEye());
-		camera_->SetTarget(followCamera_->GetTarget());
-		camera_->SetUp(followCamera_->GetUp());
+		Vector3 eye = followCamera_->GetEye();
+		Vector3 target = followCamera_->GetTarget();
+		Vector3 up = followCamera_->GetUp();
+
+		//eye = ;
+		target = Vector3Normalize(boss_->GetPosWorld() - eye) * 70.0f;
+
+
+		camera_->SetEye(eye);
+		camera_->SetTarget(target);
+		camera_->SetUp(up);
 	}
 
 	camera_->Update();

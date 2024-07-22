@@ -6,6 +6,8 @@
 #include "RailCamera.h"
 #include "Shake.h"
 
+#include "PostEffect.h"
+
 class GamePlayScene;
 class PlayerBullet;
 class Enemy;
@@ -23,6 +25,7 @@ public: //静的メンバ関数
 
 public://メンバ関数
 	bool Initialize() override;
+	void InitializeCursor();
 	void Update() override;
 	void Draw();
 	void DrawUI();
@@ -207,6 +210,8 @@ private: //メンバ変数
 
 	//ターゲット中の敵機
 	Vector3 easeRotaS_{};
+
+	PostEffect damageEffect_;
 
 public:
 	Player() = default;

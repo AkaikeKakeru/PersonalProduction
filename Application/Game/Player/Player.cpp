@@ -52,7 +52,7 @@ Player* Player::Create(Model* model) {
 }
 
 bool Player::Initialize() {
-	float kCenterAnchorPoint_ = 0.5f;
+//	float kCenterAnchorPoint_ = 0.5f;
 
 	Character::SetGroupName(groupName_);
 	Character::SetDefaultLife(kDefaultLife_);
@@ -69,17 +69,6 @@ bool Player::Initialize() {
 
 	worldTransform3dReticle_ = new WorldTransform();
 	worldTransform3dReticle_->Initialize();
-
-	spriteReticle_ = std::make_unique<Sprite>();
-	spriteReticle_->Initialize(Framework::kCursorTextureIndex_);
-	spriteReticle_->SetAnchorPoint({
-		kCenterAnchorPoint_, kCenterAnchorPoint_ });
-	spriteReticle_->SetPosition({ WinApp::Win_Width / 2, WinApp::Win_Height / 2 });
-	spriteReticle_->SetSize({ 64,64 });
-
-	cursor_ = std::make_unique<Cursor>();
-	cursor_->SetDistance(70.0f);
-	cursor_->Initialize();
 
 #pragma region 調整項目
 	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
@@ -164,22 +153,6 @@ bool Player::Initialize() {
 	}
 #endif // _DEBUG
 
-	//テキスト
-	Text* newText = new Text();
-	textEmpty_.reset(newText);
-	textEmpty_->Initialize(Framework::kTextTextureIndex_);
-	textEmpty_->SetString("AmmoIsEmpty");
-
-	float len = (float)textEmpty_->GetString().length() + 1.0f;
-
-	textEmpty_->SetPosition(
-		{
-			spriteReticle_->GetPosition().x - (textEmpty_->fontWidth_ * len),
-			spriteReticle_->GetPosition().y
-		}
-	);
-	textEmpty_->SetSize({ 2.5f,2.5f });
-
 	shake_.SetWidthSwing(5.0f);
 
 	Vector3 move{};
@@ -217,7 +190,31 @@ bool Player::Initialize() {
 		}
 	);
 
+	//damageEffect_.Initialize();
+
 	return true;
+}
+
+void Player::InitializeCursor() {
+	cursor_ = std::make_unique<Cursor>();
+	cursor_->Initialize(*camera_);
+	cursor_->SetDistance(70.0f);
+
+	//テキスト
+	Text* newText = new Text();
+	textEmpty_.reset(newText);
+	textEmpty_->Initialize(Framework::kTextTextureIndex_);
+	textEmpty_->SetString("AmmoIsEmpty");
+
+	float len = (float)textEmpty_->GetString().length() + 1.0f;
+
+	textEmpty_->SetPosition(
+		{
+			cursor_->GetSprite()->GetPosition().x - (textEmpty_->fontWidth_ * len),
+			cursor_->GetSprite()->GetPosition().y
+		}
+	);
+	textEmpty_->SetSize({ 2.5f,2.5f });
 }
 
 void Player::Update() {
@@ -285,6 +282,7 @@ void Player::Update() {
 			//ダメージ時にシェイクをセット
 			shake_.SetWidthSwing(5.0f);
 			shake_.SetIs(true);
+
 		}
 
 		//シェイクフラグを確認
@@ -308,7 +306,7 @@ void Player::Update() {
 	}
 
 	if (Character::IsStart()) {
-		spriteReticle_->SetIsInvisible(false);
+		cursor_->GetSprite()->SetIsInvisible(false);
 		bulletGauge_->SetIsInvisible(false);
 
 		//ライフ0でデスフラグ
@@ -338,13 +336,13 @@ void Player::Update() {
 
 				isSetupOverPositionEase_ = true;
 				bulletGauge_->SetIsInvisible(true);
-				spriteReticle_->SetIsInvisible(true);
+				cursor_->GetSprite()->SetIsInvisible(true);
 			}
 		}
 	}
 	else {
 		bulletGauge_->SetIsInvisible(true);
-		spriteReticle_->SetIsInvisible(true);
+		cursor_->GetSprite()->SetIsInvisible(true);
 	}
 #ifdef _DEBUG
 	{
@@ -396,10 +394,9 @@ void Player::Draw() {
 
 void Player::DrawUI() {
 	bulletGauge_->Draw();
-	//spriteReticle_->Draw();
-	textEmpty_->DrawAll();
-
 	cursor_->Draw();
+
+	textEmpty_->DrawAll();
 
 	Character::DrawUI();
 }
@@ -460,65 +457,58 @@ void Player::UpdateReticle(
 	const Vector3& lockonTargetPos
 	, float distance
 ) {
-		cursor_->SetDistance(distance);
-
-		cursor_->Update();
+	cursor_->SetDistance(distance);
+		cursor_->Update(*camera_,lockonTargetPos);
 		worldTransform3dReticle_->position_ = lockonTargetPos;
 		//3Dレティクル座標を更新
 		worldTransform3dReticle_->UpdateMatrix();
 
-
-		//レティクルスプライトの位置
-		// エネミーのワールド座標をスクリーン座標に変換して設定
-	/*	spriteReticle_->SetPosition(
-			cursor_->TransFromWorldToScreen(lockonTargetPos)
-		);*/
 		spriteReticle_->SetPosition(
 			cursor_->TransFromWorldToScreen(cursorPos_)
 		);
 	//---------------
-		Vector2 size2d{};
-		Vector4 color2d{};
-		float alfaRest = 0.0f;
-		//ロックオン中か否かでスプライトのサイズを変える
-		if (cursor_->IsLockOn()) {
-			size2d = { 80,80 };
-			color2d = { 0.7f,0.2f,0.2f,0.8f };
-			alfaRest = 0.2f;
-		}
-		else {
-			size2d = { 64,64 };
-			color2d = { 1,1,1,1 };
-			alfaRest = 0.5f;
-		}
+	Vector2 size2d{};
+	Vector4 color2d{};
+	float alfaRest = 0.0f;
+	//ロックオン中か否かでスプライトのサイズを変える
+	if (cursor_->IsLockOn()) {
+		size2d = { 80,80 };
+		color2d = { 0.7f,0.2f,0.2f,0.8f };
+		alfaRest = 0.2f;
+	}
+	else {
+		size2d = { 64,64 };
+		color2d = { 1,1,1,1 };
+		alfaRest = 0.5f;
+	}
 
-		spriteReticle_->SetSize(size2d);
-		spriteReticle_->SetColor(color2d);
-		spriteReticle_->Update();
-		//---------------
-			//残弾数ゲージの変動
-		bulletGauge_->GetRestSprite()->
-			SetColor({ 0.2f,0.7f,0.2f,alfaRest });
-		bulletGauge_->SetPosition({
-			spriteReticle_->GetPosition().x - 64.0f + 16.0f,
-			spriteReticle_->GetPosition().y + 32.0f
-			});
+	cursor_->GetSprite()->SetSize(size2d);
+	cursor_->GetSprite()->SetColor(color2d);
+	cursor_->GetSprite()->Update();
+	//---------------
+	//残弾数ゲージの変動
+	bulletGauge_->GetRestSprite()->
+		SetColor({ 0.2f,0.7f,0.2f,alfaRest });
+	bulletGauge_->SetPosition({
+		cursor_->GetSprite()->GetPosition().x - 64.0f + 16.0f,
+		cursor_->GetSprite()->GetPosition().y + 32.0f
+		});
 
-		bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
-		bulletGauge_->DecisionFluctuation();
-		bulletGauge_->SetIsFluct(true);
-		bulletGauge_->Update();
+	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
+	bulletGauge_->DecisionFluctuation();
+	bulletGauge_->SetIsFluct(true);
+	bulletGauge_->Update();
 
-		if (remainBulletCount_ <= 0) {
-			float len = (float)textEmpty_->GetString().length() + 1.0f;
-			textEmpty_->SetPosition(
-				{
-					spriteReticle_->GetPosition().x - (textEmpty_->fontWidth_ * len),
-					spriteReticle_->GetPosition().y
-				}
-			);
-			textEmpty_->Print();
-		}
+	if (remainBulletCount_ <= 0) {
+		float len = (float)textEmpty_->GetString().length() + 1.0f;
+		textEmpty_->SetPosition(
+			{
+				cursor_->GetSprite()->GetPosition().x - (textEmpty_->fontWidth_ * len),
+				cursor_->GetSprite()->GetPosition().y
+			}
+		);
+		textEmpty_->Print();
+	}
 }
 
 void Player::Attack() {
@@ -582,35 +572,19 @@ void Player::PhaseChange() {
 
 	Vector3 startRota{};
 	Vector3 endRota{};
-		float updateRota = ConvertToRadian(180.0f);
-		if (countAdv_ % 2 == 1) {
-			updateRota *= -1;
-		}
-		if(countAdv_ == 1) {
+	float updateRota = ConvertToRadian(90.0f);
+	if (countAdv_ % 2 == 1) {
+		updateRota *= -1;
+	}
 
-			startPos = Character::GetPosition();
-			endPos = {
-				Character::GetPosition().x,
-				Character::GetPosition().y,
-				Character::GetPosition().z +50.0f
-			};
-
-			startRota = easeRotaS_ ;
-			endRota = {
-				Character::GetRotation().x,
-				+ updateRota / 2,
-				Character::GetRotation().z
-			};
-		}
-	else if (countAdv_ < cBossPhaseIndex_) {
+	if (countAdv_ < cBossPhaseIndex_) {
 		//countAdv_++;
-
-			startPos = Character::GetPosition();
-			endPos = {
-				Character::GetPosition().x,
-				Character::GetPosition().y,
-				Character::GetPosition().z +50.0f
-			};
+		startPos = Character::GetPosition();
+		endPos = {
+			Character::GetPosition().x,
+			Character::GetPosition().y,
+			Character::GetPosition().z + 50.0f
+		};
 
 		startRota = easeRotaS_ ;
 		endRota = {
@@ -620,13 +594,12 @@ void Player::PhaseChange() {
 		};
 	}
 	else {
-
-			startPos = Character::GetPosition();
-			endPos = {
-				Character::GetPosition().x,
-				Character::GetPosition().y,
-				Character::GetPosition().z +50.0f
-			};
+		startPos = Character::GetPosition();
+		endPos = {
+			Character::GetPosition().x,
+			Character::GetPosition().y,
+			Character::GetPosition().z + 50.0f
+		};
 
 		startRota = easeRotaS_ ;
 		endRota = {
@@ -635,7 +608,6 @@ void Player::PhaseChange() {
 			Character::GetRotation().z
 		};
 	}
-
 
 	moveEase.Reset(
 		Ease::InOut_,

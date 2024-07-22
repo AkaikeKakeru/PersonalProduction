@@ -51,6 +51,7 @@ void GamePlaySceneRun::InitializeCharacter() {
 	newPlayer->SetCamera(camera_);
 	//newPlayer->SetGamePlayScene(this);
 	newPlayer->Initialize();
+	newPlayer->InitializeCursor();
 
 	Ease ease;
 	ease.Reset(
