@@ -92,6 +92,11 @@ public: // メンバ関数
 	//衝突時コールバック
 	virtual void OnCollision(const CollisionInfo& info);
 
+	//モデルの取得
+	Model* GetModel() const {
+		return model_;
+	}
+
 	// 座標の取得
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_; }

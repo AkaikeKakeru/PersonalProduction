@@ -8,9 +8,12 @@
 #include "Model.h"
 #include "Object3d.h"
 
+#include "ObjectManager.h"
 #include "LevelLoader.h"
 #include <map>
 #include <vector>
+
+#include "Skydome.h"
 
 struct LevelData;
 
@@ -19,6 +22,21 @@ public: //クラス内定数
     const float kTubePopPosZ_ = 600.0f;
     const float kTubeDeadPosZ_ = -300.0f;
     const int32_t kRePopTime_ = 10;
+
+public:
+    enum modelName {
+        skydomeModel_ = ObjectManager::skydomeModel_,
+        tubeModel_ = ObjectManager::tubeModel_,
+        bottomBGModel_ = ObjectManager::bottomBGModel_,
+        doorModel_ = ObjectManager::doorModel_,
+    };
+
+    enum objName {
+        doorL_,
+        doorR_,
+        bottomBG_,
+    };
+
 public:
     void Initialize();
     void Update();
@@ -44,6 +62,9 @@ public:
     }
 
 private:
+    static ObjectManager* objManager_;
+
+private:
     Camera* camera_;
 
     //デフォルトオブジェクト
@@ -52,18 +73,18 @@ private:
     //オブジェクトデータコンテナ
     std::list<Object3d*> objects_;
 
+    //天球
+    std::unique_ptr<Skydome> skydome_ = nullptr;
+
+    //扉の位置
+    Vector3 doorPos_{};
+
+    //オブジェリスト
+    std::list<std::unique_ptr<Object3d>> objs_;
+
     //レベルローダー
     LevelLoader* levelLoader_;
 
     //読み込むjson名
     std::string jsonFileName_;
-
-    //スピード
-    //float speed_ = 0.0f;
-
-    //再配置タイマー
-    int32_t timerRePop_ = 0;
-
-    //停止フラグ
-    bool isStop_ = false;
 };
