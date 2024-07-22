@@ -33,6 +33,8 @@ public:
 		kBackgroundTextureIndex_ = 3,
 		//マウスUIテクスチャ番号
 		kMouseTextureIndex_ = 4,
+		//敵機、発射予告テクスチャ番号
+		kNoticeEnemyBulletTextureIndex_ = 5,
 		//テキストテクスチャ番号
 		kTextTextureIndex_ = 100,
 		//白塗りテクスチャ番号

@@ -1,7 +1,9 @@
-﻿/*3次元ベクトル*/
+/*3次元ベクトル*/
 
 #include "Vector3.h"
 #include <cmath>	//sqrt
+
+#include "MyMath.h"
 
 Vector3::Vector3()
 	: x(0.0f), y(0.0f), z(0.0f) {
@@ -47,8 +49,10 @@ Vector3& Vector3::operator/=(float s) {
 	return *this;
 }
 
-const float Vector3Length(Vector3 v) {
-	return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+const float Vector3Length(Vector3 v) {	
+	return SquareRoot(
+		(v.x * v.x) + (v.y * v.y) + (v.z * v.z)
+	);
 }
 
 Vector3 Vector3Normalize(Vector3 v) {
@@ -73,6 +77,15 @@ const Vector3 Vector3Cross(const Vector3& v1, const Vector3& v2) {
 	return Vector3(v1.y * v2.z - v1.z * v2.y,
 		v1.z * v2.x - v1.x * v2.z,
 		v1.x * v2.y - v1.y * v2.x);
+}
+
+const float Vector3Distance(const Vector3& v1, const Vector3& v2) {
+	Vector3 a = Vector3(
+		(v2.x - v1.x) * (v2.x - v1.x),
+		(v2.y - v1.y) * (v2.y - v1.y),
+		(v2.z - v1.z) * (v2.z - v1.z));
+
+	return SquareRoot(a.x + a.y + a.z);
 }
 
 const Vector3 operator+(const Vector3& v1, const Vector3& v2) {

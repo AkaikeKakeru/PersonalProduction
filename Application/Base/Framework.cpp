@@ -92,6 +92,10 @@ void Framework::Initialize(){
 		"mouse.dds");
 
 	spriteBas->LoadTexture(
+		TextureIndex::kNoticeEnemyBulletTextureIndex_,
+		"Brick.dds");
+
+	spriteBas->LoadTexture(
 		TextureIndex::kWhiteTextureIndex_,
 		"white.dds");
 	spriteBas->LoadTexture(

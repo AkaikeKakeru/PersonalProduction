@@ -2,6 +2,7 @@
 
 #include "MyMath.h"
 #include <cstdint>
+#include <cassert>
 
 //円周率
 const float PI = 3.1415926535f;
@@ -19,20 +20,24 @@ float AbsoluteValue(float f) {
 }
 
 float SquareRoot(float f) {
+	double fD = (double)f;
+
 	const float EPSILON = 0.00001f;
 
-	float x = 1.0f, y = 0.0f;
+	double x = 1.0f, y = 0.0f;
+
+	bool notEnd = true;
 
 	//ニュートン法を用いる
-	while (true) {
-		x = x - (x * x - f) / (2.0f * x);
-		y = x * x - f;
+	while (notEnd) {
+		x = x - (x * x - fD) / (2.0f * x);
+		y = x * x - fD;
 		if ((y <= EPSILON) && (y >= -EPSILON)){
-			break;
+			notEnd = false;
 		}
 	}
 
-	return x;
+	return (float)x;
 }
 
 float Pow(float f, size_t n) {

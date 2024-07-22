@@ -60,6 +60,8 @@ void Character::Update() {
 	// 現在の回転を取得
 	Vector3 rot = Object3d::GetRotation();
 
+	Vector3 scale = Object3d::GetScale();
+
 	if (isStart_) {
 		position = Object3d::GetPosition();
 		// 座標の回転を反映
@@ -144,7 +146,7 @@ void Character::DrawImgui() {
 
 #ifdef _DEBUG
 	ImGui::Begin(cGroupName);
-	ImGui::SetWindowPos(ImVec2(0, 0));
+	ImGui::SetWindowPos(ImVec2(imGuiWinPos_[0], imGuiWinPos_[1]));
 	ImGui::SetWindowSize(ImVec2(500, 100));
 	ImGui::SliderFloat3(
 		"Pos", debugPos_, -PosRange_, PosRange_);

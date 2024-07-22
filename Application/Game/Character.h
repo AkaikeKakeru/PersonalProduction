@@ -286,6 +286,16 @@ public:
 	const float* GetDebugDirection() {
 		return debugDir_;
 	}
+
+	void SetImGuiWinPosition(const float* imGuiWinPos) {
+		for (int i = 0; i < 2; i++) {
+			imGuiWinPos_[i] = imGuiWinPos[i];
+		}
+	}
+	const float* GetImGuiWinPosition() {
+		return imGuiWinPos_;
+	}
+
 private:
 	//調整変数グループ名
 	const char* groupName_ = "Character";
@@ -384,6 +394,9 @@ private: //ImGui用
 	//Vector3の要素数
 	static const int kVector3Count_ = 3;
 
+	//Vector2の要素数
+	static const int kVector2Count_ = 2;
+
 	//Pos範囲
 	const float PosRange_ = 30.0f;
 
@@ -395,6 +408,9 @@ private: //ImGui用
 
 	//ImGui用自機Dir
 	float debugDir_[kVector3Count_] = {};
+
+	//ImGui窓用Pos
+	float imGuiWinPos_[kVector2Count_] = {};
 
 public:
 	Character() = default;
