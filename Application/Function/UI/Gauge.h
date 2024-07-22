@@ -1,4 +1,4 @@
-﻿/*スプライト型のゲージUI*/
+/*スプライト型のゲージUI*/
 
 #pragma once
 #include "Sprite.h"
@@ -103,6 +103,15 @@ public: //アクセッサ
 	//最大時間のセット
 	void SetMaxTime(float maxTime) {
 		maxTime_ = maxTime;
+	}
+
+	//透明化フラグのセット
+	void SetIsInvisible(bool is) {
+		spriteLeft_->SetIsInvisible(is);
+		spriteRight_->SetIsInvisible(is);
+		spriteGauge_->SetIsInvisible(is);
+		spriteRest_->SetIsInvisible(is);
+		spriteAmount_->SetIsInvisible(is);
 	}
 
 private: //メンバ変数

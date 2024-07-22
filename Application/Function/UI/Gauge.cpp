@@ -1,4 +1,4 @@
-﻿/*スプライト型のゲージUI*/
+/*スプライト型のゲージUI*/
 
 #include "Gauge.h"
 #include "SafeDelete.h"
@@ -34,11 +34,13 @@ void Gauge::Initialize() {
 	spriteRight_->SetTextureSize({ texSize, texSize });
 	spriteRight_->SetTextureLeftTop({ 64,0 });
 
-	spriteRest_->SetAnchorPoint({ 0.0f,0.5f });
-	spriteAmount_->SetAnchorPoint({ 0.0f,0.5f });
-	spriteGauge_->SetAnchorPoint({ 0.5f,0.5f });
-	spriteLeft_->SetAnchorPoint({ 0.5f,0.5f });
-	spriteRight_->SetAnchorPoint({ 0.5f,0.5f });
+	float kCenterAnchorPoint_ = 0.5f;
+
+	spriteRest_->SetAnchorPoint({ 0.0f,kCenterAnchorPoint_  });
+	spriteAmount_->SetAnchorPoint({ 0.0f,kCenterAnchorPoint_  });
+	spriteGauge_->SetAnchorPoint({ kCenterAnchorPoint_ ,kCenterAnchorPoint_ });
+	spriteLeft_->SetAnchorPoint({ kCenterAnchorPoint_ ,kCenterAnchorPoint_  });
+	spriteRight_->SetAnchorPoint({ kCenterAnchorPoint_ ,kCenterAnchorPoint_  });
 
 	ResetSize();
 	ResetArrangement();

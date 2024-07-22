@@ -1,4 +1,4 @@
-﻿/*マテリアル*/
+/*マテリアル*/
 
 #pragma once
 
@@ -6,6 +6,7 @@
 #include <string>
 #include <wrl.h>
 #include "Vector3.h"
+#include <Vector4.h>
 
 /*マテリアル*/
 class Material {
@@ -39,6 +40,7 @@ public:
 	Vector3 ambient_;            // アンビエント影響度
 	Vector3 diffuse_;            // ディフューズ影響度
 	Vector3 specular_;           // スペキュラー影響度
+	Vector4 color_;				 // 色あい(指定可能)
 	float alpha_;                 // アルファ
 	std::string filename_; // テクスチャファイル名
 
@@ -56,6 +58,15 @@ public:
 	const D3D12_CPU_DESCRIPTOR_HANDLE& GetCpuHandle() { return cpuDescHandleSRV_; }
 	const D3D12_GPU_DESCRIPTOR_HANDLE& GetGpuHandle() { return gpuDescHandleSRV_; }
 
+	//ファイル拡張子の取り出し
+	void PickFileExt(
+		const std::wstring& filePath);
+
+	void SetColor(const Vector4& color) {
+		Vector4 c = color;
+		color_ = c;
+	}
+
 private:
 	// テクスチャバッファ
 	ComPtr<ID3D12Resource> texbuff_;
@@ -68,6 +79,9 @@ private:
 	//定数バッファマップ
 	ConstBufferDataMaterial* constMap_ = nullptr;
 
+	//ファイル拡張子
+	std::wstring fileExt_;
+
 private:
 	// コンストラクタ
 	Material() {
@@ -75,6 +89,7 @@ private:
 		diffuse_ = {0.0f, 0.0f, 0.0f};
 		specular_ = {0.0f, 0.0f, 0.0f};
 		alpha_ = 1.0f;
+		color_ = { 0.0f,0.0f,0.0f,1.0f };
 	}
 
 	void Initialize();

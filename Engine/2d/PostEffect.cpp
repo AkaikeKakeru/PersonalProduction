@@ -1,4 +1,4 @@
-﻿/*ポストエフェクト*/
+/*ポストエフェクト*/
 
 #include "PostEffect.h"
 #include "WinApp.h"
@@ -805,6 +805,37 @@ void PostEffect::CreateDSV() {
 		descHeapDSV_->GetCPUDescriptorHandleForHeapStart()
 	);
 }
+
+//void PostEffect::LoadFromTextureInternal() {
+//	//ファイルストリーム
+//	std::ifstream file;
+//	//モデル名
+//	const string modelFilename = modelname + ".obj"; // "modelname.obj"
+//	const string directoryPath = Directory_ + modelname + "/"; // "Resources/modelname/"
+//
+//	//objファイルを開く
+//	file.open(directoryPath + modelFilename);
+//
+//	//ファイルオープンの失敗を確認
+//	assert(!file.fail());
+//
+//	name_ = modelname;
+//}
+
+//PostEffect* PostEffect::LoadTexture(const std::string& postEffectName) {
+//	//インスタンス
+//	PostEffect* instance = new PostEffect();
+//	//読み込み
+//	instance->LoadFromTextureInternal(postEffectName);
+//
+//	//デスクリプタヒープの生成
+//	instance->InitializeDescriptorHeap();
+//
+//	instance->LoadTextures();
+//
+//	return instance;
+//}
+
 
 PostEffect::PostEffect() {
 	texture_.anchorPoint_ = { 1.0f,1.0f };

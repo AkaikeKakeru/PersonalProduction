@@ -1,9 +1,10 @@
-﻿/*ゲームメイン*/
+/*ゲームメイン*/
 
 #include "GameMain.h"
 #include "SceneFactory.h"
 
 SceneManager* GameMain::sceneManager_ = Framework::GetSceneManager();
+PlaySceneStateManager* GameMain::stateManager_ = PlaySceneStateManager::GetInstance();
 
 void GameMain::Initialize() {
 	Framework::Initialize();

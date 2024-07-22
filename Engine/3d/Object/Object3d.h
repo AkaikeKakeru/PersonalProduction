@@ -1,4 +1,4 @@
-﻿/*OBJ3Dオブジェクト*/
+/*OBJ3Dオブジェクト*/
 
 #pragma once
 
@@ -28,6 +28,11 @@ private: // エイリアス
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public: // サブクラス
+	//定数バッファ用データ構造体(マテリアル)
+	struct ConstBufferColor {
+		Vector4 color; //色(RGBA)
+	};
+
 		// パイプラインセット
 	struct PipelineSet {
 		// ルートシグネチャ
@@ -87,6 +92,11 @@ public: // メンバ関数
 	//衝突時コールバック
 	virtual void OnCollision(const CollisionInfo& info);
 
+	//モデルの取得
+	Model* GetModel() const {
+		return model_;
+	}
+
 	// 座標の取得
 	const Vector3& GetPosition() const {
 		return worldTransform_.position_; }
@@ -99,6 +109,17 @@ public: // メンバ関数
 	//ワールド行列の取得
 	const Matrix4& GetMatWorld() {
 		return worldTransform_.matWorld_;}
+	//ワールド変換後の位置の取得
+	const Vector3& GetPosWorld() {
+		return worldTransform_.posWorld_;}
+	//コライダーの取得
+	BaseCollider* GetCollider() const {
+		return collider_;
+	};
+	//色の取得
+	const Vector4& GetColor() const {
+		return model_->GetColor();
+	}
 
 	/// 座標の設定
 	void SetPosition(const Vector3& position) {
@@ -120,6 +141,10 @@ public: // メンバ関数
 		camera_ = camera; }
 	//コライダーのセット
 	void SetCollider(BaseCollider* collider);
+	//色のセット
+	void SetColor(const Vector4& color) {
+		model_->SetColor(color);
+	}
 
 protected: // メンバ変数
 		   //ワールドトランスフォーム
@@ -127,6 +152,9 @@ protected: // メンバ変数
 
 	//モデル
 	Model* model_ = nullptr;
+
+	//色用定数バッファ
+	ConstBufferColor* constMapColor = nullptr;
 
 	//カメラ
 	Camera* camera_ = nullptr;

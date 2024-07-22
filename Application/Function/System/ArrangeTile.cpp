@@ -1,4 +1,4 @@
-﻿/*タイルを並べるようなシーン遷移オブジェクト*/
+/*タイルを並べるようなシーン遷移オブジェクト*/
 
 #include "ArrangeTile.h"
 #include <SafeDelete.h>
@@ -132,6 +132,8 @@ void ArrangeTile::AddSprite(
 	const Vector2 pos,
 	const float rotation,
 	const Vector2 size) {
+	float kCenterAnchorPoint_ = 0.5f;
+
 	std::unique_ptr<Sprite> newSprite =
 		std::make_unique<Sprite>();
 
@@ -139,7 +141,7 @@ void ArrangeTile::AddSprite(
 	newSprite->SetSize(size);
 	newSprite->SetRotation(rotation);
 	newSprite->SetPosition(pos);
-	newSprite->SetAnchorPoint({ 0.5f,0.5f });
+	newSprite->SetAnchorPoint({ kCenterAnchorPoint_,kCenterAnchorPoint_ });
 	newSprite->Update();
 	//リストに登録
 	sprites_.push_back(std::move(newSprite));

@@ -21,7 +21,6 @@
 Input* Character::input_ = Input::GetInstance();
 CollisionManager* Character::collisionManager_ = CollisionManager::GetInstance();
 SpriteBasis* Character::spriteBas_ = SpriteBasis::GetInstance();
-Model* Character::cartModel_ = nullptr;
 
 Character* Character::Create() {
 	//オブジェクトのインスタンスを生成
@@ -34,7 +33,6 @@ Character* Character::Create() {
 }
 
 bool Character::Initialize() {
-
 	if (!Object3d::Initialize()) {
 		return false;
 	}
@@ -48,31 +46,21 @@ bool Character::Initialize() {
 
 	collider_->SetAttribute(COLLISION_ATTR_PLAYER);
 
-#pragma region HPスプライト
-	hpGauge_ = new Gauge();
-	hpGauge_->Initialize();
-
-	hpGauge_->SetRestMax(life_);
-	hpGauge_->SetRest(life_);
-	hpGauge_->SetMaxTime(maxTimeHP_);
-
-	hpGauge_->SetPosition({ 64,64 });
-	hpGauge_->SetSize({ 1,1 });
-#pragma endregion
-
-	cart_ = new Cart();
-	cart_->Initialize();
-	cart_->SetModel(cartModel_);
-	cart_->SetCamera(camera_);
-
 	return true;
 }
 
 void Character::Update() {
+	//自壊フラグの立った弾を削除
+	bullets_.remove_if([](std::unique_ptr<Bullet>& bullet) {
+		return bullet->IsDead();
+		});
+
 	// 現在の座標を取得
 	Vector3 position = Object3d::GetPosition();
 	// 現在の回転を取得
 	Vector3 rot = Object3d::GetRotation();
+
+	Vector3 scale = Object3d::GetScale();
 
 	if (isStart_) {
 		position = Object3d::GetPosition();
@@ -92,6 +80,11 @@ void Character::Update() {
 		Object3d::Update();
 
 		position = Object3d::GetPosition();
+
+		//弾更新
+		for (std::unique_ptr<Bullet>& bullet : bullets_) {
+			bullet->Update();
+		}
 	}
 	else {
 		if (!isOver_) {
@@ -100,7 +93,6 @@ void Character::Update() {
 	}
 
 	if (isStart_) {
-
 		//ライフ0でデスフラグ
 		if (life_ <= 0.0f) {
 			OverMove();
@@ -128,6 +120,11 @@ void Character::Update() {
 }
 
 void Character::Draw() {
+	//弾描画
+	for (std::unique_ptr<Bullet>& bullet : bullets_) {
+		bullet->Draw();
+	}
+
 	Object3d::Draw(worldTransform_);
 	cart_->Draw();
 }
@@ -149,7 +146,7 @@ void Character::DrawImgui() {
 
 #ifdef _DEBUG
 	ImGui::Begin(cGroupName);
-	ImGui::SetWindowPos(ImVec2(0, 0));
+	ImGui::SetWindowPos(ImVec2(imGuiWinPos_[0], imGuiWinPos_[1]));
 	ImGui::SetWindowSize(ImVec2(500, 100));
 	ImGui::SliderFloat3(
 		"Pos", debugPos_, -PosRange_, PosRange_);
@@ -163,8 +160,6 @@ void Character::DrawImgui() {
 void Character::Finalize() {
 	hpGauge_->Finalize();
 	cart_->Finalize();
-	SafeDelete(cart_);
-	//SafeDelete(cartModel_);
 }
 
 void Character::OnCollision(const CollisionInfo& info) {
@@ -226,4 +221,43 @@ void Character::OverMove() {
 	if (endPositionEase_.IsEnd()) {
 		SetIsOver(true);
 	}
+}
+
+void Character::Attack() {
+	//弾の生成、初期化
+	std::unique_ptr<Bullet> newBullet =
+		std::make_unique<Bullet>();
+
+	newBullet->Initialize();
+
+	newBullet->SetModel(Character::GetBulletModel());
+
+	newBullet->SetScale(worldTransform_.scale_);
+	newBullet->SetRotation(worldTransform_.rotation_);
+	newBullet->SetPosition(Vector3{
+		worldTransform_.matWorld_.m[3][0],
+		worldTransform_.matWorld_.m[3][1],
+		worldTransform_.matWorld_.m[3][2]
+		});
+
+	newBullet->SetVelocity(bulletVelocity_);
+
+	newBullet->SetDamage(bulletDamage_);
+
+	newBullet->SetCamera(camera_);
+
+	newBullet->SetGameScene(Character::GetGamePlayScene());
+
+	newBullet->GetCollider()->SetAttribute(Character::GetCollider()->GetAttribute());
+
+	newBullet->Update();
+
+	//リストに登録
+	bullets_.push_back(std::move(newBullet));
+}
+
+void Character::AddBullet() {
+}
+
+Character::~Character() {
 }

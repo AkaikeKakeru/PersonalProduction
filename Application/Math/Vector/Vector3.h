@@ -1,4 +1,4 @@
-﻿/*3次元ベクトル*/
+/*3次元ベクトル*/
 
 #pragma once
 
@@ -30,6 +30,9 @@ Vector3 Vector3Normalize(Vector3 v);
 const float Vector3Dot(const Vector3& v1, const Vector3& v2);
 //外積
 const Vector3 Vector3Cross(const Vector3& v1, const Vector3& v2);
+
+//2点間の距離
+const float Vector3Distance(const Vector3& v1, const Vector3& v2);
 
 const Vector3 operator+(const Vector3& v1, const Vector3& v2);
 const Vector3 operator-(const Vector3& v1, const Vector3& v2);

@@ -1,4 +1,4 @@
-﻿/*マテリアル*/
+/*マテリアル*/
 
 #include "Material.h"
 #include <DirectXTex.h>
@@ -29,6 +29,9 @@ void Material::Initialize() {
 }
 
 void Material::Update(){
+	ambient_ = Vector3( color_.x,color_.y,color_.z);
+	alpha_ = color_.w;
+
 	// 定数バッファへデータ転送
 	constMap_->ambient = ambient_;
 	constMap_->diffuse = diffuse_;
@@ -90,11 +93,25 @@ void Material::LoadTexture(const std::string& directoryPath,
 		filepath.c_str(), -1, wfilepath,
 		_countof(wfilepath));
 
-	result = LoadFromWICFile(
-		wfilepath,
-		WIC_FLAGS_NONE,
-		&metadata,
-		scratchImg);
+	PickFileExt(wfilepath);
+
+	if (fileExt_ == L"dds") {
+		//DDSテクスチャのロード
+		result = LoadFromDDSFile(
+			wfilepath,
+			DDS_FLAGS_NONE,
+			&metadata,
+			scratchImg);
+	}
+
+	else {
+		//WICテクスチャのロード
+		result = LoadFromWICFile(
+			wfilepath,
+			WIC_FLAGS_NONE,
+			&metadata,
+			scratchImg);
+	}
 
 	ScratchImage mipChain{};
 	// ミップマップ生成
@@ -164,4 +181,25 @@ void Material::LoadTexture(const std::string& directoryPath,
 		&srvDesc, //テクスチャ設定情報
 		cpuDescHandleSRV_
 	);
+}
+
+void Material::PickFileExt(
+	const std::wstring& filePath) {
+	size_t pos1;
+	std::wstring exceptExt;
+
+	//区切り文字'.'が出てくる一番最後の部分を検索
+	pos1 = filePath.rfind('.');
+	//検索がヒットしたら
+	if (pos1 != std::wstring::npos) {
+		//区切り文字の後ろをファイル拡張子として保存
+		fileExt_ = filePath.substr(pos1 + 1, filePath.size() - pos1 - 1);
+
+		//区切り文字の前までを抜き出す
+		exceptExt = filePath.substr(0, pos1);
+	}
+	else {
+		fileExt_ = L"";
+		exceptExt = filePath;
+	}
 }

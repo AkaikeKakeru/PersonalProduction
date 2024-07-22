@@ -1,4 +1,4 @@
-﻿/*OBJ3Dオブジェクト*/
+/*OBJ3Dオブジェクト*/
 
 #include "Object3d.h"
 #include <d3dcompiler.h>

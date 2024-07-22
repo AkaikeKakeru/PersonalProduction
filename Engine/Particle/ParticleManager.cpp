@@ -420,19 +420,19 @@ void ParticleManager::Active(
 	for (int i = 0; i < setQua; i++) {
 		//位置座標をランダムに分布
 		Vector3 pos{};
-		pos.x = RandomOutput(setPosM.x / 2, setPosP.x / 2) + setMove.x;
-		pos.y = RandomOutput(setPosM.y / 2, setPosP.y / 2) + setMove.y;
-		pos.z = RandomOutput(setPosM.z / 2, setPosP.z / 2) + setMove.z;
+		pos.x = RandomOutputFloat(setPosM.x / 2, setPosP.x / 2) + setMove.x;
+		pos.y = RandomOutputFloat(setPosM.y / 2, setPosP.y / 2) + setMove.y;
+		pos.z = RandomOutputFloat(setPosM.z / 2, setPosP.z / 2) + setMove.z;
 
 		//速度をランダムに分布
 		Vector3 vel{};
-		vel.x = RandomOutput(setVelM.x / 2, setVelP.x / 2);
-		vel.y = RandomOutput(setVelM.y / 2, setVelP.y / 2);
-		vel.z = RandomOutput(setVelM.z / 2, setVelP.z / 2);
+		vel.x = RandomOutputFloat(setVelM.x / 2, setVelP.x / 2);
+		vel.y = RandomOutputFloat(setVelM.y / 2, setVelP.y / 2);
+		vel.z = RandomOutputFloat(setVelM.z / 2, setVelP.z / 2);
 
 		//重力に見立てて加速度のYのみ別枠でランダムに分布
 		Vector3 acc{};
-		acc.y = RandomOutput(-setAcc.y / 2, setAcc.y / 2);
+		acc.y = RandomOutputFloat(-setAcc.y / 2, setAcc.y / 2);
 
 		//追加
 		particle_->Add(life, pos, vel, acc, scaleStart, scaleEnd);

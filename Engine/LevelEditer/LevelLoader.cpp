@@ -1,4 +1,4 @@
-﻿/*レベルエディター*/
+/*レベルエディター*/
 
 #include "LevelLoader.h"
 #include <json.hpp>
@@ -9,15 +9,15 @@
 #include <SafeDelete.h>
 
 const std::string LevelLoader::kDefaultBaseDirectory_ = "Resource/levels/";
-
+const std::string LevelLoader::kExtension = ".json";
 void LevelLoader::LoadFileJson(const std::string fileName,Camera* camera) { 
 	////連結してフルパスを得る
 	//const std::string fullpath =
-	//	std::string("Resource/levels/") + "rimuta_TL1" + ".json";
+	//	std::string("Resource/levels/") + "fileName" + ".json";
 
 	//連結してフルパスを得る
 	const std::string fullpath =
-		kDefaultBaseDirectory_ + fileName + ".json";
+		kDefaultBaseDirectory_ + fileName + kExtension;
 
 	//ファイルストリーム
 	std::ifstream file;
@@ -92,19 +92,19 @@ void LevelLoader::LoadFileJson(const std::string fileName,Camera* camera) {
 	//レベルデータに出現するモデルの読込
 	for (auto& objectData : levelData->objects_) {
 		//ファイル名から登録済みモデルを検索
-		decltype(models)::iterator it = models.find(objectData.fileName_);
+		decltype(models_)::iterator it = models_.find(objectData.fileName_);
 
 		//未読込の場合読み込む
 		Model* model = Model::LoadFromOBJ(objectData.fileName_);
-		models[objectData.fileName_] = model;
+		models_[objectData.fileName_] = model;
 	}
 
 	//レベルデータからオブジェクトを生成、配置
 	for(auto& objectData : levelData->objects_){
 		//ファイル名から登録済みモデルを検索
 		Model* model = nullptr;
-		decltype(models)::iterator it = models.find(objectData.fileName_);
-		if (it != models.end()) { model = it->second; }
+		decltype(models_)::iterator it = models_.find(objectData.fileName_);
+		if (it != models_.end()) { model = it->second; }
 		//モデルを指定して3Dオブジェクトを生成
 		Object3d* newObject = Object3d::Create();
 		newObject->SetModel(model);
@@ -119,13 +119,16 @@ void LevelLoader::LoadFileJson(const std::string fileName,Camera* camera) {
 		//カメラセット
 		newObject->SetCamera(camera);
 
+		newObject->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+
+		newObject->Update();
+
 		//配列に登録
 		objects_.push_back(newObject);
 	}
 }
 
 void LevelLoader::Finalize() {
-	for (Object3d* object : objects_) {
-		SafeDelete(object);
-	}
+	models_.clear();
+	objects_.clear();
 }

@@ -9,25 +9,38 @@
 #include "Camera.h"
 #include "Ease.h"
 
+#include <memory>
+#include <List>
+#include <Sprite.h>
+
 /*カーソルやレティクルの座標を求める*/
 class Cursor {
 public://定数
 	//ロックオンの範囲
 	const float kLockOnRange_ = 50.0f;
-
+	
 	//ロックオン時、イージングタイマーの最大値
 	const int32_t kEaseTimerLockOn_ = 6;
 	//リリース時、イージングタイマーの最大値
 	const int32_t kEaseTimerRelease_ = 3;
 
 public: //アクセッサ
+
+	void Initialize(const Camera& camera);
+	void Update(
+		const Camera& camera,
+		const Vector3& targetWorldPos);
+	void Draw();
+
 	/// <summary>
 	/// 3Dレティクル位置取得
 	/// </summary>
 	/// <param name="camera">カメラ</param>
 	/// <param name="targetWorldPos">標的のワールド座標(MatWorld.m[3][0]～m.[3][2])</param>
 	/// <returns>レティクルのワールド座標</returns>
-	Vector3& Get3DReticlePosition(Camera* camera,const Vector3 targetWorldPos);
+	Vector3& Get3DReticlePosition(
+		//Camera* camera,
+		const Vector3 targetWorldPos);
 
 	/// <summary>
 	///スクリーン座標から、ワールド座標へ変換 
@@ -44,6 +57,18 @@ public: //アクセッサ
 	Vector2& TransFromWorldToScreen(const Vector3& worldPos);
 
 	/// <summary>
+	/// レティクルスプライトの取得
+	/// </summary>
+	/// <returns>レティクルスプライト</returns>
+	Sprite* GetSprite() {
+		return spriteReticle_.get();
+	}
+
+	const Vector3& GetReticlePos() {
+		return reticlePos_;
+	}
+
+	/// <summary>
 	/// 距離のセット
 	/// </summary>
 	/// <param name="distance">距離</param>
@@ -56,9 +81,21 @@ public: //アクセッサ
 		return isLockOn_;
 	}
 
+	void SetCamera(const Camera& camera) {
+		Camera c = camera;
+
+		camera_ = &c;
+
+		CreateMatrixInverseVPV();
+	}
+
+	void SetTargetPos(const Vector3& targetWorldPos) {
+		Vector3 pos = targetWorldPos;
+
+		targetPos_ = pos;
+	};
+
 private: //固有関数
-	//ビュープロジェクションビューポート行列生成
-	void CreateMatrixVPV();
 	//ビュープロジェクションビューポート行列の逆行列生成
 	void CreateMatrixInverseVPV();
 	//レイの方向を確認
@@ -71,24 +108,32 @@ private: //固有関数
 	void LockOn(const Vector3& targetWorldPos);
 
 	/// <summary>
+	///ロックオン
+	/// </summary>
+	/// <param name="targetWorldPos">標的のワールド座標(MatWorld.m[3][0]～m.[3][2])</param>
+	void LockOnBef(const Vector3& targetWorldPos);
+
+	/// <summary>
 	/// イージングで位置を移動させる
 	/// </summary>
 	void EasePosition();
 
 private: //メンバ変数
 	//カメラ
-	static Camera* camera_;
+	Camera* camera_;
+
+	std::unique_ptr<Sprite> spriteReticle_;
+
+	Vector3 targetPos_{};
 
 	//ビュープロジェクションビューポート行列
 	Matrix4 matVPV_ = Matrix4Identity();
+
 	//ビュープロジェクションビューポートの逆行列
 	Matrix4 matInverseVPV_ = Matrix4Identity();
 
 	//レティクル位置
 	Vector3 reticlePos_ = {};
-
-	//レティクルの移動先保管用
-	Vector3 reticleMove_ = {};
 
 	//カメラからの距離
 	float distance_ = 50.0f;

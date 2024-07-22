@@ -1,4 +1,4 @@
-﻿/*スプライト*/
+/*スプライト*/
 
 #pragma once
 #include "SpriteBasis.h"
@@ -144,7 +144,7 @@ private://メンバ変数
 	//表示サイズ
 	Vector2 size_ = { 100,100 };
 	//アンカーポイント
-	Vector2 anchorPoint_ = { 0,0 };
+	Vector2 anchorPoint_ = { 0.0f,0.0f };
 	//左右反転フラグ
 	bool isFlipX_ = false;
 	//上下反転フラグ

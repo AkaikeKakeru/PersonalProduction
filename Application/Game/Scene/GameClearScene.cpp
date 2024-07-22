@@ -7,6 +7,8 @@
 #include "SceneManager.h"
 #include <Quaternion.h>
 
+#include "ObjectManager.h"
+
 #ifdef _DEBUG
 #include <imgui.h>
 #endif
@@ -14,6 +16,7 @@
 DirectXBasis* GameClearScene::dxBas_ = DirectXBasis::GetInstance();
 Input* GameClearScene::input_ = Input::GetInstance();
 SpriteBasis* GameClearScene::spriteBas_ = SpriteBasis::GetInstance();
+ObjectManager* GameClearScene::objManager_ = ObjectManager::GetInstance();
 
 void GameClearScene::Initialize() {
 	/// 描画初期化
@@ -31,62 +34,45 @@ void GameClearScene::Initialize() {
 	camera_->SetEye({ 0, 0, 0 });
 	camera_->SetTarget({ 0, 0, 0 });
 
-	playerModel_ = new Model();
-	playerModel_ = Model::LoadFromOBJ("human", true);
+	Object3d* newObj = new Object3d();
 
-	skydomeModel_ = new Model();
-	skydomeModel_ = Model::LoadFromOBJ("skydome", false);
-
-	doorModel_ = new Model();
-	doorModel_ = Model::LoadFromOBJ("cube", true);
-
-	cartModel_ = new Model();
-	cartModel_ = Model::LoadFromOBJ("cart", true);
-
-	tubeModel_ = new Model();
-	tubeModel_ = Model::LoadFromOBJ("BG_Tube", true);
-
-	bottomBGModel_ = new Model();
-	bottomBGModel_ = Model::LoadFromOBJ("clearBottom", true);
-
-	playerObj_ = new Object3d();
-	playerObj_ = Object3d::Create();
-	playerObj_->SetModel(playerModel_);
-	playerObj_->SetPosition({ 0, -5.0f, 150.0f });
-	playerObj_->SetRotation(CreateRotationVector(
+	newObj = Object3d::Create();
+	newObj->SetCamera(camera_);
+	newObj->SetModel(objManager_->GetModel(playerActiveModel_));
+	newObj->SetPosition({ 0, -5.0f, 150.0f });
+	newObj->SetRotation(CreateRotationVector(
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	playerObj_->SetCamera(camera_);
 
-	camera_->SetTarget(playerObj_->GetPosition());
+	camera_->SetTarget(newObj->GetPosition());
+	playerObj_.reset(newObj);
 
 #pragma region cart
-	cart_ = new Object3d();
-	cart_ = Object3d::Create();
-
-	cart_->SetPosition({
+	newObj = Object3d::Create();
+	newObj->SetCamera(camera_);
+	newObj->SetPosition({
 		playerObj_->GetPosition().x,
 		playerObj_->GetPosition().y - 2.5f,
 		playerObj_->GetPosition().z }
 	);
-
-	cart_->SetModel(cartModel_);
-	cart_->SetCamera(camera_);
+	newObj->SetModel(objManager_->GetModel(cartModel_));
+	cart_.reset(newObj);
 #pragma endregion
 
-	skydomeObj_ = new Object3d();
-	skydomeObj_ = Object3d::Create();
-	skydomeObj_->SetModel(skydomeModel_);
-	skydomeObj_->SetScale({ 1100.0f, 256.0f, 1100.0f });
-	skydomeObj_->SetPosition({ 0,0,0 });
-	skydomeObj_->SetCamera(camera_);
+	newObj = new Object3d();
+	newObj = Object3d::Create();
+	newObj->SetCamera(camera_);
+	newObj->SetModel(objManager_->GetModel(skydomeModel_));
+	newObj->SetScale({ 1100.0f, 256.0f, 1100.0f });
+	newObj->SetPosition({ 0,0,0 });
+	skydomeObj_.reset(newObj);
 
-	bottomBG_ = new Object3d();
-	bottomBG_ = Object3d::Create();
-	bottomBG_->SetModel(bottomBGModel_);
-	bottomBG_->SetScale({ 10.0f, 10.0f, 10.0f });
-	bottomBG_->SetPosition({ 0,-100,0 });
-	bottomBG_->SetCamera(camera_);
-	bottomBG_->Update();
+	newObj = Object3d::Create();
+	newObj->SetCamera(camera_);
+	newObj->SetModel(objManager_->GetModel(bottomBGModel_));
+	newObj->SetScale({ 10.0f, 10.0f, 10.0f });
+	newObj->SetPosition({ 0,-100,0 });
+	newObj->Update();
+	bottomBG_.reset(newObj);
 
 #pragma region Tube
 	tubeManager_ = new TubeManager();
@@ -95,34 +81,33 @@ void GameClearScene::Initialize() {
 	tubeManager_->SetRotation(CreateRotationVector(
 		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
 	tubeManager_->SetScale({ 100,100,100 });
-	tubeManager_->SetTubeModel(tubeModel_);
+	tubeManager_->SetTubeModel(objManager_->GetModel(tubeModel_));
 	tubeManager_->Initialize();
 #pragma endregion
 
-	doorL_ = new Object3d();
-	doorR_ = new Object3d();
-
 	doorPos_ = { 0,0,800 };
 
-	doorL_ = Object3d::Create();
-	doorL_->SetScale({ 50,400,10 });
-	Vector3 scaDoorL = doorL_->GetScale();
+	newObj = Object3d::Create();
+	newObj->SetCamera(camera_);
+	newObj->SetScale({ 50,400,10 });
+	Vector3 scaDoorL = newObj->GetScale();
 
-	doorL_->SetPosition({ -scaDoorL.x, scaDoorL.y / 2,doorPos_.z });
-	doorL_->SetRotation(CreateRotationVector(
+	newObj->SetPosition({ -scaDoorL.x, scaDoorL.y / 2,doorPos_.z });
+	newObj->SetRotation(CreateRotationVector(
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	doorL_->SetModel(doorModel_);
-	doorL_->SetCamera(camera_);
+	newObj->SetModel(objManager_->GetModel(doorModel_));
+	doorL_.reset(newObj);
 
-	doorR_ = Object3d::Create();
-	doorR_->SetScale({ 50,400,10 });
-	Vector3 scaDoorR = doorR_->GetScale();
+	newObj = Object3d::Create();
+	newObj->SetCamera(camera_);
+	newObj->SetScale({ 50,400,10 });
+	Vector3 scaDoorR = newObj->GetScale();
 
-	doorR_->SetPosition({ scaDoorR.x, scaDoorR.y / 2, doorPos_.z });
-	doorR_->SetRotation(CreateRotationVector(
+	newObj->SetPosition({ scaDoorR.x, scaDoorR.y / 2, doorPos_.z });
+	newObj->SetRotation(CreateRotationVector(
 		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-	doorR_->SetModel(doorModel_);
-	doorR_->SetCamera(camera_);
+	newObj->SetModel(objManager_->GetModel(doorModel_));
+	doorR_.reset(newObj);
 
 	//ライト生成
 	light_ = new LightGroup();
@@ -132,46 +117,47 @@ void GameClearScene::Initialize() {
 
 	//描画基盤
 
-	//描画スプライト
-	sprite_ = new Sprite();
-	sprite_->Initialize(0);
-
 	//テキスト
 	float textSize = 5.0f;
 
-	text_ = new Text();
-	text_->Initialize(Framework::kTextTextureIndex_);
-	text_->SetString("GAME CLEAR!");
-	text_->SetPosition({
+	Text* newText = new Text();
+	newText->Initialize(Framework::kTextTextureIndex_);
+	newText->SetString("GAME CLEAR!");
+	newText->SetPosition({
 		WinApp::Win_Width / 2,
 		-20.0f,
 		});
-	text_->SetSize({ textSize,textSize });
+	newText->SetSize({ textSize,textSize });
+	text_.reset(newText);
 
 	//ボタン
 	textSize = 2.5f;
+	Button* newButton = new Button();
 
-	buttonTitle_ = new Button();
-	buttonTitle_->Initialize(0);
-	buttonTitle_->SetTelop("Title");
-	buttonTitle_->SetPosition({ -200.0f ,500.0f });
-	buttonTitle_->SetSize({ 400.0f,96.0f });
-	buttonTitle_->GetText()->SetSize({ textSize,textSize });
-	buttonTitle_->Update();
+	newButton->Initialize(0);
+	newButton->SetTelop("Title");
+	newButton->SetPosition({ -200.0f ,500.0f });
+	newButton->SetSize({ 400.0f,96.0f });
+	newButton->GetText()->SetSize({ textSize,textSize });
+	newButton->Update();
+	buttonTitle_.reset(newButton);
 
-	buttonRetry_ = new Button();
-	buttonRetry_->Initialize(0);
-	buttonRetry_->SetTelop("Retry");
-	buttonRetry_->SetPosition({ WinApp::Win_Width - 300.0f ,500.0f });
-	buttonRetry_->SetSize({ 400.0f,96.0f });
-	buttonRetry_->GetText()->SetSize({ textSize,textSize });
-	buttonRetry_->Update();
+	Button* newButton2 = new Button();
+	newButton2->Initialize(0);
+	newButton2->SetTelop("Retry");
+	newButton2->SetPosition({ WinApp::Win_Width - 300.0f ,500.0f });
+	newButton2->SetSize({ 400.0f,96.0f });
+	newButton2->GetText()->SetSize({ textSize,textSize });
+	newButton2->Update();
+	buttonRetry_.reset(newButton2);
 
 	//暗幕
-	blackOut_ = new Fade();
-	blackOut_->Initialize(Framework::kWhiteTextureIndex_);
-	blackOut_->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
-	blackOut_->SetColor({ 0,0,0,1 });
+	Fade* newFade = new Fade();
+	newFade->Initialize(Framework::kWhiteTextureIndex_);
+	newFade->SetSize({ WinApp::Win_Width,WinApp::Win_Height });
+	newFade->SetColor({0,0,0,1});
+
+	blackOut_.reset(newFade);
 
 	//タイルならべ
 
@@ -183,8 +169,8 @@ void GameClearScene::Initialize() {
 	//縦に並べる枚数
 	float height = (WinApp::Win_Height / tileSize) + 1;
 
-	arrangeTile_ = new ArrangeTile();
-	arrangeTile_->Initialize(
+	ArrangeTile* newArrTile = new ArrangeTile();
+	newArrTile->Initialize(
 		Framework::kBackgroundTextureIndex_,
 		//開始位置
 		{
@@ -198,6 +184,8 @@ void GameClearScene::Initialize() {
 		},
 		(int)(width * height)
 	);
+
+	arrangeTile_.reset(newArrTile);
 
 	const int timeMax = 60;
 	Vector2 start =
@@ -257,11 +245,8 @@ void GameClearScene::Update() {
 		//}
 	}
 
-	Vector3 playerWorldPos = {
-		playerObj_->GetMatWorld().m[3][0],
-		playerObj_->GetMatWorld().m[3][1],
-		playerObj_->GetMatWorld().m[3][2]
-	};
+	Vector3 playerWorldPos = 
+		playerObj_->GetPosWorld();
 
 	const float distance = 100.0f;
 	Vector3 posPlayer = playerWorldPos;
@@ -294,10 +279,7 @@ void GameClearScene::Update() {
 	camera_->SetTarget(posPlayer);
 	camera_->Update();
 
-	//buttonRetry_->Update();
 	buttonTitle_->Update();
-
-	sprite_->Update();
 
 	BlackOutUpdate();
 }
@@ -330,8 +312,7 @@ void GameClearScene::Draw() {
 
 	//スプライト本命処理
 	SpriteBasis::GetInstance()->PreDraw();
-
-	//sprite_->Draw();
+;
 	if (isIntro_) {
 	}
 	else {
@@ -349,43 +330,17 @@ void GameClearScene::Draw() {
 }
 
 void GameClearScene::Finalize() {
-	SafeDelete(cart_);
-	SafeDelete(cartModel_);
-
 #pragma region Tube
 	tubeManager_->Finalize();
 	SafeDelete(tubeManager_);
-	SafeDelete(tubeModel_);
 #pragma endregion
-
-	SafeDelete(playerObj_);
-	SafeDelete(skydomeObj_);
-	SafeDelete(bottomBG_);
-
-	SafeDelete(playerModel_);
-	SafeDelete(skydomeModel_);
-	SafeDelete(bottomBGModel_);
-	SafeDelete(doorModel_);
-
-	SafeDelete(sprite_);
 
 	SafeDelete(light_);
 	SafeDelete(camera_);
 
 	buttonRetry_->Finalize();
-	SafeDelete(buttonRetry_);
-
 	buttonTitle_->Finalize();
-	SafeDelete(buttonTitle_);
-
-	SafeDelete(text_);
-
-	SafeDelete(doorL_);
-	SafeDelete(doorR_);
-
 	blackOut_->Finalize();
-	SafeDelete(blackOut_);
-	SafeDelete(arrangeTile_);
 }
 
 void GameClearScene::Introduction() {
@@ -416,11 +371,8 @@ void GameClearScene::Introduction() {
 		doorR_->SetPosition(pos);
 	}
 
-	Vector3 playerWorldPos = {
-		playerObj_->GetMatWorld().m[3][0],
-		playerObj_->GetMatWorld().m[3][1],
-		playerObj_->GetMatWorld().m[3][2]
-	};
+	Vector3 playerWorldPos = 
+		playerObj_->GetPosWorld();
 
 	Vector3 posPlayer = playerWorldPos;
 

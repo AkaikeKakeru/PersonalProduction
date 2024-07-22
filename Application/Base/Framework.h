@@ -8,6 +8,7 @@
 #include "DirectXBasis.h"
 #include "Input.h"
 #include "Audio.h"
+#include "ObjectManager.h"
 
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
@@ -30,10 +31,22 @@ public:
 		kGaugeTextureIndex_ = 2,
 		//背景テクスチャ番号
 		kBackgroundTextureIndex_ = 3,
+		//マウスUIテクスチャ番号
+		kMouseTextureIndex_ = 4,
+		//敵機、発射予告テクスチャ番号
+		kNoticeEnemyBulletTextureIndex_ = 5,
 		//テキストテクスチャ番号
 		kTextTextureIndex_ = 100,
 		//白塗りテクスチャ番号
 		kWhiteTextureIndex_ = 200,
+		//ポーズ画面用テクスチャ番号
+		kPauseTextureIndex_ = 201,
+	};
+
+	//ポストエフェクト番号
+	enum PostEffectIndex {
+		//ビネットポストエフェクト番号
+		kVignetteIndex_ = 0
 	};
 
 public:
@@ -61,7 +74,7 @@ public:
 	}
 	//ポストエフェクトの取得
 	PostEffect* GetPostEffect() const {
-		return postEffect_;
+		return postEffect_.get();
 	}
 	//シーンマネージャーの取得
 	static SceneManager* GetSceneManager() {
@@ -69,6 +82,11 @@ public:
 	}
 
 public: //定数
+
+private:
+	//ポストエフェクト
+	std::unique_ptr<PostEffect> postEffect_;
+
 private:
 	//ウィンドウアプリ
 	WinApp* winApp_ = nullptr;
@@ -86,14 +104,13 @@ private:
 	//シーンマネージャー
 	static SceneManager* sceneManager_;
 
+	//オブジェクトマネージャー
+	ObjectManager* objManager_;
+
 #ifdef _DEBUG
 	//ImGuiマネージャー
 	ImGuiManager* imGuiManager_ = nullptr;
 #endif
-
-	//ポストエフェクト
-	PostEffect* postEffect_ = nullptr;
-
 	bool isEndRequest_ = false;
 
 public:

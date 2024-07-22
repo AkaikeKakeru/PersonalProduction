@@ -1,4 +1,4 @@
-﻿/*ワールド変換*/
+/*ワールド変換*/
 
 #pragma once
 #include "Vector3.h"
@@ -31,6 +31,8 @@ public:
 	Vector3 position_ = {0, 0, 0};
 	// ワールド変換行列
 	Matrix4 matWorld_ = {};
+	// ワールド変換後の座標
+	Vector3 posWorld_ = {};
 	// 親へのポインタ
 	WorldTransform* parent_ = nullptr;
 

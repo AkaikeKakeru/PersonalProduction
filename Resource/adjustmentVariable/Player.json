@@ -1,20 +1,8 @@
 {
-  "Player": {
-    "Position": [
-      0,
-      -5.0,
-      30.0
-    ],
-    "Rotation": [
-      0,
-      1.0,
-      0
-    ],
-    "Scale": [
-      1.0,
-      1.0,
-      1.0
-    ],
-    "RadiusCollider": 1.0
-  }
+    "Player": {
+        "Position" : [0,-5.0,30.0],
+        "Rotation" : [0,1.0,0],
+        "Scale" : [1.0,1.0,1.0],
+        "RadiusCollider" : 1.0
+    }
 }

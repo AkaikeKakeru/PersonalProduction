@@ -8,8 +8,10 @@
 #include "Model.h"
 #include "Sprite.h"
 #include "Object3d.h"
+#include "ObjectManager.h"
 
 #include "Skydome.h"
+#include "StageField.h"
 
 #include "Text.h"
 #include "Button.h"
@@ -29,7 +31,13 @@
 /*タイトルシーン*/
 class TitleScene : public BaseScene {
 public://構造体
-
+	enum modelName {
+		playerModel_ = ObjectManager::playerActiveModel_,
+		skydomeModel_ = ObjectManager::skydomeModel_,
+		tubeModel_ = ObjectManager::tubeModel_,
+		cartModel_ = ObjectManager::cartModel_,
+		bottomBGModel_ = ObjectManager::bottomBGModel_,
+	};
 public:
 	void Initialize() override;
 	void Update() override;
@@ -57,6 +65,7 @@ private:
 	static DirectXBasis* dxBas_;
 	static Input* input_;
 	static SpriteBasis* spriteBas_;
+	static ObjectManager* objManager_;
 
 	Camera* camera_ = nullptr;
 	LightGroup* light_ = nullptr;
@@ -67,30 +76,22 @@ private:
 #endif
 
 	// オブジェクト
-	Object3d* playerObj_ = nullptr;
-	Model* playerModel_ = nullptr;
+	std::unique_ptr<Object3d> playerObj_ = nullptr;
+	std::unique_ptr<Skydome> skydome_ = nullptr;
 
-	Skydome* skydome_ = nullptr;
-	Model* skydomeModel_ = nullptr;
-
-	Model* tubeModel_ = nullptr;
+	//ステージフィールド
+	std::unique_ptr<StageField> stageField_ = nullptr;
 
 	//カートモデル
-	Object3d* cart_ = nullptr;
-	Model* cartModel_ = nullptr;
+	std::unique_ptr<Object3d> cart_ = nullptr;
 
-	Model* bottomBGModel_ = nullptr;
-	Object3d* bottomBG_ = nullptr;
-
-	/// スプライト
-	/// </summary>
-	Sprite* sprite_ = nullptr;
+	std::unique_ptr<Object3d> bottomBG_ = nullptr;
 
 	//テキスト
-	Text* text_ = nullptr;
+	std::unique_ptr<Text> text_ = nullptr;
 
 	//ボタン
-	Button* buttonStart_ = nullptr;
+	std::unique_ptr<Button> buttonStart_ = nullptr;
 	float alpha_ = 0.0f;
 
 	//タイトルループまで
@@ -100,11 +101,11 @@ private:
 	bool isRoop_ = false;
 
 	//画面の暗幕
-	Fade* blackOut_ = nullptr;
+	std::unique_ptr<Fade> blackOut_ = nullptr;
 
 	//タイルならべのシーン遷移
-	ArrangeTile* arrangeTile_ = nullptr;
+	std::unique_ptr<ArrangeTile> arrangeTile_ = nullptr;
 
 	//背景筒マネージャー
-	TubeManager* tubeManager_;
+	std::unique_ptr<TubeManager> tubeManager_;
 };

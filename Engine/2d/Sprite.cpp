@@ -1,4 +1,4 @@
-﻿/*スプライト*/
+/*スプライト*/
 
 #include "Sprite.h"
 #include "SafeDelete.h"

@@ -10,6 +10,8 @@
 #include "PlayerBullet.h"
 #include <Framework.h>
 
+#include "ObjectManager.h"
+
 #include <Quaternion.h>
 #include <Ease.h>
 
@@ -50,6 +52,8 @@ Player* Player::Create(Model* model) {
 }
 
 bool Player::Initialize() {
+//	float kCenterAnchorPoint_ = 0.5f;
+
 	Character::SetGroupName(groupName_);
 	Character::SetDefaultLife(kDefaultLife_);
 	Character::SetDefaultPosition({ kDefaultPosX_,kDefaultPosY_,kDefaultPosZ_
@@ -61,15 +65,10 @@ bool Player::Initialize() {
 	modelActive_ = model_;
 	modelHide_ = model_;
 
-	collider_->SetAttribute(COLLISION_ATTR_PLAYER);
+	Character::collider_->SetAttribute(COLLISION_ATTR_PLAYER);
 
-	worldTransform3dReticle_.Initialize();
-
-	spriteReticle_ = new Sprite();
-	spriteReticle_->Initialize(Framework::kCursorTextureIndex_);
-
-	spriteReticle_->SetAnchorPoint({ 0.5f, 0.5f });
-	spriteReticle_->SetSize({ 64,64 });
+	worldTransform3dReticle_ = new WorldTransform();
+	worldTransform3dReticle_->Initialize();
 
 #pragma region 調整項目
 	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
@@ -97,29 +96,41 @@ bool Player::Initialize() {
 #pragma endregion
 
 #pragma region HPスプライト
-	Character::GetHPGauge()->SetRestMax(kDefaultLife_);
-	Character::GetHPGauge()->SetRest(kDefaultLife_);
-	Character::GetHPGauge()->SetMaxTime(kMaxTimeHP_);
+	Gauge* newHpGauge = new Gauge();
+	newHpGauge->SetRestMax(kDefaultLife_);
+	newHpGauge->SetRest(kDefaultLife_);
+	newHpGauge->SetMaxTime(kMaxTimeHP_);
+	newHpGauge->Initialize();
+	newHpGauge->SetPosition({ 64,64 });
+	newHpGauge->SetSize({ 1,1 });
+	Character::SetHPGauge(newHpGauge);
+#pragma endregion
 
-	Character::GetHPGauge()->SetPosition({ 64,64 });
-	Character::GetHPGauge()->SetSize({ 1,1 });
+#pragma region カート
+	Cart* newCart = Cart::Create();
+	newCart->Initialize();
+	newCart->SetModel(
+		ObjectManager::GetInstance()->
+		GetModel(
+			ObjectManager::cartModel_
+		)
+	);
+	newCart->SetCamera(camera_);
+	Character::SetCart(newCart);
 #pragma endregion
 
 #pragma region 残弾数スプライト
-	bulletGauge_ = new Gauge();
-	bulletGauge_->Initialize();
-
-	bulletGauge_->GetRestSprite()->SetColor({ 0.2f,0.7f,0.2f,0.5f });
-	bulletGauge_->SetRestMax(static_cast<float>(remainBulletCount_));
-	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
-	bulletGauge_->SetMaxTime(maxTimeBullet_);
-
-	bulletGauge_->SetPosition({ 64,64 });
-	bulletGauge_->SetSize({ 0.5f,0.5f });
-
-	bulletGauge_->GetAmountSprite()->SetColor({ 0.7f,0.7f,0.2f,0.5f });
-
-	bulletGauge_->Update();
+	Gauge* newGauge = new Gauge();
+	newGauge->Initialize();
+	newGauge->GetRestSprite()->SetColor({ 0.2f,0.7f,0.2f,0.5f });
+	newGauge->SetRestMax(static_cast<float>(remainBulletCount_));
+	newGauge->SetRest(static_cast<float>(remainBulletCount_));
+	newGauge->SetMaxTime(maxTimeBullet_);
+	newGauge->SetPosition({ 64,64 });
+	newGauge->SetSize({ 0.5f,0.5f });
+	newGauge->GetAmountSprite()->SetColor({ 0.7f,0.7f,0.2f,0.5f });
+	newGauge->Update();
+	bulletGauge_.reset(newGauge);
 #pragma endregion
 
 #ifdef _DEBUG
@@ -142,55 +153,19 @@ bool Player::Initialize() {
 	}
 #endif // _DEBUG
 
-	//テキスト
-	textEmpty_ = new Text();
-	textEmpty_->Initialize(Framework::kTextTextureIndex_);
-	textEmpty_->SetString("AmmoIsEmpty");
-
-	float len = (float)textEmpty_->GetString().length() + 1.0f;
-
-	textEmpty_->SetPosition(
-		{
-			spriteReticle_->GetPosition().x - (textEmpty_->fontWidth_ * len),
-			spriteReticle_->GetPosition().y
-		}
-	);
-	textEmpty_->SetSize({ 2.5f,2.5f });
-
 	shake_.SetWidthSwing(5.0f);
 
 	Vector3 move{};
 	bulletGauge_->SetPosition({ 64,64 });
 
 	Vector2 start{ -500,64 };
-	Vector2 end{ 64,64 };
+	Vector2 end{ 64 * 5,64 };
 
 	setupHpGaugePos_.Reset(
 		Ease::In_,
 		Character::GetTimerMax(),
 		ConvertVector2ToVector3(start),
 		ConvertVector2ToVector3(end)
-	);
-
-	Character::GetStartPositionEase().Reset(
-		Ease::In_,
-		Character::GetTimerMax(),
-		{
-			0.0f,
-			Character::GetDefaultPosition().y,
-			0.0f
-		},
-		{
-			0.0f,
-			Character::GetDefaultPosition().y,
-			Character::GetDefaultPosition().z
-		}
-		);
-	Character::GetStartRotationEase().Reset(
-		Ease::In_,
-		Character::GetTimerMax(),
-		Object3d::GetRotation(),
-		Object3d::GetRotation()
 	);
 
 	Character::GetEndPositionEase().Reset(
@@ -215,7 +190,31 @@ bool Player::Initialize() {
 		}
 	);
 
+	//damageEffect_.Initialize();
+
 	return true;
+}
+
+void Player::InitializeCursor() {
+	cursor_ = std::make_unique<Cursor>();
+	cursor_->Initialize(*camera_);
+	cursor_->SetDistance(70.0f);
+
+	//テキスト
+	Text* newText = new Text();
+	textEmpty_.reset(newText);
+	textEmpty_->Initialize(Framework::kTextTextureIndex_);
+	textEmpty_->SetString("AmmoIsEmpty");
+
+	float len = (float)textEmpty_->GetString().length() + 1.0f;
+
+	textEmpty_->SetPosition(
+		{
+			cursor_->GetSprite()->GetPosition().x - (textEmpty_->fontWidth_ * len),
+			cursor_->GetSprite()->GetPosition().y
+		}
+	);
+	textEmpty_->SetSize({ 2.5f,2.5f });
 }
 
 void Player::Update() {
@@ -233,6 +232,10 @@ void Player::Update() {
 	Vector3 shakePos = Object3d::GetPosition();
 
 	if (Character::IsStart()) {
+		if (isPhaseAdvance_) {
+			PhaseChange();
+		}
+
 		//入力で隠れフラグ操作
 		if (input_->PressMouse(1)) {
 			Object3d::SetModel(modelHide_);
@@ -250,7 +253,6 @@ void Player::Update() {
 			}
 			const float hidePosY = cartPosYLock_ + 3.0f;
 
-
 			if (remainBulletCount_ < kBulletRimit_) {
 				remainBulletCount_++;
 			}
@@ -267,13 +269,20 @@ void Player::Update() {
 			}
 		}
 
-		position += moveVector;
+		moveEase.Update();
+		rotaEase.Update();
+		rotVector = rotaEase.GetReturn();
+		moveVector = moveEase.GetReturn();
+
+		//position += moveVector;
+		//rot += rotVector;
 
 		//ダメージフラグを確認
 		if (Character::IsDamage()) {
 			//ダメージ時にシェイクをセット
 			shake_.SetWidthSwing(5.0f);
 			shake_.SetIs(true);
+
 		}
 
 		//シェイクフラグを確認
@@ -285,71 +294,58 @@ void Player::Update() {
 			shakePos += shake_.GetOutput();
 		}
 
-		rot += rotVector;
+		if (countAdv_ >= 100) {
+			//あとで自機側で、この向きになるよう回転させる
+			rotVector = CreateRotationVector(
+				{ 0.0f,1.0f,0.0f }, ConvertToRadian(180.0f));
+		}
 
-		Character::SetMovePos(position);
-		Character::SetMoveRota(rot);
+		Character::SetMovePos(moveVector);
+		Character::SetMoveRota(rotVector);
 		Character::SetShakePos(shakePos);
 	}
 
 	if (Character::IsStart()) {
+		cursor_->GetSprite()->SetIsInvisible(false);
+		bulletGauge_->SetIsInvisible(false);
+
 		//ライフ0でデスフラグ
 		if (Character::GetLife() <= 0.0f) {
 			if (!isSetupOverPositionEase_) {
 				GetEndPositionEase().Reset(
 					Ease::In_,
 					60,
-					Object3d::GetPosition(),
+					Character::GetPosition(),
 					{
-						Object3d::GetPosition().x,
-						Object3d::GetPosition().y - 60.0f,
-						Object3d::GetPosition().z - 30.0f
+						Character::GetPosition().x,
+						Character::GetPosition().y - 60.0f,
+						Character::GetPosition().z - 30.0f
 					}
 				);
 
 				GetEndRotationEase().Reset(
 					Ease::In_,
 					30,
-					Object3d::GetRotation(),
+					Character::GetRotation(),
 					{
-						Object3d::GetRotation().x - ConvertToRadian(40.0f),
-						Object3d::GetRotation().y,
-						Object3d::GetRotation().z
+						Character::GetRotation().x - ConvertToRadian(40.0f),
+						Character::GetRotation().y,
+						Character::GetRotation().z
 					}
 				);
 
 				isSetupOverPositionEase_ = true;
+				bulletGauge_->SetIsInvisible(true);
+				cursor_->GetSprite()->SetIsInvisible(true);
 			}
 		}
 	}
-
-	//残弾数ゲージの変動
-	bulletGauge_->GetRestSprite()->
-		SetColor({ 0.2f,0.7f,0.2f,5.0f });
-	bulletGauge_->SetPosition({
-		input_->GetMousePosition().x - 64.0f + 16.0f,
-		input_->GetMousePosition().y + 16.0f
-		});
-
-	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
-	bulletGauge_->DecisionFluctuation();
-	bulletGauge_->SetIsFluct(true);
-	bulletGauge_->Update();
-
-	if (remainBulletCount_ <= 0) {
-		float len = (float)textEmpty_->GetString().length() + 1.0f;
-		textEmpty_->SetPosition(
-			{
-				spriteReticle_->GetPosition().x - (textEmpty_->fontWidth_ * len),
-				spriteReticle_->GetPosition().y
-			}
-		);
-		textEmpty_->Print();
+	else {
+		bulletGauge_->SetIsInvisible(true);
+		cursor_->GetSprite()->SetIsInvisible(true);
 	}
-
 #ifdef _DEBUG
 	{
-
 		position = {
 			Character::GetDebugPosition()[0],
 			Character::GetDebugPosition()[1],
@@ -365,14 +361,13 @@ void Player::Update() {
 #endif // _DEBUG
 
 	if (IsHide()) {
-
-	Character::GetCart()->SetPosition(
-		Vector3{
-			worldTransform_.matWorld_.m[3][0],
-			cartPosYLock_,
-			worldTransform_.matWorld_.m[3][2]
-		}
-	);
+		Character::GetCart()->SetPosition(
+			Vector3{
+				worldTransform_.matWorld_.m[3][0],
+				cartPosYLock_,
+				worldTransform_.matWorld_.m[3][2]
+			}
+		);
 	}
 	else {
 		Character::GetCart()->SetPosition(
@@ -399,7 +394,8 @@ void Player::Draw() {
 
 void Player::DrawUI() {
 	bulletGauge_->Draw();
-	spriteReticle_->Draw();
+	cursor_->Draw();
+
 	textEmpty_->DrawAll();
 
 	Character::DrawUI();
@@ -415,20 +411,16 @@ void Player::DrawImgui() {
 	ApplyAdjustmentVariables();
 #pragma endregion
 
-	Character::DrawImgui();
+	//Character::DrawImgui();
 }
 
 void Player::Finalize() {
-	SafeDelete(spriteReticle_);
 	bulletGauge_->Finalize();
-	SafeDelete(textEmpty_);
-
+	SafeDelete(worldTransform3dReticle_);
 	Character::Finalize();
 }
 
 void Player::ApplyAdjustmentVariables() {
-	//Character::ApplyAdjustmentVariables();
-
 	AdjustmentVariables* adjustmentVariables_ = AdjustmentVariables::GetInstance();
 
 	worldTransform_.position_ =
@@ -461,30 +453,62 @@ void Player::OnCollision(const CollisionInfo& info) {
 	Character::OnCollision(info);
 }
 
-void Player::UpdateReticle(const Vector3& targetWorldPos) {
+void Player::UpdateReticle(
+	const Vector3& lockonTargetPos
+	, float distance
+) {
+	cursor_->SetDistance(distance);
+		cursor_->Update(*camera_,lockonTargetPos);
+		worldTransform3dReticle_->position_ = lockonTargetPos;
+		//3Dレティクル座標を更新
+		worldTransform3dReticle_->UpdateMatrix();
 
-	//ゲームシーンからカーソルを借りる
-
-	//3Dレティクル座標を更新
-	worldTransform3dReticle_.position_ = targetWorldPos;
-	worldTransform3dReticle_.UpdateMatrix();
-
-	//レティクルスプライトの位置
-	// エネミーのワールド座標をスクリーン座標に変換して設定
-	spriteReticle_->SetPosition(
-		Character::GetGamePlayScene()->GetCursor()->TransFromWorldToScreen(targetWorldPos)
-	);
+		spriteReticle_->SetPosition(
+			cursor_->TransFromWorldToScreen(cursorPos_)
+		);
+	//---------------
+	Vector2 size2d{};
+	Vector4 color2d{};
+	float alfaRest = 0.0f;
 	//ロックオン中か否かでスプライトのサイズを変える
-	if (Character::GetGamePlayScene()->GetCursor()->IsLockOn()) {
-		spriteReticle_->SetSize({ 80,80 });
-		spriteReticle_->SetColor({ 0.7f,0.2f,0.2f,0.8f });
+	if (cursor_->IsLockOn()) {
+		size2d = { 80,80 };
+		color2d = { 0.7f,0.2f,0.2f,0.8f };
+		alfaRest = 0.2f;
 	}
 	else {
-		spriteReticle_->SetSize({ 64,64 });
-		spriteReticle_->SetColor({ 1,1,1,1 });
+		size2d = { 64,64 };
+		color2d = { 1,1,1,1 };
+		alfaRest = 0.5f;
 	}
 
-	spriteReticle_->Update();
+	cursor_->GetSprite()->SetSize(size2d);
+	cursor_->GetSprite()->SetColor(color2d);
+	cursor_->GetSprite()->Update();
+	//---------------
+	//残弾数ゲージの変動
+	bulletGauge_->GetRestSprite()->
+		SetColor({ 0.2f,0.7f,0.2f,alfaRest });
+	bulletGauge_->SetPosition({
+		cursor_->GetSprite()->GetPosition().x - 64.0f + 16.0f,
+		cursor_->GetSprite()->GetPosition().y + 32.0f
+		});
+
+	bulletGauge_->SetRest(static_cast<float>(remainBulletCount_));
+	bulletGauge_->DecisionFluctuation();
+	bulletGauge_->SetIsFluct(true);
+	bulletGauge_->Update();
+
+	if (remainBulletCount_ <= 0) {
+		float len = (float)textEmpty_->GetString().length() + 1.0f;
+		textEmpty_->SetPosition(
+			{
+				cursor_->GetSprite()->GetPosition().x - (textEmpty_->fontWidth_ * len),
+				cursor_->GetSprite()->GetPosition().y
+			}
+		);
+		textEmpty_->Print();
+	}
 }
 
 void Player::Attack() {
@@ -494,52 +518,23 @@ void Player::Attack() {
 		if (input_->TriggerMouse(0)) {
 			if (bulletCooltime_ <= 0) {
 				//弾スピード
-				const float kBulletSpeed = 17.5f;
+				const float kBulletSpeed = 10.5f;
 				//毎フレーム弾が前進する速度
 				Vector3 bulletVelocity = { 0.0f,0.0f,kBulletSpeed };
 
 				//速度ベクトルを自機の向きに合わせて回転させる
 				//bulletVelocity = Vector3CrossMatrix4(bulletVelocity, worldTransform_.matWorld_);
 				bulletVelocity =
-					Vector3{
-					worldTransform3dReticle_.matWorld_.m[3][0],
-					worldTransform3dReticle_.matWorld_.m[3][1],
-					worldTransform3dReticle_.matWorld_.m[3][2]
-				} - Vector3{
-						worldTransform_.matWorld_.m[3][0],
-						worldTransform_.matWorld_.m[3][1],
-						worldTransform_.matWorld_.m[3][2]
-				};
+					worldTransform3dReticle_->posWorld_
+					- Character::GetPosWorld();
 
-				bulletVelocity = Vector3Normalize(bulletVelocity) * kBulletSpeed;
+				bulletVelocity = Vector3Normalize(bulletVelocity);
+				bulletVelocity *= kBulletSpeed;
 
-				//弾の生成、初期化
-				std::unique_ptr<PlayerBullet> newBullet =
-					std::make_unique<PlayerBullet>();
+				Character::SetBulletDamage(kGunDamage_);
+				Character::SetBulletVelocity(bulletVelocity);
 
-				newBullet->Initialize();
-
-				newBullet->SetModel(Character::GetBulletModel());
-
-				newBullet->SetScale(worldTransform_.scale_);
-				newBullet->SetRotation(worldTransform_.rotation_);
-				newBullet->SetPosition(Vector3{
-					worldTransform_.matWorld_.m[3][0],
-					worldTransform_.matWorld_.m[3][1],
-					worldTransform_.matWorld_.m[3][2]
-					});
-
-				newBullet->SetVelocity(bulletVelocity);
-
-				newBullet->SetDamage(kGunDamage_);
-
-				newBullet->SetCamera(camera_);
-
-				newBullet->SetGameScene(Character::GetGamePlayScene());
-
-				newBullet->Update();
-
-				Character::GetGamePlayScene()->AddPlayerBullet(std::move(newBullet));
+				Character::Attack();
 
 				//発射済みの弾数を一つカウント
 				remainBulletCount_--;
@@ -569,4 +564,66 @@ void Player::StartMove() {
 
 void Player::OverMove() {
 	Character::OverMove();
+}
+
+void Player::PhaseChange() {
+	Vector3 startPos{};
+	Vector3 endPos{};
+
+	Vector3 startRota{};
+	Vector3 endRota{};
+	float updateRota = ConvertToRadian(90.0f);
+	if (countAdv_ % 2 == 1) {
+		updateRota *= -1;
+	}
+
+	if (countAdv_ < cBossPhaseIndex_) {
+		//countAdv_++;
+		startPos = Character::GetPosition();
+		endPos = {
+			Character::GetPosition().x,
+			Character::GetPosition().y,
+			Character::GetPosition().z + 50.0f
+		};
+
+		startRota = easeRotaS_ ;
+		endRota = {
+			Character::GetRotation().x,
+			Character::GetRotation().y + updateRota,
+			Character::GetRotation().z
+		};
+	}
+	else {
+		startPos = Character::GetPosition();
+		endPos = {
+			Character::GetPosition().x,
+			Character::GetPosition().y,
+			Character::GetPosition().z + 50.0f
+		};
+
+		startRota = easeRotaS_ ;
+		endRota = {
+			Character::GetRotation().x,
+			0.0f,
+			Character::GetRotation().z
+		};
+	}
+
+	moveEase.Reset(
+		Ease::InOut_,
+		Character::GetTimerMax(),
+		startPos,
+		endPos
+	);
+
+	rotaEase.Reset(
+		Ease::InOut_,
+		Character::GetTimerMax(),
+		startRota,
+		endRota
+	);
+
+	isPhaseAdvance_ = false;
+
+	easeRotaS_ = endRota;
 }

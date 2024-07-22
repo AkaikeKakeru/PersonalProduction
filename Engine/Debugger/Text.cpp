@@ -1,4 +1,4 @@
-﻿/*テキスト*/
+/*テキスト*/
 
 #include "Text.h"
 
@@ -37,10 +37,12 @@ void Text::Print() {
 		int fontIndexY = fontIndex / fontLineCount_;
 		int fontIndexX = fontIndex % fontLineCount_;
 
+		float kCenterAnchorPoint_ = 0.5f;
+
 		// 座標計算
 		sprites_[spriteIndex_]->SetPosition({ position_.x + fontWidth_ * size_.x * i, position_.y });
 		sprites_[spriteIndex_]->SetSize({ fontWidth_ * size_.x, fontHeight_ * size_.y });
-		sprites_[spriteIndex_]->SetAnchorPoint({ 0.5f,0.5f });
+		sprites_[spriteIndex_]->SetAnchorPoint({ kCenterAnchorPoint_,kCenterAnchorPoint_ });
 		sprites_[spriteIndex_]->SetTextureLeftTop({ (float)fontIndexX * fontWidth_, (float)fontIndexY * fontHeight_ });
 		sprites_[spriteIndex_]->SetTextureSize({ (float)fontWidth_, (float)fontHeight_ });
 

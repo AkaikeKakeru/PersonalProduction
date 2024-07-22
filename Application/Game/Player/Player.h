@@ -6,6 +6,8 @@
 #include "RailCamera.h"
 #include "Shake.h"
 
+#include "PostEffect.h"
+
 class GamePlayScene;
 class PlayerBullet;
 class Enemy;
@@ -14,12 +16,16 @@ class CollisionManager;
 //プレイヤー
 class Player
 	: public Character {
+private:
+	const int cBossPhaseIndex_ = 3;
+
 public: //静的メンバ関数
 	//オブジェクト生成
 	static Player* Create(Model* model = nullptr);
 
 public://メンバ関数
 	bool Initialize() override;
+	void InitializeCursor();
 	void Update() override;
 	void Draw();
 	void DrawUI();
@@ -33,17 +39,22 @@ public://メンバ関数
 	void OnCollision(const CollisionInfo& info) override;
 
 	//照準更新
-	void UpdateReticle(const Vector3& targetWorldPos);
+	void UpdateReticle(
+		const Vector3& lockonTargetPos
+		, float distance);
+	//,
+		//const Vector2& lockonTargetPos2d);
 
 	//発射攻撃
-	void Attack();
+	void Attack() override;
 
 	//開始時移動
-	void StartMove();
+	void StartMove() override;
 
 	//脱落時移動
-	void OverMove();
+	void OverMove() override;
 
+	void PhaseChange();
 public: //定数
 	//調整変数グループ名
 	const char* groupName_ = "Player";
@@ -71,6 +82,11 @@ public: //定数
 	const float kDefaultPosZ_ = 30.0f;
 
 public: //アクセッサ
+	//追従カメラのビュープロジェクション
+	void SetViewProjection(const ViewProjection* viewProjection) {
+		viewProjection_ = viewProjection;
+	}
+
 	//レールカメラのワールド変換取得
 	void SetWorldTransformRailCamera(WorldTransform* worldTransformRailCamera) {
 		worldTransform_.parent_ = worldTransformRailCamera;
@@ -92,6 +108,22 @@ public: //アクセッサ
 		modelHide_ = hyde;
 	};
 
+	//フェーズ進行フラグのセット
+	void SetPhaseAdvance(
+		const bool isPhaseAdvance,
+		const int phaseIndex) {
+		isPhaseAdvance_ = isPhaseAdvance;
+		countAdv_ = phaseIndex;
+	}
+
+	Cursor& GetCursor() {
+		return *cursor_.get();
+	}
+
+	bool IsPhaseAdvance() {
+		return isPhaseAdvance_;
+	}
+
 private: //静的メンバ変数
 	//衝突マネージャー
 	static CollisionManager* collisionManager_;
@@ -101,14 +133,20 @@ private: //静的メンバ変数
 	static SpriteBasis* spriteBas_;
 
 private: //メンバ変数
-	//テキスト
-	Text* textEmpty_ = nullptr;
+	//カメラのビュープロジェクション
+	const ViewProjection* viewProjection_ = nullptr;
 
-	//カーソル
-	Cursor* cursor{};
+private: //メンバ変数
+	//移動イーズ
+	Ease moveEase{};
+	//回転イーズ
+	Ease rotaEase{};
+
+	//テキスト
+	std::unique_ptr<Text> textEmpty_ = nullptr;
 
 	//3dレティクルのワールド変換
-	WorldTransform worldTransform3dReticle_;
+	WorldTransform* worldTransform3dReticle_;
 
 	//隠れフラグ
 	bool isHide_ = false;
@@ -120,7 +158,7 @@ private: //メンバ変数
 	int32_t bulletCooltime_ = kDefaultBulletCooltime_;
 
 	//レティクル用スプライト
-	Sprite* spriteReticle_ = nullptr;
+	std::unique_ptr<Sprite> spriteReticle_ = nullptr;
 
 	//HPゲージのセットアップ位置
 	Ease setupHpGaugePos_ = {};
@@ -128,7 +166,7 @@ private: //メンバ変数
 	/// <summary>
 	/// 残弾
 	/// </summary>
-	Gauge* bulletGauge_ = {};
+	std::unique_ptr<Gauge> bulletGauge_ = {};
 
 	//残弾ゲージの位置(左上角)
 	Vector2 positionBulletGauge_ = {
@@ -156,6 +194,24 @@ private: //メンバ変数
 
 	float cartPosYLock_ = {};
 	bool isHideOld_ = false;
+
+	//フェーズ進行フラグ
+	bool isPhaseAdvance_ = false;
+
+	//進行回数
+	int countAdv_ = 0;
+
+	//カーソル
+	std::unique_ptr <Cursor> cursor_;
+	//カーソル位置
+	Vector3 cursorPos_{};
+	//今受け取っているターゲットのワールド座標
+	Vector3 targetWorldPos_{};
+
+	//ターゲット中の敵機
+	Vector3 easeRotaS_{};
+
+	PostEffect damageEffect_;
 
 public:
 	Player() = default;

@@ -1,4 +1,4 @@
-﻿/*イージング*/
+/*イージング*/
 
 #pragma once
 #include <Vector2.h>
@@ -37,7 +37,7 @@ public:
 		startVec_ = startVec;
 		endVec_ = endVec;
 		nowVec_ = startVec;
-		is_ = false;
+		is_ = true;
 		isEnd_ = false;
 	};
 
@@ -81,6 +81,10 @@ public:
 		return nowVec_;
 	}
 
+	float GetTimeRatio() {
+		return timeRatio_;
+	}
+
 	void SetStart(Vector3 start) {
 		startVec_ = start;
 	}
@@ -110,6 +114,9 @@ public:
 private:
 	//タイプ
 	int type_ = Default_;
+
+	//タイム(割合)
+	float timeRatio_;
 
 	//タイマー
 	int timer_ = 0;

@@ -63,16 +63,44 @@ void Framework::Initialize(){
 	//オブジェクト基盤
 	Object3d::StaticInitialize(dxBas_->GetDevice().Get());
 
+	objManager_ = ObjectManager::GetInstance();
+	objManager_->CreateModelList();
+	objManager_->CreateObjectList();
+
 	//描画基盤(スプライト)
 	SpriteBasis* spriteBas = SpriteBasis::GetInstance();
 	spriteBas->Initialize();
-	spriteBas->LoadTexture(kSampleTextureIndex_, "texture.png");
-	spriteBas->LoadTexture(kCursorTextureIndex_, "cursor.png");
-	spriteBas->LoadTexture(kGaugeTextureIndex_, "HPgauge.png");
-	spriteBas->LoadTexture(kBackgroundTextureIndex_, "remains_BG.png");
 
-	spriteBas->LoadTexture(kWhiteTextureIndex_, "white.png");
-	spriteBas->LoadTexture(kTextTextureIndex_, "debugfont.png");
+	spriteBas->LoadTexture(
+		TextureIndex::kSampleTextureIndex_,
+		"texture.dds");
+	spriteBas->LoadTexture(
+		TextureIndex::kCursorTextureIndex_,
+		"cursor.dds");
+	spriteBas->LoadTexture(
+		TextureIndex::kGaugeTextureIndex_,
+		"HPgauge.dds");
+	spriteBas->LoadTexture(
+		TextureIndex::kBackgroundTextureIndex_,
+		"remains_BG.png");
+
+	spriteBas->LoadTexture(
+		TextureIndex::kTextTextureIndex_,
+		"debugfont.dds");
+	spriteBas->LoadTexture(
+		TextureIndex::kMouseTextureIndex_,
+		"mouse.dds");
+
+	spriteBas->LoadTexture(
+		TextureIndex::kNoticeEnemyBulletTextureIndex_,
+		"Brick.dds");
+
+	spriteBas->LoadTexture(
+		TextureIndex::kWhiteTextureIndex_,
+		"white.dds");
+	spriteBas->LoadTexture(
+		TextureIndex::kPauseTextureIndex_,
+		"pause.dds");
 
 	//パーティクルマネージャー
 	ParticleManager::StaticInitialize(dxBas_->GetDevice().Get());
@@ -81,7 +109,9 @@ void Framework::Initialize(){
 	LightGroup::StaticInitialize(dxBas_->GetDevice().Get());
 
 	//ポストエフェクトの初期化
-	postEffect_ = new PostEffect();
+	 postEffect_ =
+		std::make_unique<PostEffect>();
+
 	postEffect_->Initialize();
 
 	//調整項目の読込
@@ -106,6 +136,5 @@ void Framework::Finalize(){
 #endif // DEBUG
 	sceneManager_->Finalize();
 
-	delete postEffect_;
 	delete sceneFactory_;
 }

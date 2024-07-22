@@ -1,4 +1,4 @@
-﻿/*スプライトとしてのボタンUI*/
+/*スプライトとしてのボタンUI*/
 
 #include "Button.h"
 #include "Input.h"
@@ -7,11 +7,12 @@
 #include <Framework.h>
 
 void Button::Initialize(uint32_t index) {
+	float kCenterAnchorPoint_ = 0.5f;
 	position_ = { 0,0 };
 	size_ = { 10,10 };
 
 	sprite_ = new Sprite();
-	sprite_->SetAnchorPoint({ 0.5f, 0.5f });
+	sprite_->SetAnchorPoint({ kCenterAnchorPoint_, kCenterAnchorPoint_ });
 	sprite_->Initialize(index);
 
 	textSize_ = 2.5f;

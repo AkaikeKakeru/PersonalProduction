@@ -64,7 +64,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer;$(ProjectDir)Application\Function\System;$(ProjectDir)Application\Function\UI;$(ProjectDir)Engine\Color;$(ProjectDir)Application\Game\Cart</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer;$(ProjectDir)Application\Function\System;$(ProjectDir)Application\Function\UI;$(ProjectDir)Engine\Color;$(ProjectDir)Application\Game\Cart;$(ProjectDir)Application\Game\Background¥Scroll;$(ProjectDir)Application\Game\Enemy\Boss;$(ProjectDir)Application\Game\Bullet;$(ProjectDir)Application\Game\Scene\PlayScene;$(ProjectDir)Application\Game\Scene\PlayScene\Manager</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -87,7 +87,7 @@
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer;$(ProjectDir)Application\Function\System;$(ProjectDir)Application\Function\UI;$(ProjectDir)Engine\Color;$(ProjectDir)Application\Game\Cart</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Application\Base;$(ProjectDir)Application\Function;$(ProjectDir)Application\Game;$(ProjectDir)Application\Game\Scene;$(ProjectDir)Application\Game\Scene\Manager;$(ProjectDir)Application\Math;$(ProjectDir)Engine\Audio;$(ProjectDir)Engine\ConstBuffer;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d\Camera;$(ProjectDir)Engine\3d\Light;$(ProjectDir)Engine\3d\Object;$(ProjectDir)Application\Game\Player;$(ProjectDir)Application\Function\Collider;$(ProjectDir)Application\Game\Enemy;$(ProjectDir)Application\Math\Vector;$(ProjectDir)Application\Math\Matrix;$(ProjectDir)Application\Math\PhysicsCalculation;$(ProjectDir)Application\Game\Background;$(ProjectDir)Engine\Particle;$(ProjectDir)Engine\LevelEditer;$(ProjectDir)Application\Function\System;$(ProjectDir)Application\Function\UI;$(ProjectDir)Engine\Color;$(ProjectDir)Application\Game\Cart;$(ProjectDir)Application\Game\Background¥Scroll;$(ProjectDir)Application\Game\Enemy\Boss;$(ProjectDir)Application\Game\Bullet;$(ProjectDir)Application\Game\Scene\PlayScene;$(ProjectDir)Application\Game\Scene\PlayScene\Manager</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -112,23 +112,38 @@
     <ClCompile Include="Application\Function\UI\Gauge.cpp" />
     <ClCompile Include="Application\Function\System\Shake.cpp" />
     <ClCompile Include="Application\Game\Background\Skydome.cpp" />
+    <ClCompile Include="Application\Game\Background\StageField.cpp" />
     <ClCompile Include="Application\Game\Background\Tube.cpp" />
     <ClCompile Include="Application\Game\Background\TubeManager.cpp" />
+    <ClCompile Include="Application\Game\Enemy\BaseEnemy.cpp" />
+    <ClCompile Include="Application\Game\Enemy\Boss\Boss.cpp" />
+    <ClCompile Include="Application\Game\Bullet\Bullet.cpp" />
     <ClCompile Include="Application\Game\Cart\Cart.cpp" />
     <ClCompile Include="Application\Game\Character.cpp" />
+    <ClCompile Include="Application\Game\Enemy\Boss\WeakPoint.cpp" />
     <ClCompile Include="Application\Game\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\Game\Enemy\EnemyBullet.cpp" />
+    <ClCompile Include="Application\Game\ObjectManager.cpp" />
     <ClCompile Include="Application\Game\Player\Player.cpp" />
     <ClCompile Include="Application\Game\Player\PlayerBullet.cpp" />
+    <ClCompile Include="Application\Game\Scene\PlayScene\GamePlaySceneEnding.cpp" />
+    <ClCompile Include="Application\Game\Scene\PlayScene\GamePlaySceneOpening.cpp" />
+    <ClCompile Include="Application\Game\Scene\PlayScene\GamePlaySceneRun.cpp" />
+    <ClCompile Include="Application\Game\Scene\PlayScene\Manager\BaseStatePlayScene.cpp" />
+    <ClCompile Include="Application\Game\Scene\PlayScene\GamePlaySceneBossBattle.cpp" />
     <ClCompile Include="Application\Game\Scene\GameClearScene.cpp" />
     <ClCompile Include="Application\Game\Scene\GameOverScene.cpp" />
-    <ClCompile Include="Application\Game\Scene\GamePlayScene.cpp" />
+    <ClCompile Include="Application\Game\Scene\PlayScene\GamePlayScene.cpp" />
     <ClCompile Include="Application\Game\Scene\Manager\BaseScene.cpp" />
     <ClCompile Include="Application\Game\AdjustmentVariables.cpp" />
+    <ClCompile Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateFactory.cpp" />
+    <ClCompile Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateManager.cpp" />
+    <ClCompile Include="Application\Game\Scene\PlayScene\PauseScreen.cpp" />
     <ClCompile Include="Application\Math\MyMath.cpp" />
     <ClCompile Include="Application\Math\Quaternion.cpp" />
     <ClCompile Include="Engine\2d\PostEffect.cpp" />
     <ClCompile Include="Engine\3d\Camera\DebugCamera.cpp" />
+    <ClCompile Include="Engine\3d\Camera\FollowCamera.cpp" />
     <ClCompile Include="Engine\3d\Camera\RailCamera.cpp" />
     <ClCompile Include="Engine\3d\Light\LightGroup.cpp" />
     <ClCompile Include="Engine\Audio\Audio.cpp" />
@@ -179,25 +194,41 @@
     <ClInclude Include="Application\Function\Collider\SphereCollider.h" />
     <ClInclude Include="Application\Function\System\Shake.h" />
     <ClInclude Include="Application\Game\Background\Skydome.h" />
+    <ClInclude Include="Application\Game\Background\StageField.h" />
     <ClInclude Include="Application\Game\Background\Tube.h" />
     <ClInclude Include="Application\Game\Background\TubeManager.h" />
+    <ClInclude Include="Application\Game\Enemy\BaseEnemy.h" />
+    <ClInclude Include="Application\Game\Enemy\Boss\Boss.h" />
+    <ClInclude Include="Application\Game\Bullet\Bullet.h" />
     <ClInclude Include="Application\Game\Cart\Cart.h" />
     <ClInclude Include="Application\Game\Character.h" />
+    <ClInclude Include="Application\Game\Enemy\Boss\WeakPoint.h" />
     <ClInclude Include="Application\Game\Enemy\Enemy.h" />
     <ClInclude Include="Application\Game\Enemy\EnemyBullet.h" />
     <ClInclude Include="Application\Game\GameMain.h" />
     <ClInclude Include="Application\Function\UI\Gauge.h" />
+    <ClInclude Include="Application\Game\ObjectManager.h" />
     <ClInclude Include="Application\Game\Player\Player.h" />
     <ClInclude Include="Application\Game\Player\PlayerBullet.h" />
+    <ClInclude Include="Application\Game\Scene\PlayScene\GamePlaySceneEnding.h" />
+    <ClInclude Include="Application\Game\Scene\PlayScene\GamePlaySceneRun.h" />
+    <ClInclude Include="Application\Game\Scene\PlayScene\Manager\AbstractPlaySceneStateFactory.h" />
+    <ClInclude Include="Application\Game\Scene\PlayScene\GamePlaySceneBossBattle.h" />
     <ClInclude Include="Application\Game\Scene\GameClearScene.h" />
     <ClInclude Include="Application\Game\Scene\Manager\AbstractSceneFactory.h" />
     <ClInclude Include="Application\Game\Scene\Manager\BaseScene.h" />
     <ClInclude Include="Application\Game\Scene\GameOverScene.h" />
     <ClInclude Include="Application\Game\AdjustmentVariables.h" />
+    <ClInclude Include="Application\Game\Scene\PlayScene\Manager\BaseStatePlayScene.h" />
+    <ClInclude Include="Application\Game\Scene\PlayScene\GamePlaySceneOpening.h" />
+    <ClInclude Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateFactory.h" />
+    <ClInclude Include="Application\Game\Scene\PlayScene\Manager\PlaySceneStateManager.h" />
+    <ClInclude Include="Application\Game\Scene\PlayScene\PauseScreen.h" />
     <ClInclude Include="Application\Math\MyMath.h" />
     <ClInclude Include="Application\Math\Quaternion.h" />
     <ClInclude Include="Engine\2d\PostEffect.h" />
     <ClInclude Include="Engine\3d\Camera\DebugCamera.h" />
+    <ClInclude Include="Engine\3d\Camera\FollowCamera.h" />
     <ClInclude Include="Engine\3d\Camera\RailCamera.h" />
     <ClInclude Include="Engine\3d\Light\DirectionalLight.h" />
     <ClInclude Include="Engine\3d\Light\LightGroup.h" />
@@ -210,7 +241,7 @@
     <ClInclude Include="Engine\2d\SpriteBasis.h" />
     <ClInclude Include="Application\Base\FixFPS.h" />
     <ClInclude Include="Application\Base\Framework.h" />
-    <ClInclude Include="Application\Game\Scene\GamePlayScene.h" />
+    <ClInclude Include="Application\Game\Scene\PlayScene\GamePlayScene.h" />
     <ClInclude Include="Application\Base\Input.h" />
     <ClInclude Include="Engine\3d\Object\Material.h" />
     <ClInclude Include="Application\Math\Matrix\Matrix4.h" />

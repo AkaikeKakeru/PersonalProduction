@@ -1,8 +1,9 @@
-﻿/*シーン管理*/
+/*シーン管理*/
 
 #include "SceneManager.h"
 #include "ImGuiManager.h"
 #include <cassert>
+#include <SafeDelete.h>
 
 void SceneManager::Update(){
 	//次のシーンの予約があるなら
@@ -38,7 +39,7 @@ void SceneManager::Draw(){
 void SceneManager::Finalize(){
 	//最後のシーンの終了と解放
 	scene_->Finalize();
-	delete scene_;
+	SafeDelete(scene_);
 }
 
 void SceneManager::ChangeScene(const std::string& sceneName) {

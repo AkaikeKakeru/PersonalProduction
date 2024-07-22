@@ -7,6 +7,8 @@
 #include "SpriteBasis.h"
 #include <Input.h>
 
+#include "Bullet.h"
+
 #include "Cursor.h"
 #include "Ease.h"
 #include "Gauge.h"
@@ -30,10 +32,6 @@ public: //静的メンバ関数
 	//キャラクター生成
 	static Character* Create();
 
-	static void SetCartModel(Model* cartModel) {
-		cartModel_ = cartModel;
-	}
-
 public://メンバ関数
 	virtual bool Initialize() override;
 	virtual void Update() override;
@@ -51,6 +49,12 @@ public://メンバ関数
 	//脱落時移動
 	virtual void OverMove();
 
+	//攻撃
+	virtual void Attack();
+
+	//弾追加
+	virtual void AddBullet();
+
 public: //アクセッサ
 	//ゲームシーンのセット
 	void SetGamePlayScene(GamePlayScene* gamePlayScene) {
@@ -60,6 +64,11 @@ public: //アクセッサ
 	//半径の取得
 	float GetRadius() const {
 		return radiusCollider_;
+	}
+
+	//ワールド変換の取得
+	const WorldTransform* GetWorldTransform() {
+		return &worldTransform_;
 	}
 
 	//スピードのセット
@@ -114,6 +123,8 @@ public: //アクセッサ
 
 	//ゲームオーバーフラグの取得
 	bool IsOver() {
+
+
 		return isOver_;
 	}
 
@@ -124,11 +135,24 @@ public: //アクセッサ
 
 	//HPゲージの取得
 	Gauge* GetHPGauge() const {
-		return hpGauge_;
+		return hpGauge_.get();
+	}
+
+	//HPゲージの取得
+	void SetHPGauge(Gauge* hpGauge) {
+		hpGauge_.reset(hpGauge);
 	}
 
 	Cart* GetCart() const {
-		return cart_;
+		return cart_.get();
+	}
+
+	void SetCart(Cart* cart) {
+		cart_.reset(cart);
+	}
+
+	void SetCartModel(Model* cartModel) {
+		cartModel_ = cartModel;
 	}
 
 private: //静的メンバ変数
@@ -138,9 +162,6 @@ private: //静的メンバ変数
 	static Input* input_;
 	//スプライト基盤
 	static SpriteBasis* spriteBas_;
-
-	//カートモデル
-	static Model* cartModel_;
 
 public:
 	//ゲームプレイシーンの取得
@@ -174,6 +195,16 @@ public:
 		shakePos_ = shakePos;
 	}
 
+	//弾速度のセット
+	void SetBulletVelocity(const Vector3& bulletVelocity) {
+		bulletVelocity_ = bulletVelocity;
+	}
+
+	//弾攻撃力のセット
+	void SetBulletDamage(const float bulletDamage) {
+		bulletDamage_ = bulletDamage;
+	}
+
 	//スピードの取得
 	float GetSpeed() {
 		return speed_;
@@ -200,13 +231,31 @@ public:
 	Ease& GetEndRotationEase() {
 		return endRotationEase_;
 	}
+
+	//開始Pos用イーズの取得
+	void SetStartPositionEase(Ease& ease) {
+		startPositionEase_ = ease;
+	}
+	//開始Rota用イーズの取得
+	void SetStartRotationEase(Ease& ease) {
+		startRotationEase_ = ease;
+	}
+	//終了Pos用イーズの取得
+	void SetEndPositionEase(Ease& ease) {
+		endPositionEase_ = ease;
+	}
+	//終了Rota用イーズの取得
+	void SetEndRotationEase(Ease& ease) {
+		endRotationEase_ = ease;
+	}
+
 	//グループ名の取得
 	void SetGroupName(const char* groupName) {
 		groupName_ = groupName;
 	}
 
 	void SetHpGauge(Gauge* hpGauge) {
-		hpGauge_ = hpGauge;
+		hpGauge_.reset(hpGauge);
 	}
 
 	void SetDefaultLife(float defaultLife) {
@@ -237,6 +286,16 @@ public:
 	const float* GetDebugDirection() {
 		return debugDir_;
 	}
+
+	void SetImGuiWinPosition(const float* imGuiWinPos) {
+		for (int i = 0; i < 2; i++) {
+			imGuiWinPos_[i] = imGuiWinPos[i];
+		}
+	}
+	const float* GetImGuiWinPosition() {
+		return imGuiWinPos_;
+	}
+
 private:
 	//調整変数グループ名
 	const char* groupName_ = "Character";
@@ -279,7 +338,7 @@ private: //メンバ変数
 	/// <summary>
 	/// HP
 	/// </summary>
-	Gauge* hpGauge_ = {};
+	std::unique_ptr<Gauge> hpGauge_ = {};
 
 	//HPゲージの位置(左上角)
 	Vector2 positionHPGauge_ = {
@@ -317,11 +376,26 @@ private: //メンバ変数
 	float speed_ = 0.5f;
 
 	//カート
-	Cart* cart_ = nullptr;
+	std::unique_ptr<Cart> cart_ = nullptr;
+
+	//カートモデル
+	Model* cartModel_ = nullptr;
+
+	//弾
+	std::list<std::unique_ptr<Bullet>> bullets_;
+
+	//弾速度
+	Vector3 bulletVelocity_{};
+
+	//弾攻撃力
+	float bulletDamage_ = 0.0f;
 
 private: //ImGui用
 	//Vector3の要素数
 	static const int kVector3Count_ = 3;
+
+	//Vector2の要素数
+	static const int kVector2Count_ = 2;
 
 	//Pos範囲
 	const float PosRange_ = 30.0f;
@@ -335,7 +409,10 @@ private: //ImGui用
 	//ImGui用自機Dir
 	float debugDir_[kVector3Count_] = {};
 
+	//ImGui窓用Pos
+	float imGuiWinPos_[kVector2Count_] = {};
+
 public:
 	Character() = default;
-	virtual ~Character() = default;
+	virtual ~Character();
 };
