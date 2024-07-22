@@ -9,6 +9,10 @@
 #include "Camera.h"
 #include "Ease.h"
 
+#include <memory>
+#include <List>
+#include <Sprite.h>
+
 /*カーソルやレティクルの座標を求める*/
 class Cursor {
 public://定数
@@ -22,8 +26,11 @@ public://定数
 
 public: //アクセッサ
 
-	void Initialize();
-
+	void Initialize(const Camera& camera);
+	void Update(
+		const Camera& camera,
+		const Vector3& targetWorldPos);
+	void Draw();
 
 	/// <summary>
 	/// 3Dレティクル位置取得
@@ -31,7 +38,9 @@ public: //アクセッサ
 	/// <param name="camera">カメラ</param>
 	/// <param name="targetWorldPos">標的のワールド座標(MatWorld.m[3][0]～m.[3][2])</param>
 	/// <returns>レティクルのワールド座標</returns>
-	Vector3& Get3DReticlePosition(Camera* camera,const Vector3 targetWorldPos);
+	Vector3& Get3DReticlePosition(
+		//Camera* camera,
+		const Vector3 targetWorldPos);
 
 	/// <summary>
 	///スクリーン座標から、ワールド座標へ変換 
@@ -46,6 +55,18 @@ public: //アクセッサ
 	/// <param name="worldPos">ワールド座標</param>
 	/// <returns>変換後のスクリーン座標</returns>
 	Vector2& TransFromWorldToScreen(const Vector3& worldPos);
+
+	/// <summary>
+	/// レティクルスプライトの取得
+	/// </summary>
+	/// <returns>レティクルスプライト</returns>
+	Sprite* GetSprite() {
+		return spriteReticle_.get();
+	}
+
+	const Vector3& GetReticlePos() {
+		return reticlePos_;
+	}
 
 	/// <summary>
 	/// 距離のセット
@@ -67,6 +88,12 @@ public: //アクセッサ
 
 		CreateMatrixInverseVPV();
 	}
+
+	void SetTargetPos(const Vector3& targetWorldPos) {
+		Vector3 pos = targetWorldPos;
+
+		targetPos_ = pos;
+	};
 
 private: //固有関数
 	//ビュープロジェクションビューポート行列の逆行列生成
@@ -95,6 +122,10 @@ private: //メンバ変数
 	//カメラ
 	Camera* camera_;
 
+	std::unique_ptr<Sprite> spriteReticle_;
+
+	Vector3 targetPos_{};
+
 	//ビュープロジェクションビューポート行列
 	Matrix4 matVPV_ = Matrix4Identity();
 
@@ -103,9 +134,6 @@ private: //メンバ変数
 
 	//レティクル位置
 	Vector3 reticlePos_ = {};
-
-	//レティクルの移動先保管用
-	Vector3 reticleMove_ = {};
 
 	//カメラからの距離
 	float distance_ = 50.0f;
