@@ -12,6 +12,8 @@
 #include <iomanip>
 #include <Quaternion.h>
 
+ObjectManager* StageField::objManager_ = ObjectManager::GetInstance();
+
 void StageField::Initialize() {
     levelLoader_= new LevelLoader();
     levelLoader_->LoadFileJson(jsonFileName_, camera_);
@@ -37,7 +39,12 @@ void StageField::Initialize() {
 		newTube->SetModel(loadObj->GetModel());
 
 		newTube->SetCamera(camera_);
+
+		newTube->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+
 		newTube->Update();
+
+		objects_.push_back(newTube);
 	}
 
 #pragma region 扉
