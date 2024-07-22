@@ -49,7 +49,7 @@ public://メンバ関数
 	}
 
 private:
-	void SortingSign(float& f);
+	void SortingSign(float& f, float min, float max);
 
 public://定数
 	//発射間隔

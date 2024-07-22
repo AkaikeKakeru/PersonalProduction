@@ -127,6 +127,10 @@ bool Boss::Initialize() {
 		}
 	);
 
+	float imGuiWinPos[2] = { 600,0 };
+
+	Character::SetImGuiWinPosition(imGuiWinPos);
+
 	return true;
 }
 
@@ -256,17 +260,15 @@ void Boss::Update() {
 	for (std::unique_ptr<WeakPoint>& weak : weakPoint_) {
 		int32_t now = 0;
 
-	//	if (weak) {
-			weak->SetPosition(Object3d::GetPosition());
-			weak->Update();
-	//	}
+		//	if (weak) {
+		weak->SetPosition(Object3d::GetPosition());
+		weak->Update();
+		//	}
 
 		weakPosContainer_[now] = weak->GetPosition();
 
 		now++;
 	}
-
-
 }
 
 void Boss::Draw() {
@@ -306,9 +308,9 @@ void Boss::OverMove() {
 }
 
 void Boss::Attack() {
-//	isAttack_ = true;
+	//	isAttack_ = true;
 
-	//弾スピード
+		//弾スピード
 	const float kBulletSpeed = 6.0f;
 
 	Vector3 worldPos =
@@ -404,18 +406,29 @@ void Boss::ResetNextEase() {
 	//横移動イーズを、エンドフラグを起点にリセット
 	if (moveEase_.IsEnd()) {
 		Vector3 rand{};
+		Vector2 x = {-3.0f, 3.0f};
+		Vector2 y = {0.0f, 2.0f};
+		Vector2 z = {2.0f, 8.0f};
+
 		while (true) {
 
 			rand = {
-				RandomOutputFloat(-1.0f, 1.0f),
-				RandomOutputFloat(-1.0f, 1.0f),
-				RandomOutputFloat(-1.0f, 0.0f)
+				RandomOutputFloat(x.x, x.y),
+				RandomOutputFloat(y.x, y.y),
+				RandomOutputFloat(z.x, z.y)
 			};
 
 			//-1.0f or 0.0f or 1.0f　のどれかにする。
-			SortingSign(rand.x);
-			SortingSign(rand.y);
-			SortingSign(rand.z);
+			SortingSign(rand.x, x.x,x.y);
+			SortingSign(rand.y, y.x,y.y);
+			SortingSign(rand.z, z.x,z.y);
+
+			if (rand.x == 0.0f) {
+				if (rand.y >= 0.0f) {
+					if(rand.z <= 0.0f)
+					continue;
+				}
+			}
 
 			//前回と同じ出力なら抽選し直し
 			if (moveEaseVec_.x != rand.x
@@ -423,6 +436,7 @@ void Boss::ResetNextEase() {
 				|| moveEaseVec_.z != rand.z) {
 				break;
 			}
+
 		}
 
 #pragma region 横移動イーズのリセット
@@ -470,14 +484,16 @@ void Boss::ResetNextEase() {
 	}
 }
 
-void Boss::SortingSign(float& f) {
-	if (f < -0.7f) {
-		f = -1.0f;
+void Boss::SortingSign(float& f, float min, float max) {
+	float a = max - min;
+	float cen = a / 2;
+	if (f <  cen - (a * 0.3f)) {
+		f = min;
 	}
-	else if (f > 0.3f) {
-		f = 1.0f;
+	else if (f > cen + (a * 0.3f)) {
+		f = max;
 	}
 	else {
-		f = 0.0f;
+		f = cen;
 	}
 }
