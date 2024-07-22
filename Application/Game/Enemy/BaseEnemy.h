@@ -122,6 +122,9 @@ private: //メンバ変数
 	//アクティブフラグ
 	bool isActive_ = false;
 
+	//発射予告スプライト
+	std::unique_ptr<Sprite> spriteNotice_;
+
 public:
 	BaseEnemy() = default;
 	~BaseEnemy() = default;

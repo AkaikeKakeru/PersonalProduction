@@ -84,11 +84,15 @@ void BaseEnemy::Update() {
 	Vector3 position = Object3d::GetPosition();
 	// 現在の回転を取得
 	Vector3 rot = Object3d::GetRotation();
+	// 現在のスケールを取得
+	Vector3 scale = Object3d::GetScale();
 
 	//移動ベクトル
 	Vector3 moveVector = { 0.0f,0.0f,0.0f };
 	//回転ベクトル
 	Vector3 rotVector = { 0.0f,0.0f,0.0f };
+	//スケールベクトル
+	Vector3 scaleVector = {0,0,0};
 
 	moveVector = { 0.0f,0.0f,Character::GetSpeed() };
 	moveVector = Vector3CrossMatrix4(moveVector, worldTransform_.matWorld_);
@@ -98,11 +102,23 @@ void BaseEnemy::Update() {
 
 	//発射タイマーを減らしていき、0で発射処理
 	fireTimer_--;
+
+	if(fireTimer_ <= kFireInterval / 2 ) {
+		scaleVector = { scale.x,scale.y * 1.1f,scale.z };
+		Character::SetScale(scale);
+	}
+	//else if(fireTimer_ <= kFireInterval / 4 ){
+	//	Character::SetColor({ 0.7f,0.8f,0.1f,1.0f });
+	//}
+
 	if (fireTimer_ <= 0) {
 		//発射
 		Attack();
 		//発射タイマーを初期化
 		fireTimer_ = kFireInterval;
+
+		scaleVector = { 1,1,1 };
+		Character::SetScale(scale);
 	}
 
 	Object3d::Update();
