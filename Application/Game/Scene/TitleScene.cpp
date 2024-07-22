@@ -77,18 +77,10 @@ void TitleScene::Initialize() {
 
 	bottomBG_.reset(newObj);
 
-#pragma region Tube
-	TubeManager* newTube = new TubeManager();
-	newTube->SetCamera(camera_);
-	newTube->SetSpeed(16.0f);
-	newTube->SetRotation(CreateRotationVector(
-		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
-	newTube->SetScale({ 100,100,100 });
-	newTube->SetTubeModel(objManager_->GetModel(tubeModel_));
-	newTube->Initialize();
-
-	tubeManager_.reset(newTube);
-#pragma endregion
+	stageField_ = std::make_unique<StageField>();
+	stageField_->SetJsonFileName("StageField1");
+	stageField_->SetCamera(camera_);
+	stageField_->Initialize();
 
 	//ライト生成
 	light_ = new LightGroup();
@@ -206,9 +198,7 @@ void TitleScene::Update() {
 	skydome_->Update();
 	bottomBG_->Update();
 
-#pragma region Tube
-	tubeManager_->Update();
-#pragma endregion
+	stageField_->Update();
 
 	PlayerUpdate();
 
@@ -229,9 +219,8 @@ void TitleScene::Draw() {
 	//天球描画
 	skydome_->Draw();
 	bottomBG_->Draw();
-#pragma region Tube
-	tubeManager_->Draw();
-#pragma endregion
+
+	stageField_->Draw();
 
 	playerObj_->Draw();
 	cart_->Draw();
@@ -252,9 +241,7 @@ void TitleScene::Draw() {
 }
 
 void TitleScene::Finalize() {
-#pragma region Tube
-	tubeManager_->Finalize();
-#pragma endregion
+	stageField_->Finalize();
 	SafeDelete(light_);
 	SafeDelete(camera_);
 	buttonStart_->Finalize();

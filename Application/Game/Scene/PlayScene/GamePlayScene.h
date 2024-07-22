@@ -33,7 +33,6 @@
 #include "Enemy.h"
 #include "EnemyBullet.h"
 #include "Boss.h"
-#include "Skydome.h"
 #include "Cart.h"
 
 #include "StageField.h"
@@ -61,18 +60,9 @@ public:
 		playerActiveModel_ = ObjectManager::playerActiveModel_,
 		playerHideModel_ = ObjectManager::playerHideModel_,
 		enemyModel_ = ObjectManager::enemyModel_,
-		skydomeModel_ = ObjectManager::skydomeModel_,
 		bulletModel_ = ObjectManager::bulletModel_,
 		tubeModel_ = ObjectManager::tubeModel_,
 		cartModel_ = ObjectManager::cartModel_,
-		bottomBGModel_ = ObjectManager::bottomBGModel_,
-		doorModel_ = ObjectManager::doorModel_,
-	};
-
-	enum objName {
-		doorL_,
-		doorR_,
-		bottomBG_,
 	};
 
 	enum mouseSpriteIndex {
@@ -184,17 +174,8 @@ public: //メンバ変数
 	//ライト
 	LightGroup* light_ = nullptr;
 
-	//天球
-	std::unique_ptr<Skydome> skydome_ = nullptr;
-
 	//ステージフィールド
 	std::unique_ptr<StageField> stageField_ = nullptr;
-
-	//扉の位置
-	Vector3 doorPos_{};
-
-	//オブジェリスト
-	std::list<std::unique_ptr<Object3d>> objs_;
 
 	//パーティクル
 	std::unique_ptr<Particle> particle_ = nullptr;

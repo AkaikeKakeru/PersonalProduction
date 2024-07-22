@@ -55,13 +55,7 @@ void GamePlayScene::Finalize() {
 }
 
 void GamePlayScene::FinalizeBackGround() {
-#pragma region Tube
-	//tubeManager_->Finalize();
-#pragma endregion
-
 	stageField_->Finalize();
-
-	skydome_->Finalize();
 }
 void GamePlayScene::FinalizeCharacter() {
 }
@@ -80,74 +74,10 @@ void GamePlayScene::InitializeCamera() {
 	camera_->Update();
 }
 void GamePlayScene::InitializeBackground() {
-#pragma region Skydome
-	Skydome* newSkydome = Skydome::Create();
-	skydome_.reset(newSkydome);
-	skydome_->SetCamera(camera_);
-	skydome_->SetModel(objManager_->GetModel(skydomeModel_));
-	skydome_->SetScale({ 1024.0f, 256.0f, 1024.0f });
-	skydome_->SetPosition({ 0,0,0 });
-#pragma endregion
-
 	stageField_ = std::make_unique<StageField>();
 	stageField_->SetJsonFileName("StageField1");
-	stageField_->SetCamera(*camera_);
+	stageField_->SetCamera(camera_);
 	stageField_->Initialize();
-
-//#pragma region Tube
-//	TubeManager* newTubeManager_ = new TubeManager();
-//	tubeManager_.reset(newTubeManager_);
-//	tubeManager_->SetCamera(camera_);
-//	tubeManager_->SetSpeed(16.0f);
-//	tubeManager_->SetRotation(CreateRotationVector(
-//		{ 0.0f,0.0f,1.0f }, ConvertToRadian(180.0f)));
-//	tubeManager_->SetScale({ 100,100,100 });
-//	tubeManager_->SetTubeModel(objManager_->GetModel(tubeModel_));
-//	tubeManager_->Initialize();
-//#pragma endregion
-//
-//#pragma region 扉
-//	Object3d* obj = new Object3d();
-//
-//	std::unique_ptr<Object3d> newObj =
-//		std::make_unique<Object3d>();
-//
-//	doorPos_ = { 0,0,800 };
-//
-//	obj = Object3d::Create();
-//	obj->SetCamera(camera_);
-//	obj->SetScale({ 50,400,10 });
-//	Vector3 scaDoorL = obj->GetScale();
-//
-//	obj->SetPosition({ -scaDoorL.x, scaDoorL.y / 2,doorPos_.z });
-//	obj->SetRotation(CreateRotationVector(
-//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-//	obj->SetModel(objManager_->GetModel(doorModel_));
-//
-//	newObj.reset(obj);
-//	objs_.push_back(std::move(newObj));
-//
-//	obj = Object3d::Create();
-//	obj->SetCamera(camera_);
-//	obj->SetScale({ 50,400,10 });
-//	Vector3 scaDoorR = obj->GetScale();
-//	obj->SetPosition({ scaDoorR.x, scaDoorR.y / 2, doorPos_.z });
-//	obj->SetRotation(CreateRotationVector(
-//		{ 0.0f,1.0f,0.0f }, ConvertToRadian(0.0f)));
-//	obj->SetModel(objManager_->GetModel(doorModel_));
-//	newObj.reset(obj);
-//	objs_.push_back(std::move(newObj));
-//#pragma endregion
-//
-//	obj = Object3d::Create();
-//	obj->SetModel(objManager_->GetModel(bottomBGModel_));
-//	obj->SetScale({ 10.0f, 10.0f, 10.0f });
-//	obj->SetPosition({ 0,-100,0 });
-//	obj->SetCamera(camera_);
-//	obj->Update();
-//
-//	newObj.reset(obj);
-//	objs_.push_back(std::move(newObj));
 }
 void GamePlayScene::InitializeCharacter() {
 }
@@ -323,14 +253,7 @@ void GamePlayScene::InitializePause() {
 void GamePlayScene::UpdateCamera() {
 }
 void GamePlayScene::UpdateBackground() {
-	skydome_->Update();
-
-	for (std::unique_ptr<Object3d>& obj : objs_) {
-		obj->Update();
-	}
-#pragma region Tube
-	//tubeManager_->Update();
-#pragma endregion
+	stageField_->Update();
 }
 void GamePlayScene::UpdateCharacter() {
 }
@@ -412,14 +335,7 @@ void GamePlayScene::DrawPause(){
 void GamePlayScene::DrawCharacter() {
 }
 void GamePlayScene::DrawBackground() {
-	//天球描画
-	skydome_->Draw();
-	for (std::unique_ptr<Object3d>& obj : objs_) {
-		obj->Draw();
-	}
-#pragma region Tube
-	//tubeManager_->Draw();
-#pragma endregion
+	stageField_->Draw();
 }
 
 void GamePlayScene::Initialize3d() {
@@ -470,7 +386,9 @@ void GamePlayScene::Initialize() {
 	PlaySceneStateManager::GetInstance()->SetSceneFactory(stateFactory_);
 
 	//シーンマネージャーに最初のシーンをセット
-	PlaySceneStateManager::GetInstance()->ChangeState("BOSSBATTLE");
+	PlaySceneStateManager::GetInstance()->ChangeState("RUN");
+
+	//PlaySceneStateManager::GetInstance()->ChangeState("BOSSBATTLE");
 
 	Initialize2d();
 }

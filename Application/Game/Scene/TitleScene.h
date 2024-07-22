@@ -11,6 +11,7 @@
 #include "ObjectManager.h"
 
 #include "Skydome.h"
+#include "StageField.h"
 
 #include "Text.h"
 #include "Button.h"
@@ -77,6 +78,9 @@ private:
 	// オブジェクト
 	std::unique_ptr<Object3d> playerObj_ = nullptr;
 	std::unique_ptr<Skydome> skydome_ = nullptr;
+
+	//ステージフィールド
+	std::unique_ptr<StageField> stageField_ = nullptr;
 
 	//カートモデル
 	std::unique_ptr<Object3d> cart_ = nullptr;
